@@ -1,0 +1,140 @@
+<p class="body_header"><%= t 'agusta.request_adhoc' %></p>
+<%= render 'layouts/message_display' %>
+<%= image_seperator %>
+<%= hidden_field_tag :browser, (browser.ie8? || browser.ie6? || browser.ie7?) %>
+<% if @aircraft_kits_response.present? %>
+    <% if @aircraft_kits_response.present? %>
+        <%= form_tag send_agusta_path, :method => :post, :id => 'ordersubmit_form', :remote => true do %>
+            <%= hidden_field_tag "localTime", nil, :id => "localTime" %>
+            <%= hidden_field_tag "duplicateOrder",nil%>
+            <div class="selection_area">
+              <div class="selection_row">
+                <div class="selection_block agusta_aircraft_id">
+                  <div class="s_title"><%= t 'agusta.id' %>*</div>
+                  <%= select_tag(:aircraftId, options_for_select(@aircraftId), :prompt => t('agusta.select'), :onchange => "agustaCheckForm($(this).prop(\"selectedIndex\"),'aircraft_id');", :id => 'acId',:class=> "form-control") %>
+                </div>
+                <!-- Start Selection Block Kit Part No -->
+                <div class="selection_block agusta_kit_part_no input-append">
+                  <div class="s_title"><%= t 'agusta.kit_part_no' %></div>
+                  <% status = (browser.ie8? || browser.ie7? || browser.ie6?) %>
+                  <% if status  %>
+                      <%= select_tag(:kit_part_nos, options_for_select(@kit_part_nos), :disabled => true, :prompt => t('agusta.select'), :onchange => "agustaCheckForm($(this).prop(\"selectedIndex\"),'kit_part_number');", :id => 'kpnId',:class=> "form-control") %>
+                      <div class="clear"></div>
+                      <div class="ie_form">
+                        <a class="btn btn-primary" title="ADD NEW KIT P/N" style="float: left; display:none;" data-toggle="collapse" href="#collapse_pn" id="link_to_newkit" aria-expanded="false" aria-controls="collapseExample">
+                          <span class="glyphicon glyphicon-plus-sign"> ADD KIT PN</span>
+                        </a>
+                        <div class="collapse" id="collapse_pn">
+                          &nbsp;
+                          <%= text_field_tag :new_kit_pn, nil,:placeholder => "Enter New Kit PN",:class => "form-control",:id => "new_pn_outdated_browser",:style =>"width: 195px; display:inline;" %>
+                          <a class="btn btn-primary" style="float: right;" href="#" aria-expanded="false" aria-controls="collapseExample" onclick="add_new_kit_pn();">
+                            <span class="glyphicon glyphicon-ok"></span>
+                          </a>
+                        </div>
+                      </div>
+                  <% else %>
+                      <%= text_field_tag :kit_part_nos, nil,:disabled => true, :prompt => t('agusta.select'), :id => 'kpnId', :class=> "ui-autocomplete-input form-control" %>
+                  <% end %>
+                </div>
+                <!-- End Selection Block -->
+                <div class="clearfix"></div>
+                <!-- Start Selection Block Stations -->
+                <div class="selection_block agusta_station">
+                  <div class="s_title"><%= t 'agusta.station' %></div>
+                  <%= select_tag(:stations, options_for_select(@stations), :disabled => true, :prompt => t('agusta.select'), :id => 'stId',:class=> "form-control") %>
+                </div>
+                <!-- End Selection Block -->
+                <!-- Start Selection Block Delivery Points -->
+                <div class="selection_block agusta_discharge_point">
+                  <div class="s_title"><%= t 'agusta.discharge_point' %></div>
+                  <%= select_tag(:delivery_points, options_for_select(@delivery_points), :disabled => true, :prompt => t('agusta.select'), :id => 'dpId',:class=> "form-control") %>
+                </div>
+                <!-- End Selection Block -->
+                <div class="clearfix"></div>
+              </div>
+              <div id="kitComponentsDetailsID"></div>
+            </div>
+        <% end %>
+    <% end %>
+<% end %>
+<!--  modal content -->
+<div class="modal fade" id="addmore_parts_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- MODAL HEADER -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick='$(".extra_order_div .extra_order_tr").remove();$("#autocomplete_kpn").val("");$(".err_msg").hide();'>X</button>
+        <h3><%= t 'agusta.additional_parts' %></h3>
+      </div>
+      <!-- MODAL BODY -->
+      <div class="modal-body">
+        <span class="err_msg agusta_part_validation_error"><%= render :partial => "layouts/message_display" %></span>
+        <form onsubmit="return false;" action="" class="form-inline">
+          <div class="order_request_div">
+            <div class="table-responsive">
+              <table id="table" class="table ext_order_req">
+                <tbody>
+                <tr>
+                  <th>Id</th>
+                  <th><%= t 'agusta.part_no' %></th>
+                  <th><%= t 'agusta.station' %></th>
+                  <th><%= t 'agusta.discharge_point' %></th>
+                  <th>&nbsp;</th>
+                </tr>
+                <tr>
+                  <td>
+                    <span id="aircraft_id"></span>
+                  </td>
+                  <td align="left" style="text-align:left; width:220px;">
+                    <input type="text" size="10" id="autocomplete_kpn" class="PartNo form-control"/>
+                  </td>
+                  <td>
+                    <span id="station_code"></span>
+                  </td>
+                  <td>
+                    <span id="discharge_point"></span>
+                  </td>
+                  <td>
+                    <p id="additionalPartID" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></p>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="extra_order_div">
+              <div class="table-responsive">
+                <table class="table extra_order_req" id="table">
+                  <tbody>
+                  <tr>
+                    <th><%= t 'agusta.part_no' %></th>
+                    <th><%= t 'agusta.part_qty' %></th>
+                    <th><%= t 'agusta.quantity' %></th>
+                    <th><%= t 'agusta.motive' %></th>
+                    <th><%= t 'agusta.note' %></th>
+                    <th>Action</th>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="btn_row text-right">
+            <input type="submit" class="btn btn-default btn-info" value="<%= t 'agusta.add' %>" name="commit" id="add_order_record" disabled />
+            &nbsp;
+            <input type="submit" class="btn btn-default btn-info" value="<%= t 'agusta.close' %>" data-dismiss="modal" aria-hidden="true" name="commit" id="order_close" onclick='$(".extra_order_div .extra_order_tr").remove();$("#autocomplete_kpn").val("");$(".err_msg").hide();'/>
+          </div>
+        </form>
+        <div id="additionalPartsDetailsID"></div>
+      </div>
+      <!-- MODAL FOOTER -->
+      <!--<div class="modal-footer">-->
+      <!--<div class="btn_row text-right">-->
+      <!--<input type="submit" class="btn btn-info" value="<%#= t 'agusta.add' %>" name="commit" id="add_order_record" disabled />-->
+      <!--&nbsp;-->
+      <!--<input type="submit" class="btn btn-info" value="<%#= t 'agusta.close' %>" data-dismiss="modal" aria-hidden="true" name="commit" id="order_close" onclick='$(".extra_order_div .extra_order_tr").remove();$("#autocomplete_kpn").val("");$(".err_msg").hide();'/>-->
+      <!--</div>-->
+      <!--</div>-->
+    </div>
+  </div>
+</div>
+<!-- End modal content -->

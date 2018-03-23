@@ -1,0 +1,59 @@
+<%= form_tag pick_ticket_print_kit_copies_path , :target =>'_blank' do  %>
+    <div id="bincenter_select_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="body_header">Part Bin Center Select Page</h2>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <%= 'Part Bin Center'%>
+              </div>
+              <div class="col-sm-4">
+                <% if @binCenters_response %>
+                    <%= select_tag 'bincenter', options_for_select(@binCenters.collect{ |u| [u] }), class: "form-control" %>
+                <% else %>
+                    <%= @binCenters_response["errMsg"] %>
+                <% end %>
+              </div>
+            </div>
+            <%= hidden_field_tag 'kit_version_number', @kit_copies.kit_version_number %>
+            <%= hidden_field_tag 'kit_number', @kit_copies.kit.kit_number %>
+            <% if params[:reprint] %>
+                <%= hidden_field_tag :reprint, params[:reprint] %>
+            <% end %>
+            <%= hidden_field_tag 'sort_by' %>
+            <%= hidden_field_tag 'kit_copy_id', params[:id] %>
+            <%= hidden_field_tag 'select_ids_for_alternate[]' %>
+            <%= hidden_field_tag 'version_alert_message', @alert %>
+            <% if @mmt_kit_copies %>
+                <% @cups = (get_commited_data.call @mmt_kit_copies,"cups").flatten %>
+                <% @cup_parts = (get_commited_data.call @cups,"cup_parts").flatten %>
+                <% @cup_parts.each do |cup_part| %>
+                    <%= hidden_field_tag 'part_numbers[]', cup_part.part.part_number %>
+                <% end %>
+            <% else %>
+                <% @kit_copies.kit.cups.each_with_index do |cup_values, cups_index|  %>
+                    <% unless @kit_copies.kit.cups[cups_index].parts.blank?  %>
+                        <% @kit_copies.kit.cups[cups_index].cup_parts.each_with_index do |value,index| %>
+                            <% unless @kit_copies.kit.cups[cups_index].cup_parts[index].status == false %>
+                                <%= hidden_field_tag 'part_numbers[]', @kit_copies.kit.cups[cups_index].parts[index].part_number %>
+                            <% end %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+            <div class="modal-footer">
+              <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+              <% if session[:user_level] %>
+                  <% if session[:user_level] > "3" %>
+                      <%= submit_tag 'Print Pick Ticket', class: 'btn btn-primary' %>
+                  <%end%>
+              <%end%>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>

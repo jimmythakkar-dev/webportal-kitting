@@ -1,0 +1,35 @@
+<h2 class="body_header">Location Detail</h2>
+<%= image_seperator %>
+<%if notice%>
+    <p class="alert alert-success"><%= notice %></p>
+<%end%>
+
+<div class="row">
+  <div class="col-sm-3"><label>Name: </label></div>
+  <div class="col-sm-9 body_text_subhead"><%= @location.name %></div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3"><label>Created Date: </label></div>
+  <div class="col-sm-9"><%= @location.created_at.strftime("%m/%d/%Y") %></div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3"><label>Updated Date: </label></div>
+  <div class="col-sm-9"><%= @location.updated_at.strftime("%m/%d/%Y") %></div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-sm-offset-2 col-sm-10">
+    <% if session[:user_level] %>
+        <% if session[:user_level] > "5" %>
+            <%if @location.name != "SOS Queue" && @location.name != "Ship/Invoice" && @location.name != "Send to Stock" && @location.name != "Empty Queue" && @location.name != "NEW KIT QUEUE" && @location.name != "Change Kit Queue" && @location.name != "Picking Queue"  %>
+                <%= link_to 'Edit', edit_location_path(@location), class: 'btn btn-primary' %>
+            <%end%>
+        <%end%>
+    <%end%>
+    <%= link_to 'Back', locations_path, class: 'btn btn-default' %>
+  </div>
+</div>
+<br>
+

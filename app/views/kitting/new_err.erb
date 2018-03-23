@@ -1,0 +1,92 @@
+<h2 class="body_header">Create Kit</h2>
+<%= image_seperator %>
+<p>Please Enter Kit Number to view details for that Kit. If you do not know the Kit Number,
+   you can search by Part Number. Selecting a Kit status is optional.</p>
+<%= image_seperator %>
+<%= render 'layouts/message_display' %>
+<% unless @response["invalidPartList"].join().blank? %>
+    <p class="text-danger">  Parts not on contract : <%= @response["invalidPartList"].join(",").upcase %></p>
+    <p class=text-danger"> <b><%= @response["invalidPartList"].join(" - ").upcase %></b> </p>
+<% end %>
+
+<p class="body_text_subhead">Kit Information</p>
+
+<%= form_tag ({:controller=> 'kitting'}),class: 'form-horizontal'  do %>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag 'Kit Number: ', nil, :class=>"control-label" %></div>
+        <% if @response["errCode"] == "4" %>
+          <div class="col-sm-9"><%= text_field_tag :kit_number, params[:kit_number].upcase %></div></div>
+        <% else %>
+          <div class="col-sm-9"> <%= label_tag :kit_number, params[:kit_number].upcase %>
+            <%= hidden_field_tag :kit_number, params[:kit_number].upcase %></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3"><%= label_tag 'Site: ', nil,:class=>"control-label" %></div>
+            <div class="col-sm-9"><%= render 'show_site'%></div>
+          </div>
+        <% end %>
+
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag 'Description: ',nil, :class => "control-label"%>  </div>
+        <div class="col-sm-9"><%= text_field_tag :kit_description, params[:kit_description] %>    </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag 'Location: ',nil, :class => "control-label"%></div>
+        <div class="col-sm-9"><%= text_field_tag :kit_location, params[:kit_location] %></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag 'Status: ', nil, :class => "control-label" %></div>
+        <div class="col-sm-9">
+          <%= radio_button_tag :kit_status, "1", params[:kit_status] == "1" ? true : false %>
+          <%= label_tag :Active, nil, :class => "radio inline"  %>
+          <%= radio_button_tag :kit_status, "2", params[:kit_status] == "2" ? true : false %>
+          <%= label_tag :Pending, nil,:class=>"radio inline" %>
+          <%= radio_button_tag :kit_status, "6", params[:kit_status] == "6" ? true : false  %>
+          <%= label_tag :Inactive, nil,:class=>"radio inline" %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag 'Note: ',nil, :class => "control-label"%></div>
+        <div class="col-sm-9"><%= text_area_tag "kit_Notes#{[params[:kit_Notes]]}",params[:kit_Notes].values[0], :rows => 2, :cols => '60%'%></div>
+      </div>
+    </div>
+  <%= image_seperator %>
+
+  <p class="body_text_subhead">Kit Parts</p>
+  <table id="table">
+    <thead>
+      <th class ='small_text_box'>TRAY</th>
+      <th>PART NUMBER</th>
+      <th>QTY</th>
+      <th>UM</th>
+      <th>BIN NUMBER</th>
+      <th>&nbsp;</th>
+    </thead>
+    <tbody>
+
+    <% num_count = params[:part_count] %>
+    <% for i in (0).upto(num_count.to_i - 1) %>
+        <tr>
+          <td><%= text_field_tag "kit_tray#{[i]}", params[:kit_tray][i.to_s], :class =>'kit_tray input-mini' %></td>
+          <td><%= text_field_tag "kit_part_number#{[i]}",params[:kit_part_number][i.to_s] ,class: 'part_number'%></td>
+          <td><%= text_field_tag "kit_quantity#{[i]}", params[:kit_quantity][i.to_s],:class =>'kit_quantity input-mini' %></td>
+          <td><%= select_tag "um#{[i]}", options_for_select([["EA"],["LB"],["HU"],["TH"]],params[:um][i.to_s]), :class => "col-sm-12" %></td>
+          <td><%= text_field_tag "bin_number#{[i]}",params[:bin_number][i.to_s], :class =>'bin_number input-medium' %></td>
+          <% unless @response["errCode"] == "4" %>
+            <td class="adjust_image"><%= link_to (image_tag src="cross.gif", :width => "10", :height => "10", class: 'kitting_part_number') %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="fieldsset">
+    <div><%= link_to 'Add Additional Parts', nil,class:'add_part_number'  %></div>
+    <div>
+      <%= submit_tag "Create Kit" ,id:'validate_update_btn' ,class: 'btn btn-primary'%>
+      <%= link_to 'Cancel', kitting_index_path , class: 'btn' %>
+    </div>
+  </div>
+<% end %>

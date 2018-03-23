@@ -1,0 +1,317 @@
+<p class="body_header"><%= t("upload_report",:scope => "reports.upload_reports") %></p>
+<%= image_seperator %>
+<div class="row">
+  <div class="col-sm-12"><%= link_to t("upload_report",:scope => "reports.upload_reports"), upload_reports_path,:class=> "pull-right"  if session[:user_level] >= "5" %></div>
+</div>
+<% if flash[:notice].present? || flash[:error].present? %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="alert <%= flash[:error].present? ? "alert-danger" : "alert-success" %> "><%= flash[:error].present? ? flash[:error] : flash[:notice] %><span onclick="this.parentNode.parentNode.removeChild(this.parentNode);"class="glyphicon glyphicon-remove-sign pull-right remove-flash"></span></div>
+      </div>
+    </div>
+<% end %>
+<!--<div class="row">-->
+  <div class="table-responsive">
+    <% if @files.blank? %>
+        <table class="table tablesorter">
+          <thead>
+          <tr>
+            <th class="filter-false"><%= t("download",:scope => "reports.index") %></th>
+            <th><%= t("report_name",:scope => "reports.index") %></th>
+            <th><%= t("date_updated",:scope => "reports.index") %></th>
+            <th class="filter-false"><%= t("generate",:scope => "reports.index") %></th>
+          </tr>
+          </thead>
+          <tr>
+            <td>&nbsp;</td>
+            <td><%= t("bin_map",:scope => "reports.index") %></td>
+            <td>&nbsp;</td>
+            <td style="text-align:center;">
+              <%= link_to (image_tag ('update-icon.png'), :height =>"25",:width => "25", :class => "img-responsive",:title => "Generate/Update Excel Spreadsheet"),generate_reports_path(:report_generate => 'binmapgen')  %>
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><%= t("consignment_inventory_report",:scope => "reports.index") %></td>
+            <td>&nbsp;</td>
+            <td style="text-align:center;">
+              <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                     :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                          generate_reports_path(:report_generate => 'consiggen')  %>
+            </td>
+          </tr>
+          <% if session[:user_level] >= "2" %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("cust_forecast",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                              generate_reports_path(:report_generate => 'custfogen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <tr>
+            <td>&nbsp;</td>
+            <td><%= t("empties",:scope => "reports.index") %></td>
+            <td>&nbsp;</td>
+            <td style="text-align:center;">
+              <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                     :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                          generate_reports_path(:report_generate => 'emptiegen')  %>
+            </td>
+          </tr>
+          <% if current_user == "029415" %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("on_hand",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                              generate_reports_path(:report_generate => 'onhandgen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <tr>
+            <td>&nbsp;</td>
+            <td><%= t("open_orders",:scope => "reports.index") %></td>
+            <td>&nbsp;</td>
+            <td style="text-align:center;">
+              <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                     :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                          generate_reports_path(:report_generate => 'openorgen')  %>
+            </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td><%= t("past_due_report",:scope => "reports.index") %></td>
+            <td>&nbsp;</td>
+            <td style="text-align:center;">
+              <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                     :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                          generate_reports_path(:report_generate => 'pastdugen')  %>
+            </td>
+          </tr>
+          <% if current_user == "029415" %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("qc_lab_report",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                              generate_reports_path(:report_generate => 'qclabgen')  %>
+                </td>
+              </tr>
+          <% end %>
+        </table>
+    <% else %>
+        <table class="table tablesorter">
+          <thead>
+          <tr>
+            <th class="filter-false"><%= t("download",:scope => "reports.index") %></th>
+            <th><%= t("report_name",:scope => "reports.index") %></th>
+            <th><%= t("date_updated",:scope => "reports.index") %></th>
+            <th class="filter-false"><%= t("generate",:scope => "reports.index") %></th>
+          </tr>
+          </thead>
+          <% @files.each do |file| %>
+              <% if get_file_details(file) %>
+                  <% if @report_name != "" && @report_name == "Customer Forecast"%>
+                      <% if session[:user_level] >= "2" %>
+                          <tr>
+                            <td style="text-align:center">
+                              <%= link_to (image_tag ('excel_icon_download.png'), :size => "30x10",:class => "img-responsive",
+                                                     :title => t("download_as_excel",:scope => "reports.index") ),
+                                          download_reports_path(:report => @report_variable) %>
+                            </td>
+                            <td><%=  @report_name %></td>
+                            <td><%=  @report_date %> <%=  @report_time %></td>
+                            <td style="text-align:center;">
+                              <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                                     :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                                          generate_reports_path(:report_generate => @report_generate)  %>
+                            </td>
+                          </tr>
+                      <% end %>
+                  <% else %>
+                      <% if current_user == "029415" %>
+                          <tr>
+                            <td style="text-align:center">
+                              <%= link_to (image_tag ('excel_icon_download.png'), :size => "30x10",:class => "img-responsive",
+                                                     :title => t("download_as_excel",:scope => "reports.index") ),
+                                          download_reports_path(:report => @report_variable) %>
+                            </td>
+                            <td><%=  @report_name %></td>
+                            <td><%=  @report_date %> <%=  @report_time %></td>
+                            <td style="text-align:center;">
+                              <%= link_to (image_tag ('update-icon.png'), :height =>"25", :class => "img-responsive",:width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                                          generate_reports_path(:report_generate => @report_generate)  %>
+                            </td>
+                          </tr>
+                      <% else %>
+                          <% unless @report_name == "On Hand" || @report_name == "QC Lab Tracking"  %>
+                              <tr>
+                                <td style="text-align:center">
+                                  <%= link_to (image_tag ('excel_icon_download.png'), :size => "30x10",:class => "img-responsive",
+                                                         :title => t("download_as_excel",:scope => "reports.index") ),
+                                              download_reports_path(:report => @report_variable) %>
+                                </td>
+                                <td><%=  @report_name %></td>
+                                <td><%=  @report_date %> <%=  @report_time %></td>
+                                <td style="text-align:center;">
+                                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive", :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                                              generate_reports_path(:report_generate => @report_generate)  %>
+                                </td>
+                              </tr>
+                          <% end %>
+                      <% end %>
+                  <%end%>
+              <% end %>
+          <% end %>
+
+          <% unless File.exists?("#{@directory_path}"+current_user+"_BinMap.xls") %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("bin_map",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                              generate_reports_path(:report_generate => 'binmapgen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <% unless File.exists?("#{@directory_path}"+current_user+"_ConsignInvRpt.xls") %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("consignment_inventory_report",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                              generate_reports_path(:report_generate => 'consiggen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <% unless File.exists?("#{@directory_path}"+current_user+"_CustForecastRpt.xls") %>
+              <% if session[:user_level] >= "2" %>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td><%= t("cust_forecast",:scope => "reports.index") %></td>
+                    <td>&nbsp;</td>
+                    <td style="text-align:center;">
+                      <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                             :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                                  generate_reports_path(:report_generate => 'custfogen')  %>
+                    </td>
+                  </tr>
+              <% end %>
+          <% end %>
+          <% unless File.exists?("#{@directory_path}"+current_user+"_EmptiesRpt.xls") %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("empties",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                              generate_reports_path(:report_generate => 'emptiegen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <% if current_user == "029415" %>
+              <% unless File.exists?("#{@directory_path}"+current_user+"_onHandRpt.xls") %>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td><%= t("on_hand",:scope => "reports.index") %></td>
+                    <td>&nbsp;</td>
+                    <td style="text-align:center;">
+                      <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                             :width => "25", :title => "Generate/Update Excel Spreadsheet"),
+                                  generate_reports_path(:report_generate => 'onhandgen')  %>
+                    </td>
+                  </tr>
+              <% end %>
+          <% end %>
+          <% unless File.exists?("#{@directory_path}"+current_user+"_OpenOrdersRpt.xls") %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("open_orders",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                              generate_reports_path(:report_generate => 'openorgen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <% unless File.exists?("#{@directory_path}"+current_user+"_PastDueRpt.xls") %>
+              <tr>
+                <td>&nbsp;</td>
+                <td><%= t("past_due_report",:scope => "reports.index") %></td>
+                <td>&nbsp;</td>
+                <td style="text-align:center;">
+                  <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                         :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                              generate_reports_path(:report_generate => 'pastdugen')  %>
+                </td>
+              </tr>
+          <% end %>
+          <% if current_user == "029415" %>
+              <% unless File.exists?("#{@directory_path}"+current_user+"_QCLabTracking.xls") %>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td><%= t("qc_lab_report",:scope => "reports.index") %></td>
+                    <td>&nbsp;</td>
+                    <td style="text-align:center;">
+                      <%= link_to (image_tag ('update-icon.png'), :height =>"25",:class => "img-responsive",
+                                             :width => "25", :title => t("generate_update_excel_spreadsheet",:scope => "reports.index") ),
+                                  generate_reports_path(:report_generate => 'qclabgen')  %>
+                    </td>
+                  </tr>
+              <% end %>
+          <% end %>
+        </table>
+    <% end %>
+  </div>
+<!--</div>-->
+
+<% if @manual_files.present? %>
+    <div class="row">
+      <div class="panel">
+        <div class="col-sm-12 table_title">
+          <%= t("manual_reports",:scope => "reports.index") %>
+        </div>
+        <table class="table tablesorter">
+          <thead>
+          <tr>
+            <th><%= t("report_name",:scope => "reports.index") %></th>
+            <th><%= t("description",:scope => "reports.upload_reports") %></th>
+            <th><%= t("date_updated",:scope => "reports.index") %></th>
+            <% if session[:user_level] >= "5" %>
+                <th class="filter-false"><%= session[:user_level] >= "5" ? t("action",:scope=>"reports.index") : "" %></th>
+            <% end %>
+          </tr>
+          </thead>
+          <% @manual_files.each do |manual_file| %>
+              <tr>
+                <td>
+          <span class="col-sm-3">
+            <%= link_to (image_tag ('excel-icon.gif'), :size => "20x10",:class => "img-responsive",:title => "View/Download as Excel Spreadsheet"),download_reports_path(:file => manual_file.file_name.to_s,:type=>"manual" ) %>
+          </span>
+                  <%= manual_file.name.split(".")[0..-2].join(".").split("_").join(" ").gsub(current_user,"").try(:upcase) rescue manual_file.name %>
+                </td>
+                <td><%= manual_file.description.present? ? manual_file.description : "N/A"  %></td>
+                <td><%= manual_file.updated_at.strftime("%m/%d/%Y %l:%M:%S %p") %></td>
+                <% if session[:user_level] >= "5" %>
+                    <td><%= link_to t("delete",:scope=>"reports.index"), manual_file, method: :delete, data: {confirm: "You sure to delete Report ?"} %></td>
+                <% end %>
+              </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+<% end %>

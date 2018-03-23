@@ -1,0 +1,80 @@
+<span class="body_header"><%= t('title',:scope => "file_transfer.index").html_safe %></span>
+<%= image_seperator %>
+<% if @boeing_pay_load_detail %>
+    <%= render partial: 'file_transfer_status/pay_load_detail', locals: { boeing_pay_load_detail: @boeing_pay_load_detail} %>
+<% else %>
+
+    <p>
+      <%= t('desc',:scope => "file_transfer.index").html_safe %>
+    </p>
+
+    <%= image_seperator %>
+    <%= render 'search' %>
+    <%= image_seperator %>
+    <% if @pick_file_list %>
+        <%= render partial: 'file_transfer_status/pick_file_list', locals: {pick_file_list: @pick_file_list} %>
+    <% end %>
+    <% if @delivery_file_list %>
+        <%= render partial: 'file_transfer_status/delivery_file_list', locals: {delivery_file_list: @delivery_file_list} %>
+    <% end %>
+    <% if @pick_file_details %>
+        <%= render partial: 'file_transfer_status/pick_detail', locals: {pick_file_details: @pick_file_details} %>
+    <% end %>
+
+    <% if @delivery_file_details %>
+        <%= render partial: 'file_transfer_status/delivery_detail', locals: {delivery_file_details: @delivery_file_details} %>
+    <% end %>
+
+    <% if @pick_files %>
+        <% if @pick_files.size > 0 %>
+            <p><b>PICK FILES</b> <%= t('for',scope: 'file_transfer.index') %>  - <i><b><%= @my_site_code %></b></i></p>
+            <div class="text-right"><small class="text-left"><em> <%= page_entries_info(@pick_files).gsub('hashes','rows').html_safe %></em></small></div>
+            <div class="table-responsive">
+              <table class="table tablesorter center-align">
+                <thead>
+                <th><%= t('file_name',:scope => "file_transfer.index") %></th>
+                <th><%= t('date_time',:scope => "file_transfer.index") %></th>
+                <th><%= t('part_count',:scope => "file_transfer.index") %></th>
+                </thead>
+                <% @pick_files.each do |file| %>
+                    <tr onclick="location.href='<%= file_transfer_status_path(act: 'P',grid_key: file['filename'])%>'" title="Click on Heading to Sort or Click on Row to View Pick List Parts">
+                      <td ><%= file['filename'] %></td>
+                      <td><%= FileTransferStatus.get_datetime_FTS_value file['create_date'] %></td>
+                      <td><%= file['mypartscount'] %></td>
+                    </tr>
+                <% end %>
+              </table>
+            </div>
+            <%= will_paginate @pick_files  %>
+        <% else %>
+            <div class="text-danger"><%= flash[:alert] = t('no_pick_file',:scope => "file_transfer.index") %> </div>
+        <% end %>
+    <% end %>
+
+    <% if @delivery_files %>
+        <% if @delivery_files.size > 0 %>
+            <br>
+            <p><b><%= t('delivery_file',:scope => "file_transfer.index") %></b> <%= t('for',scope: 'file_transfer.index') %> - <i><b><%= @my_site_code %></b></i></p>
+            <div class="text-right"><small class="text-left"><em> <%= page_entries_info(@delivery_files).gsub('hashes','rows').html_safe %></em></small></div>
+            <div class="table-responsive">
+                <table class="table tablesorter center-align">
+                  <thead>
+                  <th><%= t('delivery_file_name',:scope => "file_transfer.index") %></th>
+                  <th><%= t('date_time',:scope => "file_transfer.index") %></th>
+                  <th><%= t('iteam',:scope => "file_transfer.index") %></th>
+                  </thead>
+                  <% @delivery_files.each do |file| %>
+                      <tr onclick="location.href='<%= file_transfer_status_path(act: 'D',grid_key: file['filename'])%>'" title="Click on Heading to Sort or Click on Row to View DELIVERY List Parts">
+                        <td><%= file['filename'] %></td>
+                        <td><%= FileTransferStatus.get_datetime_FTS_value file['create_date'] %></td>
+                        <td><%= file['mypartscount'] %></td>
+                      </tr>
+                  <% end %>
+                </table>
+            </div>
+            <%= will_paginate @delivery_files , :param_name => 'delivery_page'   %>
+        <% else %>
+            <div class="text-danger"><%= flash[:alert] = t('no_delivery_file',:scope => "file_transfer.index") %> </div>
+        <% end %>
+    <% end %>
+<% end %>

@@ -1,0 +1,20 @@
+<%= render 'search' %>
+
+  <div class="table_title"> PART NUMBER(S) WITH <%= params["txtPartNo"] %></div>
+
+
+<div class="row">
+  <% @partNums_response["searchPartList"].each_index do |index| %>
+    <div class="col-sm-3">
+           <%= link_to @partNums_response["searchPartList"][index],
+                       qc_laboratory_fuzzy_search_path(@partNums_response["searchPartList"][index], search_type: 'PartNo') %>
+    </div>
+    <% index = index + 1 %>
+    <% if index != 1 && index % 4 == 0 %>
+      </div>
+      <div class="row">
+    <% end %>
+  <% end %>
+</div>
+<br>
+<div> Please select to see part details.</div>

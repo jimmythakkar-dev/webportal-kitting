@@ -1,0 +1,60 @@
+<h2 class="body_header"><%= "Upload Configuration for #{@customer.cust_name}" %></h2>
+<%= render 'layouts/message_display' %>
+<%= form_tag(@customer, method: "PUT") do %>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Header Name</th>
+        <th>Spreadsheet Column</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Material (Part Numbers) </td>
+        <td><%= text_field_tag "Material", @column_hash ? @column_hash["Material"] : nil , class:"form-control", required: true %></td>
+      </tr>
+      <tr>
+        <td>Material Description (Kit Description/Job Card Description)</td>
+        <td><%= text_field_tag "Material Description", @column_hash ? @column_hash["Material Description"] : nil, class:"form-control" , required: true  %></td>
+      </tr>
+      <tr>
+        <td>Bulk Material </td>
+        <td><%= text_field_tag "Bulk Material", @column_hash ? @column_hash["Bulk Material"] : nil, class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>Work Order</td>
+        <td><%= text_field_tag "Order", @column_hash ? @column_hash["Order"] : nil, class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>Material (Stage)</td>
+        <td><%= text_field_tag "Stage Material", @column_hash ? @column_hash["Stage Material"] :nil, class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>WBS element (Aircraft Tail Number/Serial Number)</td>
+        <td><%= text_field_tag "WBS element", @column_hash ? @column_hash["WBS element"] : nil , class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>Pegged requirement (Kit Numbers/Job Card Number)</td>
+        <td><%= text_field_tag "Pegged requirement", @column_hash ? @column_hash["Pegged requirement"] : nil, class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>Base Unit of Measure</td>
+        <td><%= text_field_tag "Base Unit of Measure", @column_hash ? @column_hash["Base Unit of Measure"] : nil, class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>Requirement Quantity</td>
+        <td><%= text_field_tag "Requirement Quantity", @column_hash ? @column_hash["Requirement Quantity"] : nil, class:"form-control", required: true  %></td>
+      </tr>
+      <tr>
+        <td>Requirement Date(Due Date)</td>
+        <td><%= text_field_tag "Requirement Date", @column_hash ? @column_hash["Requirement Date"] : nil, class:"form-control", required: true  %></td>
+      </tr>
+      </tbody>
+    </table>
+    <br>
+    <div class="row">
+      <div class="col-sm-12 text-right">
+        <%= submit_tag "Update", class: "btn btn-primary upload_configuration" %>
+      </div>
+    </div>
+<% end %>

@@ -1,0 +1,233 @@
+<h2 class="body_header">Kit Detail</h2>
+<%= image_seperator %>
+<p id="notice"><%= notice %></p>
+<% if params[:actin] == "NK" %>
+    <p class="alert alert-success text-center"><strong> <%= @parent_kit.try(:kit_number).upcase %></strong>
+      Updated or Created  successfully <br />
+      at <%= @kit.created_at %>
+      by <%= @kit.cust_no %>.
+    </p>
+<% end %>
+
+<% if session[:user_level] %>
+    <% if session[:user_level] >= "3" %><p class="text-right">
+        <%= link_to 'Edit Kit', kits_detail_design_path(kit_number: @parent_kit.kit_number, kit_media_type: @parent_kit.kit_media_type.name,compartments: @parent_kit.kit_media_type.compartment, compartment_layout: @parent_kit.kit_media_type.compartment_layout, kit_id: @parent_kit.id,mmt_kit_id: @multi_kit_for_edit, bincenter: @parent_kit.bincenter,kit_action: "M") %>
+        </p>
+    <%end%>
+<%end%>
+
+<p class="body_text_subhead">Kit Information</p>
+
+<div class="row">
+  <label class="col-sm-3">Kit Number</label>
+  <div class="col-sm-3"><%= @parent_kit.try(:kit_number) %></div>
+  <div class="col-sm-6">
+    <% if session[:user_level] %>
+        <% if session[:user_level] > "3" %>
+            <%= @parent_kit.try(:status) == 1 ? "#{link_to 'Create Copy', new_copy_kits_path(id: @parent_kit.id), :class => 'btn btn-info'}".html_safe : "" %>
+        <%end%>
+    <%end%>
+  </div>
+</div>
+
+<div class="row">
+  <label class="col-sm-3">Kit Media Type: </label>
+  <div class="col-sm-9"><%= @parent_kit.try(:kit_media_type).try(:name) %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Kit Bin Center: </label>
+  <div class="col-sm-9"><%= @parent_kit.try(:bincenter) %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Part Bin Center: </label>
+  <div class="col-sm-9"><%= @parent_kit.try(:part_bincenter) %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Status </label>
+  <div class="col-sm-9"><%= display_status(@parent_kit.try(:status))%></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Description </label>
+  <div class="col-sm-9"><%= @parent_kit.try(:description) %></div>
+</div>
+<%= image_seperator %>
+<div class="row">
+  <label class="col-sm-3">Note </label>
+  <div class="col-sm-9"><%= @parent_kit.try(:notes).html_safe if @parent_kit.notes.present? %></div>
+</div>
+
+
+<%= image_seperator %>
+<p class="text-right">
+  <% if session[:user_level] %>
+    <p class="text-right">
+      <%= link_to 'Kit History', kit_history_path(kit: @parent_kit), title: 'Kit History' %>
+    </p>
+<%end%>
+<%= form_tag print_label_kits_path, :target =>'_blank' do  %>
+    <% if @multi_media_kits %>
+        <p class="text-primary"><strong class="text-info"> Kit Media Types</strong> </p>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel mmty-panel">
+              <div class="panel-heading mmty-heading">
+                <ul class="nav mmty-nav-tab nav-tabs">
+                  <% box_number = "" %>
+                  <% @multi_media_kits.each_with_index do |mmt_kit, index| %>
+                      <li class="<%= @kit.id == mmt_kit.id  ? 'active' : '' %>">
+                        <%= link_to mmt_kit.kit_media_type.name, kit_path(mmt_kit_id: mmt_kit.id) %>
+                        <% if @kit.id == mmt_kit.id %>
+                            <% box_number = index +1  %>
+                        <% end %>
+                      </li>
+                  <% end %>
+
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row search-panel">
+          <div class="col-sm-6" style="padding: 10px 25px; color: #ffffff">Box : <%= box_number %> of <%= @multi_media_kits.size %></div>
+          <div class="col-sm-6"></div>
+        </div>
+    <% end %>
+
+    <% unless @kit.try(:kit_media_type).try(:kit_type) == "binder" %>
+        <%if @kit.try(:kit_media_type).try(:kit_type) == "configurable" %>
+            <div class="config_mmt_kit_type">
+              <%= @kit.kit_media_type.name != "Small Configurable TB" ? "<div class='gridster_container'>".html_safe : "<div class='gridster small_orange_kit' style='position:relative;'>".html_safe %>
+              <% display_kit = create_group @kit.cups.where('commit_status = ? and status = ?',true, true).sort_by {|cup| cup.cup_number.to_i }, @kit.kit_media_type.name %>
+              <% display_kit.each_with_index do |group,index| %>
+                  <div <%= add_class_and_id_to_gridster(@kit.kit_media_type.name,index) %> >
+                    <ul>
+                      <% group.each_with_index do |cup,index| %>
+                          <% cup_dimension = cup.cup_dimension.split(",") %>
+                          <li rel="<%= (cup.ref1 || cup.ref2 || cup.ref3)? "tooltip" : ""  %>" title='<%= cup.ref1+', ' if cup.ref1 %> <%= cup.ref2+', ' if cup.ref2 %> <%= cup.ref3 if cup.ref3 %>'
+                              <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %> >
+                            <span class="box-no"><%= cup.cup_number %></span>
+                            <div class="block_area">
+                              <%= raw get_configurable_part_with_qty(cup).join('') %>
+                            </div>
+                            <% checkbox_flag = session[:cup_ids].include?(cup.id) if session[:cup_ids].present? %>
+                            <% if cup.cup_parts.where(:commit_status => true, :status => true ).size > 0 && (!cup.parts.first.nil? && cup.check_in_contract_status("cup_parts")) %>
+                                <span> <%= check_box_tag 'cup_ids[]', cup.id,checkbox_flag,{:class => "selected_cup_ids"}  %></span>
+                            <% end %>
+                          </li>
+                      <% end %>
+                    </ul>
+
+                  </div>
+              <% end %>
+
+            </div>
+            <%= display_kit_handle(@kit.kit_media_type.name) %>
+            </div>
+
+        <% else %>
+            <div class="mmt_kit_type">
+              <div class="row print-box">
+                <% @cups = get_cups_layout @kit.cups.where(:commit_status => true), @kit.kit_media_type.compartment_layout %>
+                <% index = 0 %>
+                <% @cups.each_with_index do |row, row_index| %>
+                    <div class="cup_table">
+                      <table class="thumbnails cups">
+                        <tr>
+                          <% row.each_with_index do |value, col_index| %>
+                              <td>
+                                <div <%= (!value.parts.first.nil? && !value.check_in_contract_status("cup_parts")) ? "class='thumbnail non-contract-cup'".html_safe : "class='thumbnail'".html_safe %>>
+                                  <div class="caption">
+                                    <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                                    <ul>
+                                      <%= raw get_parts(value).join('') if value %>
+                                    </ul>
+                                    <% checkbox_flag = session[:cup_ids].include?(value.id) if session[:cup_ids].present? %>
+                                    <% if value.cup_parts.where(:commit_status => true, :status => true ).size > 0 && (!value.parts.first.nil? && value.check_in_contract_status("cup_parts")) %>
+                                        <p><%= check_box_tag 'cup_ids[]', value.id, checkbox_flag, {:class => "selected_cup_ids"} %></p>
+                                    <% else %>
+                                        <p>&nbsp;</p>
+                                    <% end %>
+                                  </div>
+                                </div>
+                              </td>
+                              <% index += 1 %>
+                          <% end %>
+                        </tr>
+                      </table>
+                    </div>
+                <% end %>
+              </div>
+            </div>
+
+        <%end%>
+    <% else %>
+        <table class="table table-bordered">
+          <thead>
+          <th></th>
+          <th>SLEEVES</th>
+          <th>Part Number</th>
+          <th>Quantity</th>
+          </thead>
+          <tbody>
+          <% @row_count = 0 %>
+
+          <% @kit.cups.each_with_index do |cup,cup_index|  %>
+              <% unless @kit.cups[cup_index].parts.blank?  %>
+                  <% @kit.cups[cup_index].cup_parts.each_index do |index| %>
+                      <% unless @kit.cups[cup_index].cup_parts[index].status == false %>
+                          <% @row_count = @row_count + 1 %>
+                          <% if @kit.cups[cup_index].cup_parts[index].commit_status == true %>
+                              <% checkbox_flag = session[:cup_ids].include?(@kit.cups[cup_index].id) if session[:cup_ids].present? %>
+                              <tr>
+                                <td width=20px>
+                                  <%= check_box_tag 'cup_ids[]',@kit.cups[cup_index].id, checkbox_flag, {:class => "selected_cup_ids"}   %>
+                                </td>
+                                <td>
+                                  <%= label_tag "kit_tray[]", @row_count, :class =>'kit_tray input-sm', :disabled => true %>
+                                </td>
+                                <td><%= @kit.cups[cup_index].parts[index].part_number %> </td>
+                                <td><%= @kit.cups[cup_index].cup_parts[index].demand_quantity %> </td>
+                              </tr>
+                          <% end %>
+                      <% end %>
+                  <% end %>
+              <% end %>
+          <% end %>
+          </tbody>
+        </table>
+    <% end %>
+    <%= image_seperator %>
+    <%= hidden_field_tag :kit_id, @kit.id %>
+    <div class="row">
+      <% if session[:user_level] %>
+
+          <% if session[:user_level] > "3" %>
+              <div class="col-sm-4">
+                <div class="input-group">
+                  <%= select_tag "internal_label_type", options_for_select([["Select Label Type", ""],["Standard Label", "label_1"] , ["Reference Only Label", "label_2"], ["PN / QTY / REF Landscape", "label_3"], ["PN / QTY / REF Portrait", "label_4"]], "Label Type 1"), class: 'form-control'%>
+                  <span class="input-group-btn">
+                      <%= submit_tag 'Print Internal Label', class: "btn btn-primary", id: 'print_internal_labels' %>
+                    </span>
+                </div>
+              </div>
+              <% if @parent_kit && @parent_kit.kit_media_type.kit_type == 'multi-media-type' %>
+                  <div class="col-sm-4">
+                    <div class="input-group">
+                      <%= select_tag "all_internal_label_type", options_for_select([["Select Label Type", ""],["Standard Label", "label_1"] , ["Reference Only Label", "label_2"], ["PN / QTY / REF Landscape", "label_3"], ["PN / QTY / REF Portrait", "label_4"]], "Label Type 1"), class: 'form-control' %>
+                      <span class="input-group-btn">
+                        <%= submit_tag 'Print All Internal Label', class: "btn btn-primary", id: 'print_all_internal_labels' %>
+                      </span>
+                    </div>
+                  </div>
+              <% end %>
+          <%end%>
+
+      <%end%>
+      <div class="col-sm-2">
+        <%= link_to 'Back', :back, class: 'btn btn-default' %>
+      </div>
+    </div>
+<% end %>
+<hr>
+<%= render 'layouts/kitting/kit_config_layout' %>

@@ -1,0 +1,5 @@
+
+<% unless @shipTo_response["shipTo"].nil? %>
+     <%= session[:customer_Name] %><br/>
+     <%= @shipTo_response["shipTo"].gsub("<BR>","|").split("|").last() %>
+<% end %>

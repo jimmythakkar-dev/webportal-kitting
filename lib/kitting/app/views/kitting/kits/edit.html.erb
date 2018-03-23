@@ -1,0 +1,12 @@
+<%if session[:user_level] %>
+  <% if session[:user_level] >= "3" %>
+    <%= render  "form" %>
+  <%else%>
+    <div>
+      <span class="text-left">
+        <p class="alert_msg">You are not having access to Edit Kit</p>
+         <%= link_to 'Kit List',kits_path() %>
+      </span>
+    </div>
+  <%end%>
+<%end%>

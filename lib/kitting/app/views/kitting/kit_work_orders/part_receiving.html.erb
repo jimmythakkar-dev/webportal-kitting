@@ -1,0 +1,69 @@
+<h2 class="body_header" xmlns="http://www.w3.org/1999/html">Work Order Receiving</h2>
+<hr>
+<p>Scan/Enter Pack ID for returned kits/parts.</p>
+<hr>
+<div class="row">
+  <div class="col-lg-12 text-right"><%= link_to "Kit Deliveries", kit_delivery_index_path %></div>
+</div>
+<br>
+<% if @all_errors && @all_errors.size > 0 %>
+    <div class="alert alert-danger">
+      <p><strong>Can't receive following kits/parts</strong></p>
+      <table class="table">
+        <thead><th>Delivery Id/Pack Id</th><th>Kits/Parts Not Received</th><th>Reason</th></thead>
+        <tbody class="table-without-striped">
+        <% if @already_received && @already_received.size > 0 %>
+            <% @already_received = @already_received.uniq %>
+            <% @already_received.each do |kr| %>
+                <tr class="danger"><td><%= kr.gsub(":","</td><td>").html_safe %></td><td class="text-danger">Already Received</td></tr>
+            <% end %>
+        <% end %>
+        <% if @part_not_shipped && @part_not_shipped.size > 0 %>
+            <% @part_not_shipped = @part_not_shipped.uniq %>
+            <% @part_not_shipped.each do |kr| %>
+                <tr class="danger"><td><%= kr.gsub(":","</td><td>").html_safe %></td><td class="text-danger">Not Shipped</td></tr>
+            <% end %>
+        <% end %>
+        <% if @part_not_found && @part_not_found.size > 0 %>
+            <% @part_not_found = @part_not_found.uniq %>
+            <% @part_not_found.each do |kr| %>
+                <tr class="danger"><td colspan="2"><%= kr %></td><td class="text-danger">Not Found</td></tr>
+            <% end %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+<% end %>
+<%= form_tag(receive_parts_path, :method => 'post', :class => "form-horizontal") do %>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="Kit_Copy_Number">Delivery ID / Pack ID</label>
+      <div class="col-sm-9">
+        <%= text_area_tag 'part_received' ,nil, class: "form-control", required: "required", rows: "7" %>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <input class="btn btn-primary" name="commit" value="Receive" type="submit">
+      </div>
+    </div>
+<% end %>
+<hr>
+<% if @kits_received && @kits_received.size > 0 %>
+    <% @kits_received = @kits_received.uniq %>
+    <h5 class="text-success">Kits Received</h5>
+    <table id="table" class="table">
+      <thead><th>Delivery Id</th><th>Kits Received</th></thead>
+      <% @kits_received.each do |kr| %>
+          <tr><td><%= kr.gsub(":","</td><td>").html_safe %></td></tr>
+      <% end %>
+    </table>
+<% end %>
+<% if @parts_received && @parts_received.size > 0 %>
+    <h5 class="text-success">Parts Received</h5>
+    <table id="table" class="table">
+      <thead><th>Pack Id</th><th>Parts Received</th></thead>
+      <% @parts_received.each do |pr| %>
+          <tr><td><%= pr.gsub(":","</td><td>").html_safe %></td></tr>
+      <% end %>
+    </table>
+<% end %>

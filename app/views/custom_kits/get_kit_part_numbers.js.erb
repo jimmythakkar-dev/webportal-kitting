@@ -1,0 +1,14 @@
+<% if @error.present? %>
+alert("<%= @error %>");
+<% else %>
+$('#search_status_kit_pn').html("<option value=\"\">" + I18n.t("select") + "</option>");
+var kit_pn = "<%= @kit_part_nos.join(",") %>"
+$.each(kit_pn.split(","), function(index, value) {
+    var opt = $('<option/>');
+    opt.attr('value', value);
+    opt.text(value);
+    opt.appendTo('#search_status_kit_pn');
+});
+$("#search_status_kit_pn").prop('selectedIndex', 0);
+$('#search_status_kit_pn').attr("disabled", false);
+<% end %>

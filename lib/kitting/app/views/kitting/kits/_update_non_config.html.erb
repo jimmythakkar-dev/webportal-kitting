@@ -1,0 +1,30 @@
+<% @cups = get_cups_layout @cups, @cups.first.kit.kit_media_type.compartment_layout %>
+<% index = 0%>
+<% @cups.each_with_index do |row, row_index| %>
+    <div class="cup_table">
+      <table class="thumbnails cups">
+        <tr>
+          <% row.each_with_index do |value, col_index| %>
+              <td>
+                <div <%= (!value.parts.first.nil? && !value.check_in_contract_status("cup_parts")) ? "class='thumbnail non-contract-cup'".html_safe : "class='thumbnail'".html_safe %>>
+                  <div class="caption">
+                    <% @cup_to_display = Kitting::Cup.find_all_by_kit_id_and_commit_id(@original_kit.id,value.id) %>
+                    <% if @cup_to_display.present? %>
+                        <% dup_val = @cup_to_display.first %>
+                        <h5><div class="cup_number_label"><%= index + 1 %></div><span id="ref1_<%= value.id %>"><%= dup_val.ref1 ? "#{dup_val.ref1}" : "&nbsp;".html_safe %></span><br/> <span id="ref2_<%= value.id %>"><%= dup_val.ref2 ? "#{dup_val.ref2}" : "&nbsp;".html_safe %></span><br/> <span id="ref3_<%= value.id %>"><%= dup_val.ref3 ? "#{dup_val.ref3}" : "&nbsp;".html_safe %></span> </h5>
+                    <% else %>
+                        <h5><div class="cup_number_label"><%= index + 1 %></div><span id="ref1_<%= value.id %>"><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %></span><br/> <span id="ref2_<%= value.id %>"><%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %></span><br/> <span id="ref3_<%= value.id %>"><%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %></span> </h5>
+                    <% end %>
+                    <ul class="cup_parts" data-id="<%= value.id %>">
+                      <%= raw get_drafted_cup_parts(value).join('') %>
+                    </ul>
+                    <p class="add_button"><a class="btn btn-default popup"></a></p>
+                  </div>
+                </div>
+              </td>
+              <% index += 1 %>
+          <% end %>
+        </tr>
+      </table>
+    </div>
+<% end %>

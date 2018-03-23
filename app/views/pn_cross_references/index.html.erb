@@ -1,0 +1,22 @@
+<p class="body_header"><%= t('title',:scope => "pn_cross_reference.index")%></p>
+<%= image_seperator %>
+<p><%= t('_desc',:scope => "pn_cross_reference.index").html_safe%></p>
+<%= image_seperator %>
+<%= form_tag search_pn_pn_cross_references_path, :method => 'get', class: "form-inline" do %>
+    <div class="form-group">
+      <%= "#{t('pn_part_number',:scope => "pn_cross_reference.index")}:" %>
+      <%= text_field_tag :pn_part_number, params[:pn_part_number].try(:strip).try(:upcase),
+                         class: "form-control", required: true %>
+      <%= submit_tag t('Search',:scope => "floor_views.index"), class: "btn btn-default" %>
+    </div>
+<% end %>
+<%= image_seperator %>
+<% if params[:pn_part_number] && @pn_cross_references.present? && @error.blank? %>
+    <%= render partial: "search" %>
+<% else %>
+    <div class="row">
+      <div class="col-sm-5">
+        <span class="alert_msg"><%= @error %></span>
+      </div>
+    </div>
+<% end %>

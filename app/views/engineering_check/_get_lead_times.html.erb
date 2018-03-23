@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="col-sm-4"><%= t("effective_date", scope:"bin_line_station.search_part_number") %></div>
+  <div class="col-sm-8"><%= @lead_times_response["begDate"] %></div>
+</div>
+<div class="row">
+  <div class="col-sm-4"><%= t("supportability_date", scope:"bin_line_station.search_part_number") %></div>
+  <div class="col-sm-8"><%= @lead_times_response["actionDate"] %></div>
+</div>
+<div class="row">
+  <div class="col-sm-4"><%= t("lead_time", scope:"bin_line_station.search_part_number") %></div>
+  <div class="col-sm-8"><%= @lead_times_response["actionTime"] %></div>
+</div>

@@ -1,0 +1,32 @@
+<h2 class="body_header">Filled Kit List</h2>
+<%= render 'search' %>
+<span class="text-center">
+<%= content_tag :p, params[:alert].html_safe, class: "#{flash_class(:success)}" if params[:alert].present? %>
+  <%= render 'layouts/message_display' %>
+</span>
+<div id="kit_table">
+  <% unless @kits_filling.nil? %>
+      <small><em> <%= page_entries_info(@kits_filling) %></em></small>
+      <div class="table-responsive">
+        <table class="table tablesorter filling_table">
+          <thead>
+          <th>Filled ID</th>
+          <th>Filled Kit Number </th>
+          <th>Queue </th>
+          <th>Filled State </th>
+          <th>Created By</th>
+          </thead>
+          <% @kits_filling.each do |kit_filling| %>
+              <tr>
+                <td><%= link_to kit_filling.id, edit_kit_filling_path(kit_filling.id) %></td>
+                <td><%= kit_filling.kit_copy.try(:kit_version_number) %></td>
+                <td><%= kit_filling.try(:kit_copy).try(:location).try(:name) %></td>
+                <td><%= Kitting::KitFilling.filled_state_display(kit_filling.filled_state) %></td>
+                <td><%= kit_filling.customer.user_name %></td>
+              </tr>
+          <% end %>
+        </table>
+      </div>
+      <%= will_paginate @kits_filling  %>
+  <%end%>
+</div>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>KLX Aerospace</title>
+  <%= favicon_link_tag 'favicon.ico' %>
+</head>
+<style>
+    .page{ font-size:9px; position: relative; width: 100%;  }
+    .page-lg{ font-size:9px; position: relative; width: 100%; }
+    .barcode_text{font-size:7px; }
+    .jc_desc{font-size:8px;}
+    .logo{ position: absolute; right: -18px ; bottom: -5px }
+    .logo-lg{ position: absolute; right: -18px ; bottom: -5px }
+    table {border-spacing: 4px;}
+    .print_new_page{page-break-after: always;}
+    .barcode_text span{position: relative;}
+    .page-break{page-break-after: always;}
+    .label-table td{padding: 3px 0px 3px 5px}
+    table.label-table {border-collapse: collapse; width: 100%;font-size:11px; font-family: "Arial", Gadget, sans-serif;}
+    .label-table th{text-align:left;padding: 3px 0px 3px 5px; border-top: 2px solid #000000}
+    .left {
+        font-size:12px;
+        float: left;
+        width: 60%;
+        text-align: left;
+        display: inline;
+        padding-bottom: 5px;
+    }
+    .right {
+        font-size:12px;
+        float: left;
+        text-align: left;
+        display: inline;
+        padding-bottom: 5px;
+    }
+</style>
+<body>
+<% if @order_parts && params[:commit] == "Print Inner Labels" %>
+    <% @order_parts.each_with_index do |part, k| %>
+        <% last = @order_parts.size == k + 1 ? true : false %>
+        <% generate_barcode_for_all_in_one(part.pack_id) if part.pack_id %>
+        <div class="<%= last ? 'page' : 'page page-break' %>">
+          <table style="width:100%; <%= k != 0 ? 'margin-top: 5px'.html_safe : ''.html_safe %>">
+            <tr><td><strong>Detail Part : </strong></td><td><%= part.part_number %></td></tr>
+            <tr><td><strong>Qty : </strong></td><td><%= part.quantity %></td></tr>
+            <tr><td><strong>Requestor : </strong></td><td><%= part.order.created_by %></td></tr>
+            <tr><td><strong>Delivery Point : </strong></td><td>
+              <% if part.kit_filling_detail %>
+                  <%= part.kit_filling_detail.kit_filling.kit_work_order.work_order.stage %>
+              <% else %>
+                  <%= part.order.discharge_point_name %>
+              <% end %>
+            </td></tr>
+            <tr><td><strong>Bin Center : </strong></td><td><%= Kitting::CustomerConfigurations.find_by_cust_no(current_user).default_part_bin_center rescue "-" %></td></tr>
+            <tr><td><strong>Bin Id : </strong></td><td><%= part.try(:bin_location) %></td></tr>
+            <tr><td><strong>AirCraft : </strong></td><td><%= part.order.project_id %></td></tr>
+            <tr><td><strong>Work Order : </strong></td><td><%= part.order.order_number %></td></tr>
+            <tr><td><strong>Job Card No: </strong></td><td><%= part.order.kit_part_number %></td></tr>
+            <% if part.pack_id %>
+                <tr>
+                  <td><strong>Pack Id: </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+part.pack_id.split("").map(&:ord).join("")+'.png' ) %><br><span><%=part.pack_id %></span></td>
+                </tr>
+                <tr>
+            <% end %>
+            <td>
+              <%= image_tag( Rails.root.join("app","assets","images","KLX_logo.jpg").to_s , class: 'logo', width: '35%' ) %>
+            </td>
+            </tr>
+          </table>
+        </div>
+    <% end %>
+<% elsif  @order_part_details && params[:commit] == "Print Pick Sheet" %>
+    <% combine_group_length = @combine_crib_parts_arr.size/15 %>
+    <% @combine_crib_parts_arr.each_slice(15).each_with_index do |group_combine,group_index| %>
+        <% last_group = combine_group_length == group_index ? true : false %>
+        <div class="<%= last_group ? '' : 'print_new_page'%>">
+          <table style="width:100%" class="tbl_pick_ticket_main">
+            <tr>
+              <td colspan="8">
+                <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+                  <tr>
+                    <td>Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%m/%d/%Y") %></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>Time: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%I:%M%p")  %> </td>
+                    <td>Location: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PICKING QUEUE</td>
+                  </tr>
+                  <tr>
+                    <td>Part Bin Center: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= @crib_pick_details["binCenter"] %> </td>
+                    <td></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="8">&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan="8">
+                <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+                  <tr>
+                    <td>Seq No</td>
+                    <td>Parts To be Picked</td>
+                    <td>Part Barcode</td>
+                    <td>UOM</td>
+                    <td>Req. Qty</td>
+                    <td>Bin Loc</td>
+                    <td>Picked</td>
+                  </tr>
+                  <% group_combine.each_with_index do |part_hash,index| %>
+                      <tr>
+                        <td style="width:5%"><%= index + 1 %></td>
+                        <td><%= part_hash[:part] %></td>
+                        <td>
+                          <% generate_barcode(part_hash[:part]) %>
+                          <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+part_hash[:part].split('').map(&:ord).join("") +'.png' ) %>
+                        </td>
+                        <td style="width:8%">
+                          <%= part_hash[:uom] %>
+                        </td>
+                        <td style="width:10%"><%= part_hash[:qty] %></td>
+                        <td><%=  part_hash[:bin].present? ? part_hash[:bin] : "Not Found" rescue "-"%></td>
+                        <td>&nbsp;</td>
+                      </tr>
+                  <% end %>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="8">&nbsp;</td>
+            </tr>
+          </table>
+        </div>
+    <% end %>
+
+<% end %>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!-- Modal -->
+<div id="edit-fill-pop-up_modal" class="modal fade fill">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h2 class="body_header">Kit Filling Edit</h2>
+      </div>
+      <%= form_tag cup_filling_kit_filling_index_path, :class => "form-horizontal" do %>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="col-sm-2">Kit Number:</label>
+              <div class="col-sm-10"><%= text_field_tag 'kit_number', @kit_filling.kit.kit_number, class: 'form-control',:readonly => true %>
+                <%= hidden_field_tag 'kit_filling_id', params[:kit_filling_id] || @kit_filling.id, readonly: true %>
+                <%= hidden_field_tag 'kit_id', @kit_filling.kit_id %></div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2">Cup Number</label>
+              <div class="col-sm-10"><%= text_field_tag 'kit_cup_number',nil, class: 'form-control',:readonly => true %></div>
+            </div>
+            <table id="table">
+              <thead>
+              <th>Part Number</th>
+              <th>Demand Quantity</th>
+              <th>Filled Quantity</th>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            <% if session[:user_level] %>
+                <% if session[:user_level] > "3" %>
+                    <%= submit_tag 'Save changes',id: 'cup_filling_btn', class: "btn btn-primary"  %>
+                <%end%>
+            <%end%>
+          </div>
+      <% end %>
+    </div>
+  </div>
+</div>

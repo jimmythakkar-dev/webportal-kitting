@@ -1,0 +1,65 @@
+REFACTORING FOR DB STARTED ON JUL 1
+
+MIGRATIONS FROM LIB/DB REMOVED
+
+TABLES REMOVED 
+
+CUP PARTS HISTORIES
+KIT FILLING HISTORIES
+KIT UPLOADS
+KITTING PICK TICKET HISTORIES
+
+TABLES/COLUMNS RENAMED
+
+KITS => SHOP ID REMOVED
+
+
+
+
+
+REFACTORED:
+
+
+Law of Demeter:
+
+According to the law of demeter, a model should only talk to its immediate association, don't talk to the association's association and association's property, it is a case of loose coupling.
+
+e.g
+
+class KitCopy < ActiveRecord::Base
+  belongs_to :kit
+end
+
+<%= @kit_copies.kit.kit_number %>
+<%= @kit_copies.kit.status %>
+
+
+Refactor:
+
+class KitCopy < ActiveRecord::Base
+  belongs_to :kit
+  delegate :kit_number, :status :to => :kit, :prefix => true
+end
+
+<%= @kit_copies.kit_kit_number %>
+<%= @kit_copies.kit_status %>
+
+Remove empty helpers:
+
+If you use rails generator to create scaffolds or controllers, it will also create some helpers, most of the helpers are useless, just remove them.
+Helpers are good places to add helper method for view pages, but if you don't need them, why you push these empty helpers to repository. Although your helpers are empty, rails still takes time to load them, Test::Unit or RSpec still load them to run tests.
+
+CODE LOGIC
+
+Dir.glob("app/helpers/**/*.rb").each do |file|
+  if !File.read(file).index('def')
+    FileUtils.rm file
+    FileUtils.rm_f file.sub("app/", "test/unit/").sub(".rb", "_test.rb") if File.exists?("test")
+    FileUtils.rm_f file.sub("app/", "spec/").sub(".rb", "_spec.rb") if File.exist?("spec")
+  end
+end
+
+
+Remove trailing whitespace
+
+Trailing whitespace always makes noises in version control system, it is meaningless. We should remove trailing whitespace to avoid annoying other team members.

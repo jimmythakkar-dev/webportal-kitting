@@ -1,0 +1,42 @@
+<h2 class="body_header">Replace Parts</h2>
+<%= render 'layouts/message_display' %>
+<%= image_seperator %>
+<%= form_tag({:action => 'replace_parts'},:method=>"post",:id => "part_refresh", class: "form-horizontal") do  %>
+    <div class="form-group">
+      <%= label_tag 'Part Number to be Replaced:', 'Part Number to be Replaced:',:class => "col-sm-4 control-label" %>
+      <div class="col-sm-4 old_img">
+        <div class="input-group">
+          <%= text_field_tag :old_part_number, nil,:class=> "form-control" ,:required => true%><div class="input-group-addon"><%= link_to ('<span class="glyphicon glyphicon-ok"></span>'.html_safe), "#",:id =>"old_part_no",:class => "show_tick" %></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group new_part">
+      <%= label_tag 'Enter the New Part Number:', 'Enter the New Part Number:',:class => "col-sm-4 control-label" %>
+      <div class="col-sm-4 new_img">
+        <div class="input-group">
+          <%= text_field_tag :new_part_number, nil,:readonly => true,:class=> "form-control" ,:required => true%><div class="input-group-addon"><%= link_to ('<span class="glyphicon glyphicon-ok"></span>'.html_safe), "#",:id =>"new_part_no",:class =>"hide_tick" %></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= label_tag 'Enter UOM:', 'Select UOM:',:class => "col-sm-4 control-label" %>
+      <div class="col-sm-4">
+        <%= select_tag "new_uom", options_for_select([["EA","EA"],["LB","LB"],["HU","HU"], ["TH","TH"]]), {:class => 'form-control',:disabled => true} %>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-sm-8">
+        <%= submit_tag 'Replace', :id => "replace_part_button", :disabled => true, :class => "btn btn-primary" %>
+        <%= link_to "Reset", replace_parts_parts_path ,:class=>"btn refresh btn-default" %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>
+<p><%= (page_entries_info @part_list).gsub("Kit bom bulk operation","Part Replacement(s)").html_safe %></p>
+<p id="page_number" val= "<%= params[:page] %>" ></p>
+<div class="table-responsive">
+  <table class="table tablesorter part_details">
+    <%= render "part_status"%>
+  </table>
+</div>
+<%= will_paginate @part_list %>

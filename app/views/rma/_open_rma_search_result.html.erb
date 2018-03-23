@@ -1,0 +1,105 @@
+<% if @response_open_rma %>
+    <% if response["errMsg"] != "" %>
+        <% if response["errCode"] == "5" %>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="alert alert-danger"><%= response["errMsg"] %></div>
+              </div>
+            </div>
+        <% end %>
+    <% else response["errMsg"] == "" %>
+        <!--% else %-->
+        <% unless response.kind_of? String %>
+            <div id="restock">
+              <% if @totalpage_open_rma > 0 %>
+                  <small> <%= I18n.t("pagination",:scope => "agusta.agusta_inquiry",:start_page => params[:open_page], :end_page => @totalpage_open_rma ).html_safe %></small>
+              <% end %>
+              <br/>
+            </div>
+
+            <p><b><%= t 'rma.rma_listing' %> - <%= t 'rma.open_rma' %></b></p>
+            <div style="overflow-y:scroll; height:290px;">
+              <table class="table tablesorter">
+                <thead>
+                <th width="10%"><%= t 'rma.rma' %>#</th>
+                <th width="10%"><%= t 'rma.date' %></th>
+                <th width="10%"><%= t 'rma.invoice' %>#</th>
+                <th width="33%"><%= t 'rma.status' %></th>
+                <th width="15%"><%= t 'rma.detail_status' %></th>
+                <th width="8%"><%= t 'rma.print' %></th>
+                <th width="17%"><%= t 'rma.request_update' %></th>
+                </thead>
+                <% response["invoiceNos"].each_with_index do |value,id| %>
+                    <tr>
+                      <td>
+                        <% if response["currentStatus"][id] == "Open RMA" %>
+                            <%= "Pending" %>
+                        <% else %>
+                            <%= response["rmaNos"][id] %>
+                        <% end %>
+                      </td>
+
+                      <td><%= response["issueDates"][id] %></td>
+                      <td><a href="/rma/invoice/<%= response["invoiceNos"][id]%>?disable_fields=1&rma=<%=response["rmaNos"][id]%>"><%= response["invoiceNos"][id] %></a></td>
+                      <td>
+                        <% if response["currentStatus"][id] == "Open RMA" %>
+                            <%= "Pending RMA Creation" %>
+                        <% else %>
+                            <%= response["currentStatus"][id] %>
+                        <% end %>
+                      </td>
+                      <td><a href="javascript:void(0);" onclick="getRMAdetails(<%= response["rmaNos"][id] %>);">View</a></td>
+                      <td>
+                        <%# if response["currentStatus"][id] == "Open RMA" %>
+                        <!--<button type="button" class="btn btn-default icon-envelope" onclick="openPopUpForPrint(<%#= response["rmaNos"][id] %>)" title="Email the RMA Packing Slip"/></td>-->
+                        <%# else %>
+                        <%= link_to (image_tag "pdf-mail.png"), "#", :onclick => "openPopUpForPrint(#{response["rmaNos"][id]})" %>
+                        <%# end %>
+                      </td>
+                      <td><button type="button" id="send_email_btn" class="btn btn-default glyphicon glyphicon-envelope" onclick="openPopUp('<%= response["rmaNos"][id]%>','<%= response["currentStatus"][id]%>','<%= response["invoiceNos"][id]%>')"/></td>
+                    </tr>
+                <% end %>
+              </table>
+            </div>
+            <div id="rmadetails"></div>
+            <div id="detailstatus"></div>
+            <%= will_paginate @result_open_rma, :param_name => 'open_page' %>
+        <% end %>
+    <% end %>
+    <%= form_tag send_message_rma_index_path do  %>
+        <%= hidden_field_tag :rma_no %>
+        <%= hidden_field_tag :current_status %>
+        <%= hidden_field_tag :invoice_no %>
+        <div id="send_mail_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h2 class="body_text_subhead">Send a Message</h2>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-sm-1">
+                    <%= 'Subject'%>
+                  </div>
+                  <div class="col-sm-11">
+                    <%= text_field_tag :subject, params[:subject] , :class => "form-control", :required => true %>
+                  </div>
+                </div>
+                <div class="clear"></div>
+                <div class="row">
+                  <div class="col-sm-1">Body</div>
+                  <div class="col-sm-11">
+                    <%= text_area_tag :body, nil ,:class=>"form-control" ,:rows => 10 %>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-danger close-popup" data-dismiss="modal" aria-hidden="true">Discard</button>
+                <button id="add_cup_part" class="btn btn-primary">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    <% end %>
+<% end %>

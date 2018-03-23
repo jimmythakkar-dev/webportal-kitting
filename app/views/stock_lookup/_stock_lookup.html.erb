@@ -1,0 +1,58 @@
+<!-- Displaying all stock lookups for corresponding search criteria -->
+<% if @response_stock_lookup %>
+    <!-- Checking whether mmPartNo is present -->
+    <% if @response_stock_lookup["mmPartNo"].first.blank? %>
+        <!-- If MMPartNo is not present, displaying flash messages and  error messages from RBO response -->
+        <div class="row">
+          <div class="col-sm-12">
+            <span class="alert_msg"><%= t("no_results_found",:scope => "stock_lookup._stock_lookup")%></span>
+          </div>
+        </div>
+    <% else %>
+        <% if @response_stock_lookup["errCode"] == "3" %>
+            <br/>
+            <p><%= t("err_displayed",:totalPNCount => @response_stock_lookup["totalPNCount"],:scope => "stock_lookup._stock_lookup")%></p><br />
+        <% end %>
+        <!-- Displaying stock lookups search results from RBO response -->
+        <div class="table-responsive">
+          <table class="table tablesorter" >
+            <thead>
+            <tr>
+              <th><%= t("part_num",:scope => "order_refill._refill_order") %></th>
+              <th><%= t("alt_part_num",:scope => "open_orders._shipped_order_table") %></th>
+              <th><%= t("description",:scope => "order_refill._refill_order") %></th>
+              <th><%= t("stocked",:scope => "order_refill._refill_order") %></th>
+            </tr>
+            </thead>
+            <!--- Looping through stock lookups orders --->
+            <% @response_stock_lookup["mmPartNo"].each_index do |index| %>
+                <tr>
+                  <td>
+                    <%= @response_stock_lookup["mmPartNo"][index] %>
+                  </td>
+                  <td>
+                    <% if @response_stock_lookup["partNo"] == "" %>
+                        &nbsp;
+                    <% else %>
+                        <%= @response_stock_lookup["partNo"][index] %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= @response_stock_lookup["desc"][index] %>
+                  </td>
+                  <td>
+                    <%= 'YES' %>
+                  </td>
+                </tr>
+            <% end %>
+            <!--- End of Looping through stock lookups --->
+          </table>
+        </div>
+    <% end %>
+<% else %>
+    <div class="row">
+      <div class="col-sm-12">
+        <%= flash_notice %>
+      </div>
+    </div>
+<%end%>

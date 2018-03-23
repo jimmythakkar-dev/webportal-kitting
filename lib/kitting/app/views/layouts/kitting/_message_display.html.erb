@@ -1,0 +1,3 @@
+<% flash.each do |key, msg| %>
+    <%= content_tag :p, (msg.concat("<span onclick=\"this.parentNode.parentNode.removeChild(this.parentNode);\"class=\"glyphicon glyphicon-remove-sign pull-right remove-flash\"></span>").html_safe rescue msg), class: "#{flash_class(key)}" %>
+<% end %>

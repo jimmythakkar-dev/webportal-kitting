@@ -1,0 +1,32 @@
+<h2 class="body_header"><%= t('bin_locator',:scope => "bin_line_station.index") %></h2>
+<%= image_seperator %>
+<p><%= t('_desc_bin_index',:scope => "bin_line_station.index") %></p>
+<%= image_seperator %>
+<p class="text_alert">
+  <%= flash[:alert] %>
+</p>
+<%if @locations["errCode"] == "" %>
+    <%= form_tag bin_line_station_search_part_number_path, class: 'form-inline' do %>
+        <div>
+          <%= label_tag :part_number, "#{t('part_num',:scope => "rma")}:" %>
+        </div>
+        <div class="form-group">
+          <%= text_field_tag :part_number, params[:part_number].try(:strip), required: true, class: "form-control" %>
+          <%= submit_tag "#{t('search',:scope => "rma")}", name: :search, class: 'btn btn-primary' %>
+        </div>
+    <% end %>
+    <em>
+      <%= t('or',:scope => "bin_line_station.index") %>
+    </em>
+    <%= form_tag  bin_line_station_search_by_location_path, method: "get", class: 'form-inline' do %>
+        <div>
+          <%= label_tag :part_number, t('select_loc',:scope => "bin_line_station.index") %>
+        </div>
+        <div class="form-group">
+          <%= select_tag(:location, options_for_select(@locations["binCenterList"]), { prompt: 'Select Location', required: true,class: "form-control" }) %>
+          <%= submit_tag t('view_loc',:scope => "bin_line_station.index"), name: 'location_submit', class: 'btn btn-primary' %>
+        </div>
+    <% end %>
+<%else%>
+    <div class="alert alert-danger"><%= flash[:err]%></div>
+<%end%>

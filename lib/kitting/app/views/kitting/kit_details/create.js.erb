@@ -1,0 +1,15 @@
+<% if @validation_error %>
+$.msgBox({
+    title:"KIT BOM STATUS",
+    content:"<%= @validation_error %>"
+});
+<% else %>
+ <% if @rbo_success %>
+  window.location.href = "/kitting/kits"
+ <% else %>
+$.msgBox({
+    title:"KIT BOM STATUS",
+    content:"<%= @rbo_error %>"
+});
+ <% end %>
+<% end %>

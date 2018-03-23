@@ -1,0 +1,204 @@
+<%= form_tag pick_ticket_print_kit_copies_path, :target =>'_blank' do  %>
+    <%= hidden_field_tag :kit_copy_id, params[:id] %>
+    <% if params[:reprint] %>
+        <%= hidden_field_tag :reprint, params[:reprint] %>
+    <% end %>
+    <%= hidden_field_tag :kit_version_number, @kit_copies.kit_version_number %>
+    <%= hidden_field_tag :kit_number, @kit_copies.kit.kit_number %>
+    <%= hidden_field_tag :bincenter, @kit_copies.kit.try(:part_bincenter) %>
+    <%= hidden_field_tag 'version_alert_message', @alert %>
+    <% if @kit_copies.kit.kit_media_type.kit_type == "binder" %>
+        <table class="table table-bordered">
+          <thead>
+          <p class="body_text_subhead">Kit Parts</p>
+          <th></th>
+          <th>Sleeves</th>
+          <th>Part Number</th>
+          <th>Quantity</th>
+          </thead>
+          <tbody>
+          <% @row_count = 0 %>
+          <% @kit_copies.kit.cups.where(:commit_status => true,:status => true).order(:cup_number).each_with_index do |cup_values, cups_index|  %>
+              <% unless cup_values.parts.blank?  %>
+                  <% cup_values.cup_parts.where(:commit_status => true,:status => true).each_with_index do |value,index| %>
+                      <% unless value.status == false %>
+                          <% @row_count = @row_count + 1 %>
+                          <tr>
+                            <td>
+                              <% if cup_values.check_in_contract_status("cup_parts") %>
+                                <%= check_box_tag 'select_ids[]', "#{cup_values.cup_number} - #{value.cup_id}" %>
+                              <% end %>
+                              <%= hidden_field_tag 'cup_ids[]', value.cup_id %>
+                            </td>
+                            <td>
+                              <%= text_field_tag "kit_tray[]", cup_values.cup_number, :class =>'kit_tray input-sm', :disabled => true %>
+                            </td>
+                            <td><%= cup_values.parts[0].part_number %> </td>
+                            <td><%= cup_values.cup_parts[0].demand_quantity %> </td>
+                          </tr>
+                      <% end %>
+                  <% end %>
+              <% end %>
+          <% end %>
+          </tbody>
+        </table>
+    <% else %>
+        <%if @kit_copies.kit.kit_media_type.kit_type == "configurable" %>
+            <%= @kit_copies.kit.kit_media_type.name != "Small Configurable TB" ? "<div class='gridster_container'>".html_safe : "<div class='gridster small_orange_kit' style='position:relative;'>".html_safe %>
+            <% display_kit = create_group @kit_copies.kit.cups.where('commit_status = ? and status = ?', true,true).sort_by {|cup| cup.cup_number.to_i }, @kit_copies.kit.kit_media_type.name %>
+            <% display_kit.each_with_index do |group,index| %>
+                <div <%= add_class_and_id_to_gridster(@kit_copies.kit.kit_media_type.name,index) %>>
+                  <ul>
+                    <% group.each_with_index do |cup,index| %>
+                        <% cup_dimension = cup.cup_dimension.split(",") %>
+                        <% if @change_cup && @change_cup.include?(cup.id) %>
+                            <li rel="<%= (cup.ref1 || cup.ref2 || cup.ref3)? "tooltip" : ""  %>" title='<%= cup.ref1+', ' if cup.ref1 %> <%= cup.ref2+', ' if cup.ref2 %> <%= cup.ref3 if cup.ref3 %>'
+                                <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %> >
+                              <span class="box-no"><%= cup.cup_number %></span>
+                              <div class="block_area bluecups">
+                                <%= raw get_configurable_part_with_qty(cup).join('') %>
+                              </div>
+                              <% if get_configurable_part_with_qty(cup).join('').blank? %>
+                                  <span>&nbsp;</span>
+                              <% else %>
+                                  <% if cup.check_in_contract_status("cup_parts") %>
+                                      <span><%= check_box_tag 'select_ids[]', "#{cup.cup_number} - #{cup.id}" %></span>
+                                  <% else %>
+                                      <span>&nbsp;</span>
+                                  <% end %>
+                              <% end %>
+                            </li>
+                        <% else %>
+                            <li rel="<%= (cup.ref1 || cup.ref2 || cup.ref3)? "tooltip" : ""  %>" title='<%= cup.ref1+', ' if cup.ref1 %> <%= cup.ref2+', ' if cup.ref2 %> <%= cup.ref3 if cup.ref3 %>'
+                                <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %> >
+                              <span class="box-no"><%= cup.cup_number %></span>
+                              <div class="block_area">
+                                <%= raw get_configurable_part_with_qty(cup).join('') %>
+                              </div>
+                              <% if get_configurable_part_with_qty(cup).join('').blank? %>
+                                  <span>&nbsp;</span>
+                              <% else %>
+                                  <% if cup.check_in_contract_status("cup_parts") %>
+                                      <span><%= check_box_tag 'select_ids[]', "#{cup.cup_number} - #{cup.id}" %></span>
+                                  <% else %>
+                                      <span>&nbsp;</span>
+                                  <% end %>
+                              <% end %>
+                            </li>
+                        <% end %>
+                    <% end %>
+                  </ul>
+                </div>
+            <% end %>
+            </div>
+            <%= display_kit_handle(@kit_copies.kit.kit_media_type.name) %>
+        <% else %>
+            <% @cups = get_cups_layout @cups.where(:commit_status => true), @compartment_layout %>
+            <% index = 0 %>
+            <% @row_count = 0 %>
+            <% @cups.each_with_index do |row, row_index| %>
+                <div class="cup_table">
+                  <table class="thumbnails cups">
+                    <tr>
+                      <% row.each_with_index do |value, col_index| %>
+                          <td>
+                            <%if @change_cup && @change_cup.include?(value.id)%>
+                                <div <%= (!value.parts.first.nil? && !value.check_in_contract_status("cup_parts")) ? "class='thumbnail bluecups non-contract-cup'".html_safe : "class='thumbnail bluecups'".html_safe %>>
+                                  <div class="caption">
+                                    <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                                    <% @parts = Kitting::CupPart.where("cup_id = ? AND status = ? AND commit_status = ?", value.id, true, true) %>
+                                    <ul>
+                                      <% @parts.each do |part_number| %>
+                                          <li class=<%= part_number.in_contract ? "" : "non-contract-part" %>>
+                                            <%= part_number.part.part_number %>(<%= part_number.demand_quantity %>)
+                                          </li>
+                                          <% if @parts.size == 1 %>
+                                              <div class="<%= part_number.in_contract ? "" : 'cup_img non-contract-part-image' %>"><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>part_number.part.image_name.medium.to_s).gsub("http://","https://") : image_parts_url(:image =>part_number.part.image_name.medium.to_s), class: "img-responsive",:alt => "Image Not Available" %></div>
+                                          <% end %>
+                                      <% end %>
+                                    </ul>
+                                    <% if @parts.blank? %>
+                                        <p>&nbsp;</p>
+                                        <% @row_count = @row_count + 1 %>
+                                    <% else %>
+                                        <% @row_count = @row_count + 1 %>
+                                        <% if @parts.first.in_contract? %>
+                                            <p>
+                                              <%= check_box_tag 'select_ids[]', "#{@row_count} - #{value.id}" %>
+                                              <%= hidden_field_tag 'cup_ids[]', value.id %>
+                                            </p>
+                                        <% else %>
+                                            <p> &nbsp;</p>
+                                        <% end %>
+                                    <% end %>
+                                  </div>
+                                </div>
+                            <%else%>
+                                <div <%= (!value.parts.first.nil? && !value.check_in_contract_status("cup_parts")) ? "class='thumbnail non-contract-cup'".html_safe : "class='thumbnail'".html_safe %>>
+                                  <div class="caption">
+                                    <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                                    <% @parts = Kitting::CupPart.where("cup_id = ? AND status = ? AND commit_status = ?", value.id, true, true) %>
+                                    <ul>
+                                      <% @parts.each do |part_number| %>
+                                          <li class=<%= part_number.in_contract ? "" : "non-contract-part" %>>
+                                            <%= part_number.part.part_number %>(<%= part_number.demand_quantity %>)
+                                          </li>
+                                          <% if @parts.size == 1 %>
+                                              <div class="<%= part_number.in_contract ? "" : 'cup_img non-contract-part-image' %>"><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>part_number.part.image_name.medium.to_s).gsub("http://","https://") : image_parts_url(:image =>part_number.part.image_name.medium.to_s), class: "img-responsive",:alt => "Image Not Available" %></div>
+                                          <% end %>
+                                      <% end %>
+                                    </ul>
+                                    <% if @parts.blank? %>
+                                        <p>&nbsp;</p>
+                                        <% @row_count = @row_count + 1 %>
+                                    <% else %>
+                                        <% @row_count = @row_count + 1 %>
+                                        <% if @parts.first.in_contract? %>
+                                            <p>
+                                              <%= check_box_tag 'select_ids[]', "#{@row_count} - #{value.id}" %>
+                                              <%= hidden_field_tag 'cup_ids[]', value.id %>
+                                            </p>
+                                        <% else %>
+                                            <p> &nbsp;</p>
+                                        <% end %>
+                                    <% end %>
+                                  </div>
+                                </div>
+                            <%end%>
+                          </td>
+                          <% index += 1 %>
+                      <%end%>
+                    </tr>
+                  </table>
+                </div>
+            <% end %>
+        <% end %>
+    <% end %>
+    <%= image_seperator %>
+    <div class="row">
+      <% if session[:user_level] %>
+          <% if session[:user_level] > "3" %>
+              <div class="col-sm-4">
+                <div class="row">
+                  <div class="form-group">
+                    <label class="col-sm-4">Sort Order</label>
+                    <div class="col-sm-8">
+                      <select name="sort_by" class="form-control">
+                        <option>BIN Location</option>
+                        <option>Part Number</option>
+                        <option>Cup Number</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-5">
+                <%= submit_tag 'Print Selected', class: "btn btn-primary", id: "submit_selected" %> &nbsp;
+                <%= submit_tag 'Print All', class: "btn btn-primary print_all" %> &nbsp;
+                <%= submit_tag 'Print Alternate Bin', class: "btn btn-primary" , id: "alternate-bin" %> &nbsp;
+              </div>
+          <%end%>
+      <%end%>
+      <%= link_to 'Back', kit_copies_path, class: 'btn btn-default'  %>
+    </div>
+<% end %>

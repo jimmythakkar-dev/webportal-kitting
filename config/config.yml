@@ -1,0 +1,60 @@
+development:
+  webservice_uri_format: http://dcd484:9095
+  username: admin
+  password: admin
+  kit_version_check_interval: 6000
+  part_image_path: /apps/rails/portal/images
+  conversion_report_path: /apps/w/customer_reports/
+  kitting_barcode_path: public/barcodes/
+  csv_export_path:  /apps/rails/portal/csv/
+  certification_path: /jb/
+  agusta_report_path: /shares/mis/
+  rma_image_path: /apps/rails/rma_images/
+  rma_host_name: dcd485
+  temp_image_path: public/tmp
+  csv_import_path: /apps/w/customer_reports/
+  shared_folder_path: /apps/w/customer_reports/
+
+test:
+  webservice_uri_format: https://dcd484:9096
+  username: admin
+  password: admin
+  kit_version_check_interval: 6000
+  part_image_path: /apps/rails/portal/images
+  conversion_report_path: /apps/w/customer_reports/
+  kitting_barcode_path: public/barcodes/
+  csv_import_path: /apps/w/customer_reports/
+
+qa:
+  webservice_uri_format: http://dcd484:9095
+  username: admin
+  password: admin
+  kit_version_check_interval: 6000
+  part_image_path: /apps/rails/portal/images
+  conversion_report_path: /apps/rails/portal/reports/
+  csv_export_path:  /apps/rails/portal/csv/
+  kitting_barcode_path: public/barcodes/
+  certification_path: /jb/
+  rma_image_path: /apps/rails/rma_images/
+  agusta_report_path: /apps/w/customer_reports/
+  rma_host_name: dcd485
+  temp_image_path: public/tmp
+  csv_import_path: /apps/rails/portal/csvimport
+  shared_folder_path: /apps/w/customer_reports/
+
+production:
+  webservice_uri_format: http://dcd484:9095
+  username: admin
+  password: admin
+  kit_version_check_interval: 6000
+  part_image_path: /apps/rails/portal/images
+  conversion_report_path: /apps/rails/portal/reports/
+  csv_export_path:  /apps/rails/portal/csv/
+  kitting_barcode_path: public/barcodes/
+  certification_path: /jb/
+  rma_image_path: /apps/rails/rma_images/
+  agusta_report_path: /apps/w/customer_reports/
+  rma_host_name: dcd485
+  temp_image_path: public/tmp
+  csv_import_path: /apps/rails/portal/csvimport
+  shared_folder_path: /apps/w/customer_reports/

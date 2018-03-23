@@ -1,0 +1,42 @@
+<p class="body_header"><%= t('title',:scope => "file_transfer._payload_detail") %></p>
+<%= image_seperator %>
+<p><%= link_to t('back_to_detail',:scope => "file_transfer._payload_detail"), 'javascript:history.back();'  %></p>
+<% if boeing_pay_load_detail %>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag t('payload_file_id',:scope => "file_transfer._payload_detail") %></div>
+        <div class="col-sm-9"><strong><%= boeing_pay_load_detail.first['id'] %></strong></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag t('payload_file_name',:scope => "file_transfer._payload_detail") %> </div>
+        <div class="col-sm-9"><strong><%= boeing_pay_load_detail.first['filename'] %></strong></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag t('created_date',:scope => "file_transfer._payload_detail")  %> </div>
+        <div class="col-sm-9"><strong><%= boeing_pay_load_detail.first['create_date'] %></strong></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3"><%= label_tag t('file_location',:scope => "file_transfer._payload_detail") %></div>
+        <div class="col-sm-9"><strong><%= boeing_pay_load_detail.first['file_location'] %></strong></div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12"><strong><%= t('payload_details',:scope => "file_transfer._payload_detail") %></strong></div>
+      </div>
+    </div>
+  </div>
+  <!--<div class="row">-->
+    <!--<div class="col-sm-12" style="width: 680px; overflow-x: scroll ">-->
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <tr>
+            <td>
+              <%= boeing_pay_load_detail.first['payload'].gsub(/\s+/,'</td><td>').gsub(@my_site_code,'<td>'+@my_site_code+'</td></tr><tr>').html_safe %>
+        </table>
+      </div>
+    <!--</div>-->
+  <!--</div>-->
+<% else %>
+  <%= flash[:alert] = t('no_data_found',:scope => "file_transfer._payload_detail")  %>
+<% end %>

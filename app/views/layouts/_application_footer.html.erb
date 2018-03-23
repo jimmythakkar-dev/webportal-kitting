@@ -1,0 +1,23 @@
+<div class="row copyright">
+  <div class="col-xs-12 col-sm-3">
+    <span>© <%=Time.now.year%> KLX Aerospace Solutions </span>
+  </div>
+  <div class="col-xs-12 col-sm-9 text-right">
+    <% if session[:menu_description].blank? %>
+        <%= link_to t( 'my_klx',:scope => "layouts._application_footer" ),"http://klxaerospace.com/my-klx/",target: '_blank' %> |
+    <% end %>
+    <%= link_to t( 'PRIVACY_POLICY',:scope => "layouts._application_footer" ),"http://klx.com/privacy-policy.cfm",target: '_blank' %> |
+    <%= link_to t( 'TERMS_OF_USE',:scope => "layouts._application_footer" ),"http://klx.com/termsofuse.cfm",target: '_blank' %> |
+    <%= link_to t( 'CONDITIONS_OF_SALE',:scope => "layouts._application_footer" ),"http://klxaerospace.com/conditions-sale",target: '_blank' %>
+  </div>
+</div>
+<% if controller_name == "agusta" %>
+    <%= javascript_include_tag "agusta", "data-turbolinks-track" => true %>
+<% elsif controller_name == "rma" %>
+    <%= javascript_include_tag controller_name, "data-turbolinks-track" => true %>
+<% else %>
+    <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+    <% if params[:controller] == "reports" && params[:action] == "upload" && !request.xhr? %>
+        <%= javascript_include_tag "dropzone" %>
+    <% end %>
+<% end %>

@@ -1,0 +1,38 @@
+<% if params[:part_status] == "old_part_no" %>
+    <%if @part%>
+        $(".old_img").append('<img width="50px" height="50px" src="<%= @img_src %>">');
+        $("#old_part_number").attr("readonly",true);
+        $("#old_part_no").removeClass("show_tick").addClass("hide_tick");
+        $("#new_part_number").attr("readonly",false);
+        $("#new_part_no").removeClass("hide_tick").addClass("show_tick");
+    <% else %>
+        $("#old_part_number").val("");
+        alert("Invalid Part Enter a Valid Part Number.");
+    <%end%>
+<% else %>
+    <%if @part%>
+        <% if @error %>
+        $("#new_part_number").val("");
+        $.msgBox({
+            title:"Part Status",
+            content: "<%=@error%>"
+        });
+        <% else %>
+            $(".new_img").append('<img width="50px" height="50px" src="<%= @img_src %>">');
+            $("#new_part_number").attr("readonly",true);
+            $("#new_part_no").removeClass("show_tick").addClass("hide_tick");
+            $("#new_uom").attr("disabled",false);
+            $("#replace_part_button").attr("disabled",false);
+        <% end %>
+        <% if @info %>
+        $.msgBox({
+            title:"Part Status",
+            content: "<%=@info%>",
+            type:"info"
+        });
+        <% end %>
+    <% else %>
+        $("#new_part_number").val("");
+        alert("<%= @error %>");
+    <%end%>
+<% end %>

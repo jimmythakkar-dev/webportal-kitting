@@ -1,0 +1,23 @@
+<div class="row"><div class="text-right">&nbsp;</div></div>
+<h2 class="body_header">KLX Customer Portal</h2>
+<%= image_seperator %>
+
+<p class="text-danger"><%= flash[:alert] %></p>
+
+<%= form_tag  user_sessions_path do %>
+    <div class="simple_form">
+      <div>
+        <%= label_tag 'Username:', nil, :class => "some_space"  %>
+        <%= text_field_tag :username, params[:username], :required => true %>
+      </div>
+      <div>
+        <%= label_tag 'Password:', nil, :class => "some_space"  %>
+        <%= password_field_tag :password, nil, :required => true %>
+      </div>
+      <div>
+        <%= label_tag '',nil, :class => "some_space"  %>
+        <%=  submit_tag "Log In" %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>

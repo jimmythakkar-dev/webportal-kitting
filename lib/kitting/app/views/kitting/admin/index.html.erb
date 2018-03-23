@@ -1,0 +1,97 @@
+<h2 class="body_header">Administration</h2>
+<%= image_seperator %>
+<ul class='nav sub_nav'>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "part-icon.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10">
+      <span class="name"><%= link_to 'Part Customization', parts_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Add new Images, edit Images and add Cup Count for the Part</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "location-icon.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Location Setup', locations_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Create new Location and edit Location for the Kit</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "toolbox-icon.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Kit-Media Type', kit_media_types_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Create new Kit Media-Type for the Kit</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "settings-icon-small.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Change Kit-Media Type', search_kit_kit_media_types_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Change Kit Media-Type for the Kit</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "delete_copy.jpg" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Delete Kit Copies', kit_copy_delete_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Delete the copies that are not in use</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "replace_part.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Replace Part', replace_parts_parts_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Replace Part in all Kits</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <%if can?(:>,"5") #session[:acct_switch].length > 1 && session[:acct_switch].first!= "" && session[:acct_switch].first!= " " %>
+      <li class="list-group-item">
+        <div class="col-xs-2 col-sm-1">
+          <%=  image_tag "part_setup.jpg" %>
+        </div>
+        <div class="col-xs-10 col-sm-8">
+          <span class="name"><%= link_to 'Customer Configurations', admin_cust_configs_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+          <small class="muted">Change Preferences Customer Wise</small>
+        </div>
+        <div class="clearfix"></div>
+      </li>
+  <%end%>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "ios_edit.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Edit Kit Description', edit_kit_description_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Edit description of a previously created kit</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+  <li class="list-group-item">
+    <div class="col-xs-2 col-sm-1">
+      <%=  image_tag "icon-inactive.png" %>
+    </div>
+    <div class="col-xs-10 col-sm-10 col-sm-8">
+      <span class="name"><%= link_to 'Activate/Deactivate Kit', admin_change_kit_status_path, {:style => 'text-decoration:none; font-size: 15px;'} %></span><br/>
+      <small class="muted">Make a Kit Active/Inactive</small>
+    </div>
+    <div class="clearfix"></div>
+  </li>
+</ul>
+<%= image_seperator %>

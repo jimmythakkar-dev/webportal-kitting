@@ -1,0 +1,52 @@
+<h3><%= t('FLOOR_VIEW_ACTION_REQUEST',:scope => "floor_views._email_data")%></h3>
+<div class="table-responsive">
+  <table >
+    <tr>
+      <td><%= t('Submitted_On',:scope => "floor_views._email_data")%>:</td>
+      <td ><strong><%= Date.today%></strong></td>
+    </tr>
+    <tr>
+      <td><%= t('Originator',:scope => "floor_views._email_data")%>: </td>
+      <td ><strong><%= session[:user_name]%></strong></td>
+    </tr>
+  </table>
+  <br />
+  <table >
+    <tr>
+      <td><%= t('approved_by',:scope => "floor_views._approval_email")%>Approved By:</td>
+      <td><strong><%= params[:approvedBy]%></strong></td>
+    </tr>
+    <tr>
+      <td><%= t('Approval_Status',:scope => "floor_views._approval_email")%>Approval Status: </td>
+      <td><strong><%= params[:status]%></strong></td>
+    </tr>
+    <tr>
+      <td><%= t('Status_Reason',:scope => "floor_views._approval_email")%>Status Reason:</td>
+      <td><strong><%= params[:statusReasonIn]%></strong></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <th><strong><%= t('ACTION_CODE',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('PART_NUMBER',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('LOCATION',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('BIN_QTY',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('PACK_QTY',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('UM',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('SCANCODE',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('reason_comments',:scope => "floor_views._email_data")%></strong></th>
+    </tr>
+
+    <tr>
+      <td><%= params[:ActionCode] %></td>
+      <td><%= params[:OriginalPN]%></td>
+      <td><%= params[:selLocation]%></td>
+      <td><%= params[:OrderQty]%></td>
+      <td><%= params[:PackQty]%></td>
+      <td><%= params[:UM]%></td>
+      <td><%= params[:ScanCode]%></td>
+      <td>Expedite part</td>
+    </tr>
+
+  </table>
+</div>

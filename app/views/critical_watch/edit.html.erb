@@ -1,0 +1,442 @@
+<p class="body_header"><%= t("critical_watch_list",:scope => "critical_watch.index") %></p>
+<%= image_seperator %>
+<table class="table tbl_res">
+  <tr>
+    <td colspan="3">
+      <div class="row">
+        <div class="col-sm-8">
+          <span class="ft_blue">
+            <%= t("updating_case",:scope => "critical_watch.edit") %> <em><%= t("for_part",:scope => "critical_watch.edit") %>:</em>
+              <strong>
+                <% if @sel_id %>
+                    <%= @sel_id.split("!")[3]%>
+                <% else %>
+                    <%= params[:id].split("!")[3]%>
+                <% end %>
+              </strong>
+            </span>
+        </div>
+        <div id="div_update_link"class="col-sm-4">
+          <%= link_to "#{t('back_to_summary',:scope => 'critical_watch.edit')}", critical_watch_index_path, :class => "link_add" %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
+            <span class="ft_blue">
+              <strong>
+                <%= @response_critical_watch_edit_detail[0]["lineResp"] %> -
+                <em><%= @response_critical_watch_edit_detail[0]["status"] %></em>
+              </strong>
+            </span>
+        </div>
+        <div id="div_update_link"class="col-sm-4">
+          <%= link_to "#{t('case_history',:scope => 'critical_watch.edit')}",
+                      view_history_critical_watch_path(params[:id]), :class => "link_add" %>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <table class="table tbl_item_notes">
+        <tr class="tr_header_item_notes">
+          <td><%= t("DATE",:scope => "critical_watch.edit") %>:</td>
+          <td><%= t("by",:scope => "critical_watch.edit") %></td>
+          <td><%= t("update",:scope => "critical_watch.edit") %></td>
+        </tr>
+        <% @response_critical_watch_edit_detail[0]["updateItemStatus"].length.downto(1) do |index_of_item_status| %>
+            <tr class="tr_item_notes"
+                <% if @response_critical_watch_edit_detail[0]["updateItemStatus"][index_of_item_status-1] == "NewAdd" %>
+                style="background-color:lightyellow"
+                <% elsif @response_critical_watch_edit_detail[0]["updateItemStatus"][index_of_item_status-1] == "Impact" %>
+                style="background-color:pink"
+                <% elsif @response_critical_watch_edit_detail[0]["updateItemStatus"][index_of_item_status-1] == "Delivered" %>
+                style="background-color:lightgreen"
+                <% elsif @response_critical_watch_edit_detail[0]["updateItemStatus"][index_of_item_status-1] == "Updated" %>
+                style="background-color:lightblue"
+                <% elsif @response_critical_watch_edit_detail[0]["updateItemStatus"][index_of_item_status-1] == "Closed" %>
+                style="background-color:lightgrey"
+                <% else %>
+                style="background-color:white"
+                <% end %>
+                >
+              <td>
+                <%= @response_critical_watch_edit_detail[0]["updateItemDate"][index_of_item_status-1] %>
+              </td>
+              <td>
+                <%= @response_critical_watch_edit_detail[0]["updateItemBy"][index_of_item_status-1] %>
+              </td>
+              <td>
+                <%= @response_critical_watch_edit_detail[0]["updateItemNote"][index_of_item_status-1].html_safe %>
+              </td>
+            </tr>
+        <% end %>
+        <tr>
+          <td colspan="3"><%= image_seperator %></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr class="tr_item_colors">
+    <td><%= t("color_codes",:scope => "critical_watch.new") %>:</td>
+    <td colspan="2">
+      <%= t("impact",:scope => "critical_watch.new") %>:
+      <span style="background-color:#FF9F9F;color:pink;">&nbsp; &nbsp;</span>
+      &nbsp; &nbsp;
+      - <%= t("delivered",:scope => "critical_watch.new") %>
+      <span style="background-color:lightgreen;color:lightgreen;"> &nbsp; &nbsp;
+      </span> &nbsp;
+      - <%= t("updated",:scope => "critical_watch.new") %>
+      <span style="background-color:lightblue; color:lightblue"> &nbsp; &nbsp;
+      </span> &nbsp;
+      - <%= t("new_add",:scope => "critical_watch.new") %>
+      <span style="background-color:lightyellow; color:lightyellow"> &nbsp; &nbsp;
+      </span>
+      - <%= t("closed",:scope => "critical_watch.new") %>
+      <span style="background-color:lightgrey; color:lightgrey"> &nbsp; &nbsp;
+      </span>
+    </td>
+  </tr>
+</table>
+
+<!-- Beginning of main content -->
+<%= form_tag critical_watch_path(params[:id]), :method => 'put' do %>
+    <div class="row">
+      <div class="col-sm-12">
+        <table>
+          <tr>
+            <td><strong><%= t("update_status",:scope => "critical_watch.edit") %>:</strong></td>
+          </tr>
+          <tr class="tr_update_status">
+            <td>Status:<br />
+              <%= select_tag :update_item_status,options_for_select(@initial_status,:selected => params[:update_item_status] || "NewAdd"),:class=>"form-control" %>
+            </td>
+            <td colspan="2">
+              <%= text_area_tag 'update_item_note', params[:update_item_note], :rows => 2,:class => "form-control" %>
+            </td>
+          </tr>
+          <tr class="tr_item_colors">
+            <td class="td_item_colors_border"><%= t("color_codes",:scope => "critical_watch.new") %>:</td>
+            <td class="td_item_colors_border" colspan="2">
+              <%= t("impact",:scope => "critical_watch.new") %>:
+              <span style="background-color:#FF9F9F;color:pink"> &nbsp; &nbsp; </span>
+              &nbsp; &nbsp;
+              - <%= t("delivered",:scope => "critical_watch.new") %>
+              <span style="background-color:lightgreen;color:lightgreen"> &nbsp; &nbsp;
+          </span> &nbsp;
+              - <%= t("updated",:scope => "critical_watch.new") %>
+              <span style="background-color:lightblue;color:lightblue"> &nbsp; &nbsp;
+          </span> &nbsp;
+              - <%= t("new_add",:scope => "critical_watch.new") %>
+              <span style="background-color:yellow;color:yellow"> &nbsp; &nbsp;
+          </span> &nbsp; &nbsp;
+              - <%= t("closed",:scope => "critical_watch.new") %>
+              <span style="background-color:lightgrey;color:lightgrey"> &nbsp; &nbsp;
+          </span> &nbsp; &nbsp;
+            </td>
+          </tr>
+        </table>
+
+        <%= image_seperator %>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("status",:scope => "critical_watch.new") %>:<span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :status,options_for_select(@status,params[:status] || @response_critical_watch_edit_detail[0]["status"] ),:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("line_responsible",:scope => "critical_watch.new") %>:<span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :line_responsible, options_for_select(@line_responsible, params[:line_responsible] ||= @response_critical_watch_edit_detail[0]["lineResp"]),:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("contact",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'contact_information', params[:contact_information] ||= @response_critical_watch_edit_detail[0]["contactInfo"] ,:class => "form-control" %>
+          </div>
+        </div>
+
+        <%= image_seperator %>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= "Building:" %><span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :building, options_for_select(@building, params[:building] ||= @response_critical_watch_edit_detail[0]["building"]), :onchange => "updatecities(this.selectedIndex)" ,:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("location",:scope => "critical_watch.new") %><span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :location, options_for_select([[@response_critical_watch_edit_detail[0]["location"],@response_critical_watch_edit_detail[0]["location"]], ["Select"]], params[:location] ||= @response_critical_watch_edit_detail[0]["location"]),:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("program",:scope => "critical_watch.new") %>:<span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :program, options_for_select([[@response_critical_watch_edit_detail[0]["program"]],["Select"]], params[:program] ||= @response_critical_watch_edit_detail[0]["program"]) ,:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("aircraft",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'aircraft_section', params[:aircraft_section] || @response_critical_watch_edit_detail[0]["aircraftSection"],:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("Line_Station",:scope => "floor_views._location_search") %>
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'line_station', params[:line_station] || @response_critical_watch_edit_detail[0]["lineStation"],:class => "form-control" %>
+          </div>
+        </div>
+
+        <%= image_seperator %>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("part_num",:scope => "rma") %>
+          </div>
+          <div class="col-sm-6">
+            <strong>
+              <%= @response_critical_watch_edit_detail[0]["partNo"].join(",") %>
+            </strong>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("part_name",:scope => "critical_watch.edit") %>:
+          </div>
+          <div class="col-sm-6">
+            <strong>
+              <%= @response_critical_watch_edit_detail[0]["partName"] %>
+            </strong>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("supplier_name",:scope => "critical_watch.index") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'supplier', params[:supplier] || @response_critical_watch_edit_detail[0]["supplier"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("manufacturer",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'manufacturer', params[:manufacturer] || @response_critical_watch_edit_detail[0]["manufacturer"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("sub_coverage",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'substitution_coverage', params[:substitution_coverage] || @response_critical_watch_edit_detail[0]["subCoverage"],:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("need_date",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "need_date", params[:need_date] || @response_critical_watch_edit_detail[0]["needDate"] || date_format, {class: 'datepicker form-control'} %>
+              <label for="need_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("promise_dock",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "promise_on_dock", params[:promise_on_dock] || @response_critical_watch_edit_detail[0]["promiseDate"] || date_format, {class: 'datepicker form-control'} %>
+              <label for="promise_on_dock" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("slipped",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'days_slipped',params[:days_slipped] || @response_critical_watch_edit_detail[0]["daysSlipped"],:class => "form-control"%>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("customer_date",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "impact_date", params[:impact_date] || @response_critical_watch_edit_detail[0]["impactDate"] || date_format, {class: 'datepicker form-control'} %>
+              <label for="impact_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= "1st P.O." "#{t('quantity',:scope => 'agusta')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'first_po_quantity', params[:first_po_quantity] || @response_critical_watch_edit_detail[0]["firstPOQty"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("quantity_due",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'quantity_due_in', params[:quantity_due_in] || @response_critical_watch_edit_detail[0]["qtyDueIn"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("minimum_need",:scope => "critical_watch.new") %>:<span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'minimum_need_quantity', params[:minimum_need_quantity] || @response_critical_watch_edit_detail[0]["minNeedQty"],:class => "form-control"%>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("release_qty",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'release_quantity', params[:release_quantity] || @response_critical_watch_edit_detail[0]["releaseQty"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("lines_affected",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'lines_affected', params[:lines_affected] || @response_critical_watch_edit_detail[0]["linesAffected"],:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP '"#{t('quantity',:scope => 'agusta')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'gap_quantity', params[:gap_quantity] || @response_critical_watch_edit_detail[0]["gapPOQty"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP ' "#{t('date',:scope => 'rma')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "gap_date", params[:gap_date] || @response_critical_watch_edit_detail[0]["gapPODate"],:class => "form-control datepicker" %>
+              <label for="gap_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP ' "#{t('number',:scope => 'critical_watch.new')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'gap_po_number', params[:gap_po_number] || @response_critical_watch_edit_detail[0]["gapPONum"],:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP ' "#{t('tracking_number',:scope => 'critical_watch.new')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'gap_tracking_number', params[:gap_tracking_number] || @response_critical_watch_edit_detail[0]["gapPOTrackNum"],:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("root_cause",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'root_cause', params[:root_cause] || @response_critical_watch_edit_detail[0]["rootCause"], :rows => 2 ,:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("corrective_action",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'corrective_action', params[:corrective_action] || @response_critical_watch_edit_detail[0]["correctiveAction"],:rows => 2,:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("comments",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'comments', params[:comments] || @response_critical_watch_edit_detail[0]["comments"],:rows => 2,:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("old_comments",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'old_comments', params[:old_comments] || @response_critical_watch_edit_detail[0]["oldComments"], :rows => 2,:class => "form-control" %>
+          </div>
+        </div>
+        <%= hidden_field_tag 'part_number', @response_critical_watch_edit_detail[0]["partNo"] %>
+        <%@response_critical_watch_edit_detail[0]["updateItemStatus"].each do |status|%>
+            <%= hidden_field_tag "original_update_item_status[]", status %>
+        <%end%>
+        <%@response_critical_watch_edit_detail[0]["updateItemNote"].each do |note|%>
+            <%= hidden_field_tag "original_update_item_note[]", note %>
+        <%end%>
+        <%= hidden_field_tag 'original_update_item_date', @response_critical_watch_edit_detail[0]["updateItemDate"] %>
+        <%= hidden_field_tag 'original_update_item_by', @response_critical_watch_edit_detail[0]["updateItemBy"]  %>
+        <div class="row">
+          <div class="col-sm-3">
+            <em class="alert_msg">* <%= t("required_fields",:scope => "critical_watch.new") %></em>
+          </div>
+          <div class="col-sm-6">
+            <%= submit_tag "#{t('update_case',:scope => 'critical_watch.edit')}", :class => "btn btn-primary btn_submit" %>
+            &nbsp;&nbsp;&nbsp;
+            <%= link_to "#{t('cancel',:scope => 'bin_line_station.new_part_to_location')}", :back, :class => "btn btn-default" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+      </div>
+    </div>
+<% end %>
+
+<%= javascript_tag do %>
+    window.publicURL = '<%= j root_url %>';
+<% end %>

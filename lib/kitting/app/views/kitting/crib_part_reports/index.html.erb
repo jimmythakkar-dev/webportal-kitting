@@ -1,0 +1,22 @@
+<h2 class="body_header">Reports</h2>
+<%= image_seperator %>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+    <th>Index</th>
+    <th>Report Name</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Reports</th>
+    </thead>
+    <tbody>
+        <tr>
+          <td>1</td>
+          <td>Crib Delivery Report</td>
+          <td><%= text_field_tag :crib_delivery_begin_date, params[:crib_delivery_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+          <td><%= text_field_tag :crib_delivery_end_date, params[:crib_delivery_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+          <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0,:class => "img-responsive", :alt => "View/Download as Excel Spreadsheet"), crib_delivery_path(:crib_delivery_begin_date => "", :crib_delivery_end_date => ""), id: "crib_delivery_report" %></td>
+        </tr>
+    </tbody>
+  </table>
+</div>

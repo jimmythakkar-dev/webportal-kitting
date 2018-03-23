@@ -1,0 +1,26 @@
+<p class="body_header"><%= t("upload_report",:scope => "reports.upload_reports") %></p>
+<div class="clearfix"></div>
+<%= image_seperator %>
+<%= form_tag upload_reports_path, :method => 'POST', class: "dropzone",:id =>"dropzone",:multipart => true,:role=>"form" do %>
+    <fieldset>
+      <div class="row">
+        <div class="col-sm-4">
+          <label class="control-label"><%= t("description",:scope => "reports.upload_reports") %></label>
+        </div>
+        <div class="col-sm-6"> &nbsp; </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <%= text_field_tag :description, nil, :class => "form-control",:placeholder => t("enter_description",:scope => "reports.upload_reports") %>
+        </div>
+        <div class="col-sm-6" >
+          <div class="fallback">
+            <%= file_field_tag :file ,:class => "controls inline",:multiple => true %>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions text-right">
+        <button type="submit" class="btn btn-primary" id ="upload_misc_report"><%= I18n.t("upload",:scope => "reports.upload_reports")%></button>
+      </div>
+    </fieldset>
+<%end%>

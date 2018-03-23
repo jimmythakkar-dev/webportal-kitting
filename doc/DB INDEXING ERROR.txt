@@ -1,0 +1,87 @@
+Some errors here:
+Please, create an issue with the following information here https://github.com/plentz/lol_dba/issues:
+***************************
+Class: Kitting::Kit
+Association type: has_many
+Association options: {:through=>:cups, :extend=>[]}
+Exception: uninitialized constant Cup
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:230:in `block in constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:229:in `each'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:229:in `constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/core_ext/string/inflections.rb:54:in `constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:137:in `block (2 levels) in check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:92:in `each_pair'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:92:in `block in check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:88:in `each'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:88:in `check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:190:in `simple_migration'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba/cli.rb:29:in `start'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba/cli.rb:17:in `start'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/bin/lol_dba:10:in `<top (required)>'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/lol_dba:23:in `load'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/lol_dba:23:in `<main>'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/ruby_executable_hooks:15:in `eval'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/ruby_executable_hooks:15:in `<main>'
+Some errors here:
+Please, create an issue with the following information here https://github.com/plentz/lol_dba/issues:
+***************************
+Class: Kitting::Cup
+Association type: has_many
+Association options: {:through=>:cup_parts, :extend=>[]}
+Exception: uninitialized constant CupPart
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:230:in `block in constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:229:in `each'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:229:in `constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/core_ext/string/inflections.rb:54:in `constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:137:in `block (2 levels) in check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:92:in `each_pair'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:92:in `block in check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:88:in `each'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:88:in `check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:190:in `simple_migration'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba/cli.rb:29:in `start'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba/cli.rb:17:in `start'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/bin/lol_dba:10:in `<top (required)>'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/lol_dba:23:in `load'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/lol_dba:23:in `<main>'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/ruby_executable_hooks:15:in `eval'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/ruby_executable_hooks:15:in `<main>'
+Some errors here:
+Please, create an issue with the following information here https://github.com/plentz/lol_dba/issues:
+***************************
+Class: Kitting::Part
+Association type: has_many
+Association options: {:through=>:cup_parts, :extend=>[]}
+Exception: uninitialized constant CupPart
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:230:in `block in constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:229:in `each'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/inflector/methods.rb:229:in `constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@global/gems/activesupport-3.2.12/lib/active_support/core_ext/string/inflections.rb:54:in `constantize'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:137:in `block (2 levels) in check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:92:in `each_pair'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:92:in `block in check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:88:in `each'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:88:in `check_for_indexes'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba.rb:190:in `simple_migration'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba/cli.rb:29:in `start'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/lib/lol_dba/cli.rb:17:in `start'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/gems/lol_dba-1.6.0/bin/lol_dba:10:in `<top (required)>'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/lol_dba:23:in `load'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/lol_dba:23:in `<main>'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/ruby_executable_hooks:15:in `eval'
+/home/usermac44/.rvm/gems/ruby-1.9.3-p362@webportal/bin/ruby_executable_hooks:15:in `<main>'
+
+* TIP: if you have a problem with the index name('index name too long') you can solve with the :name option. Something like :name => 'my_index'.
+* run `rails g migration AddMissingIndexes` and add the following content:
+
+
+    class AddMissingIndexes < ActiveRecord::Migration
+      def change
+        add_index :kit_fillings, :kit_copy_id
+        add_index :kit_fillings, :location_id
+        add_index :kit_fillings, :customer_id
+        add_index :kits, :kit_media_type_id
+        add_index :kits, :location_id
+        add_index :kit_media_types, :customer_id
+      end
+    end

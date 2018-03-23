@@ -1,0 +1,51 @@
+<h3>KIT ACTION REQUEST</h3>
+<table border="0" cellspacing="4">
+  <tr>
+    <td>Kit: </td>
+    <td><strong><%= @kit.kit_number.upcase %></strong></td>
+  </tr>
+  <tr>
+    <td>Description: </td>
+    <td><strong><%= @kit.description %></strong></td>
+  </tr>
+  <tr>
+    <td>Submitted On: </td>
+    <td><strong><%= (Date.today).strftime('%-m/%-d/%y') %></strong></td>
+  </tr>
+  <tr>
+    <td>Originator: </td>
+    <td><strong><%= session[:user_name] %></strong></td>
+  </tr>
+  <tr>
+    <td>Kit Status: </td>
+    <td><strong><%= "2" %></strong></td>
+  </tr>
+  <tr>
+    <td>Line Station / Location: </td>
+    <td><strong><%= @kit.bincenter %></strong></td>
+  </tr>
+  <tr>
+    <td>Kit Update Note: </td>
+    <td><strong><%= [@kit.notes] %></strong></td>
+  </tr>
+</table>
+<br />
+
+<table>
+  <thead>
+  <th>TRAY</th>
+  <th>PART NUMBER</th>
+  <th>QUANTITY</th>
+  </thead>
+  <%  @kit.try(:cups).each_with_index do |cup,cup_index| %>
+    <% cup.try(:cup_parts).each_with_index do |cup_part| %>
+      <%  if cup_part.status %>
+      <tr>
+        <td><%= cup_index + 1 %></td>
+        <td><%= cup_part.part.part_number %></td>
+        <td><%= cup_part.demand_quantity %></td>
+      </tr>
+  <% end %>
+  <% end %>
+  <% end %>
+</table>

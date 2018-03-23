@@ -1,0 +1,18 @@
+<thead>
+<th>File Name</th>
+<th>File Status</th>
+<th>Uploaded By</th>
+<th>Uploaded On </th>
+<th class="filter-false"> Response File </th>
+<th class="filter-false"> ACTION </th>
+</thead>
+<% @part_uploads.each_with_index do |kit,index| %>
+    <tr style="<%= kit.status == "FAILED" ? 'color:red;' : "" %>">
+      <td title='<%= kit.file_path.split("/").last %>'><%= truncate(kit.file_path.split("/").last,:length => 25, :omission => '...') %></td>
+      <td class="part_cup_count_status "><%= kit.status %></td>
+      <td><%= kit.customer.user_name %></td>
+      <td><%= kit.created_at.strftime("%m/%d/%Y %H:%M:%S") %></td>
+      <td><%= link_to image_tag(excel_icon(kit.status), :height => "40", :width => "40", :onClick => "upload_status('#{kit.status}');",:border => 0, :class => "img-responsive",:alt => "View/Download as Excel Spreadsheet"), (kit.status == "COMPLETED" or kit.status == "FAILED") ? csv_export_parts_path(:id => kit.id) : "#" %></td>
+      <td><%= button_to 'Delete File',  delete_upload_record_kits_path(:id => kit.id),:class=>"btn btn-danger",data: { confirm: "This File is #{kit.status}. Are you sure you want to delete the file ?" } %></td>
+    </tr>
+<% end %>

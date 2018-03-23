@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Pick Ticket</title>
+  <%= stylesheet_link_tag  "kits", :media => "all" %>
+  <%= stylesheet_link_tag  "print", :media => "all" %>
+</head>
+<body>
+<table style="width:100%" class="tbl_pick_ticket_main">
+  <tr>
+    <td colspan="8">
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <tr>
+          <td>Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%m/%d/%Y") %></td>
+          <td>Pick List</td>
+          <td>Page:</td>
+        </tr>
+        <tr>
+          <td>Time: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%I:%M%p")  %> </td>
+          <td>Location: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%=  @kit_copies.try(:location).try(:name) %></td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Kit Number: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= @pick_ticket_print_details["kitPartNo"] %></td>
+          <td>Bin Center: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=  @pick_ticket_print_details["binCenter"] %> </td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="8">
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <tr>
+          <td>Comp. No</td>
+          <td>Parts To be Picked</td>
+          <td>Part Barcode</td>
+          <td>Part Type</td>
+          <td>Req. Qty</td>
+          <td>Bin Loc</td>
+          <td>Picked</td>
+        </tr>
+        <% @array_for_pick_ticket_details.each_with_index do |pick_ticket_detail,index| %>
+            <tr>
+              <td style="width:5%"><%= pick_ticket_detail["kcpncompartmentNo"].split('-').last %></td>
+              <td><%= pick_ticket_detail["kitCompPartNo"] %></td>
+              <td>
+                <%unless pick_ticket_detail["kitCompPartNo"] == "" %>
+                    <% generate_barcode(pick_ticket_detail["kitCompPartNo"]) %>
+                    <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+pick_ticket_detail["kitCompPartNo"].split('').map(&:ord).join("") +'.png' ) %>
+                <% end %>
+              </td>
+              <td style="width:8%">
+                <% if pick_ticket_detail["part_number"].blank? %>
+                    <%= 'P' %>
+                <% else %>
+                    <%= 'AltP' %>
+                <% end %>
+              </td>
+              <td style="width:10%"><%= pick_ticket_detail["kcpnqty"] %></td>
+              <td><%= pick_ticket_detail["kcpnbinLocation"] %></td>
+              <td>&nbsp;</td>
+            </tr>
+
+        <% end %>
+        <% if @kit_demand_details &&  @kit_demand_details["orderNoList"] != "" %>
+            <tr>
+              <td><%= 'Note: ' %> </td>
+              <td style="color:red; padding-left: 20px;" colspan="6"><%= 'Open orders found for ' + params[:kit_number] %> </td>
+            </tr>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

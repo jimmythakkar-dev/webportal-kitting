@@ -1,0 +1,45 @@
+<h3>LINE STATION ADD REQUEST</h3>
+<b><%= @full_name %> (Cust. <%= @customer_number %>) </b> has requested to <font color=red>
+  <b> ADD A SCANCODE </b></font> to: <b><%= params[:location] %></b><br />
+
+<br />
+<table border="0" cellspacing="4">
+  <tr>
+    <td>Submitted On:</td>
+    <td align="left"><strong><%= Time.now.strftime("%m%d%Y") %></strong></td>
+  </tr>
+  <tr>
+    <td> Originator: </td>
+    <td align="left"><strong></strong></td>
+  </tr>
+</table>
+<br />
+<table border="0" cellspacing="4">
+  <tr>
+    <td colspan="2" align="left"><b>Bin Details:</b> </td>
+  </tr>
+  <tr>
+    <td>Line Station / Location: </td>
+    <td align="left"><strong><%= params[:location] %></strong></td>
+  </tr>
+  <tr>
+    <td>Part Number:</td>
+    <td align="left"><strong><%= params[:part_number] %></strong></td>
+  </tr>
+  <tr>
+    <td>AMC Qty:</td>
+    <td align="left"><strong><%= params[:amc_qty] %></strong></td>
+  </tr>
+  <tr>
+    <td>Pack Qty:</td>
+    <td align="left"><strong><%= params[:pack_qty] %></strong></td>
+  </tr>
+  <tr>
+    <td>Bin:</td>
+    <td align="left"><strong><%= params[:bin] %></strong></td>
+  </tr>
+  <tr>
+    <td>Ref: </td>
+    <td align="left"><strong><%= params[:ref] %></strong></td>
+  </tr>
+</table>

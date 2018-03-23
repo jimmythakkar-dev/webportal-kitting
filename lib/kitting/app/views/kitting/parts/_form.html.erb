@@ -1,0 +1,73 @@
+<h2 class="body_header">Part Image Setup</h2>
+<%= image_seperator %>
+<div class="alert_msg"><%=  flash[:notice]%></div>
+<div id="part_lookup">
+  <%= form_for @part, :html => { :class => "form_horizontal part_cup_image", :multipart => true} do |f| %>
+      <% if @part.errors.any? %>
+          <div class="alert_msg">
+            <h4><%= pluralize(@part.errors.count, "error") %> prohibited this post from being saved:</h4>
+            <ul>
+              <% @part.errors.full_messages.each do |msg| %>
+                  <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+      <% end %>
+      <%= hidden_field_tag :cup_count, @cup_count %>
+      <div class="form-group">
+        <%= f.label "Part Number",  :class => "control-label"%>
+        <div id="part_lookup">
+          <%if params[:part_number]%>
+              <%= f.text_field :part_number, :value => params[:part_number], :readonly => true, :html_options => { :class => "form-control", :required => true} %>
+          <%elsif params[:xid] %>
+              <%if params[:xid].class==Array%>
+                  <%= f.text_field :part_number, :value => params[:xid].join(","), :readonly => true, :html_options => { :class => "form-control", :required => true} %>
+              <%else%>
+                  <%= f.text_field :part_number, :value => params[:xid], :readonly => true, :html_options => { :class => "form-control", :required => true} %>
+              <%end%>
+          <%else%>
+              <%= f.text_field :part_number, :id => "parts_numbers", :class => "form-control",:readonly => true, required: true %>
+          <%end%>
+          <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading" %>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <%= f.label :image_name, :class => "control-label" %>
+          <%= f.file_field :image_name,:class=> "btn btn-default", required: @cup_count ? false : true %>
+          <span class="part_image">
+        <%= image_tag image_parts_url(:image =>@part.image_name_url(:medium).to_s), id: 'new_part_image', class: "img-responsive" %>
+      </span>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <%= f.label :large_cup_count, :class => "control-label" %>
+          <%= f.text_field :large_cup_count, :value => f.object.large_cup_count.nil? ? "0" : f.object.large_cup_count , :class => "form-control", required: @cup_count ? true : false %>
+        </div>
+        <div class="form-group">
+          <%= f.label :medium_cup_count, :class => "control-label" %>
+          <%= f.text_field :medium_cup_count, :value => f.object.medium_cup_count.nil? ? "0" : f.object.medium_cup_count , :class => "form-control", required: @cup_count ? true : false %>
+        </div>
+        <div class="form-group">
+          <%= f.label :small_cup_count, :class => "control-label" %>
+          <%= f.text_field :small_cup_count, :value => f.object.small_cup_count.nil? ? "0" : f.object.small_cup_count , :class => "form-control", required: @cup_count ? true : false %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= f.label :Note, :class => "control-label" %>
+        <!--<textarea class="controls inline" cols="60%" id="part_description" maxlength="255" name="part[description]" rows="2" onKeyPress="return(this.value.length < 255);"></textarea>-->
+        <%= f.text_area :description, :rows => 2, :cols => '60%', :class => "form-control", :maxlength => 255 %>
+      </div>
+      <br>
+      <div class="form-group text-right">
+        <% if session[:user_level] %>
+            <% if session[:user_level] > "3" %>
+                <%= f.submit 'Submit', :class => "btn btn-primary"%>
+            <%end%>
+        <%end%>
+        <a class="btn btn-default" href="javascript:history.go(-1)">Back</a>
+      </div>
+  <%end%>
+  <%= image_seperator %>
+</div>

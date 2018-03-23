@@ -1,0 +1,8 @@
+<% if @contract_details && @contract_details["errCode"].blank? || @contract_details["errMsg"] == "" %>
+$(".err_msg").hide();
+$("#add_order_record").attr("disabled", false);
+$(".extra_order_req tr:last").after("<%= escape_javascript(render 'philly_extra_part') %>");
+<%else%>
+$(".err_msg").css("display", "block");
+$(".err_msg").html("<%= @contract_details["errMsg"] rescue "Part Not On Contract" %>");
+<% end %>

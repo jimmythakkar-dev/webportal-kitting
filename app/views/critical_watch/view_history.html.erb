@@ -1,0 +1,138 @@
+<p class="body_header"><%= t("critical_watch_list",:scope => "critical_watch.index") %></p>
+<%= image_seperator %>
+<div class="row">
+  <div class="col-sm-9">
+    <div class="div_text_history">
+      <%= t("history_case",:scope => "critical_watch.show") %> <i><%= t("for_part",:scope => "critical_watch.edit") %>:</i>
+      <strong>
+        <% if @sel_id %>
+            <%= @sel_id.split("!")[3]%>
+        <% else %>
+            <%= params[:id].split("!")[3]%>
+        <% end %>
+      </strong>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <%= link_to t("add_new",:scope => "critical_watch.index"), new_critical_watch_path, :class => "link_add" %>
+  </div>
+</div>
+<!-- Beginning Of content -->
+<% if @response_critical_watch_history[0]["caseList"][0].blank? %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-12">
+            <%= t("no_critical_cases",:scope => "critical_watch.index") %>.
+          </div>
+        </div>
+      </div>
+    </div>
+<% else %>
+    <div class="table-responsive">
+      <table id="table" class="table-bordered">
+        <tr>
+          <th><%= t("type",:scope => "panstock_requests.panstock_history") %> / RESP</th>
+          <th><%= t("PART_NUMBER",:scope => "floor_views._email_data") %> </th>
+          <th>BLDG/<%= t("LOC",:scope => "critical_watch.index") %></th>
+          <th>PROG</th>
+          <th><%= t("line_station",:scope => "critical_watch.index") %></th>
+          <th><%= t("supplier_name",:scope => "critical_watch.index") %></th>
+          <th><%= t("min_need",:scope => "critical_watch.index") %></th>
+          <th><%= t("promise_date",:scope => "critical_watch.index") %></th>
+          <th><%= t("impact_date",:scope => "critical_watch.index") %></th>
+        </tr>
+        <!-- Beginning of Loop -->
+        <% @response_critical_watch_history[0]["caseList"].each_index do |index| %>
+            <tr class="tr_content" title="View History Details"
+                onclick="DoNav('<%= @response_critical_watch_history[0]["idlist"][index][0] %>', '1')"
+                <% if @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "NewAdd" %>
+                style="background-color:lightyellow"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Impact" %>
+                style="background-color:pink"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Delivered" %>
+                style="background-color:lightgreen"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Updated" %>
+                style="background-color:lightblue"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Closed" %>
+                style="background-color:lightgrey"
+                <% else %>
+                style="background-color:white"
+                <% end %>
+                >
+              <td class="td_content">
+                <strong>
+                  <em>
+                  <span class="span_status_red">
+                    <%=  @response_critical_watch_history[0]["statusList"][index].try(:upcase)%>
+                  </span>
+                  </em><br />
+                  <%=  @response_critical_watch_history[0]["lineRespList"][index] %>
+                </strong>
+              </td>
+              <td class="td_content">
+                <b><%= @response_critical_watch_history[0]["partNoList"][index] %></b>
+              </td>
+              <td class="td_content">
+                <%= @response_critical_watch_history[0]["locationList"][index] %>
+
+              </td>
+              <td class="td_content">
+                <%= @response_critical_watch_history[0]["programList"][index] %>
+              </td>
+              <td class="td_content">
+                <% unless @response_critical_watch_history[0]["lineStationList"][index].blank? %>
+                    <%= @response_critical_watch_history[0]["lineStationList"][index][0] %>
+                <% end %>
+              </td>
+              <td class="td_content">
+                <%= @response_critical_watch_history[0]["supplierList"][index] %>
+              </td>
+              <td class="td_content">
+                <%= @response_critical_watch_history[0]["minNeedQtyList"][index] %>
+              </td>
+
+              <td class="td_content">
+                <% unless @response_critical_watch_history[0]["promiseDateList"][index].blank? %>
+                    <%= Date.strptime(@response_critical_watch_history[0]["promiseDateList"][index], "%m/%d/%y").strftime("%m/%d/%y") %>
+                <%end%>
+              </td>
+              <td class="td_content">
+                <% unless @response_critical_watch_history[0]["impactDateList"][index].blank? %>
+                    <%= Date.strptime(@response_critical_watch_history[0]["impactDateList"][index], '%m/%d/%y').strftime("%m/%d/%y") %>
+                <%end%>
+              </td>
+            </tr>
+            <tr class="tr_content_font"
+                <% if @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "NewAdd" %>
+                style="background-color:lightyellow"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Impact" %>
+                style="background-color:pink"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Delivered" %>
+                style="background-color:lightgreen"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Updated" %>
+                style="background-color:lightblue"
+                <% elsif @response_critical_watch_history_item_details[index][0]["updateItemStatus"].last == "Closed" %>
+                style="background-color:lightgrey"
+                <% else %>
+                style="background-color:white"
+                <% end %>
+                >
+              <th colspan="2" class="th_content">
+                <%= t("status_update",:scope => "critical_watch.view_history") %> <br />
+                <%=  Date.strptime(@response_critical_watch_history_item_details[index][0]["updateItemDate"].last, '%m/%d/%Y').strftime("%m/%d/%y") %>
+                - <%= @response_critical_watch_history_item_details[index][0]["updateItemBy"].last %>
+              </th>
+              <td colspan="7" class="td_update_item_note">
+                <strong>
+                  <%= @response_critical_watch_history_item_details[index][0]["updateItemNote"].last %>
+                </strong>
+              </td>
+            </tr>
+        <% end %>
+<% end %>
+</table>
+</div>
+<br/>
+<%= image_seperator %>
+<!-- End Of contents -->

@@ -1,0 +1,51 @@
+<% if @response_closed_rma %>
+    <% if response_closed["errMsg"] != "" %>
+        <% if response_closed["errCode"] == "5"%>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="alert alert-danger"><%= response_closed["errMsg"] %></div>
+              </div>
+            </div>
+        <% end %>
+    <% else response_closed["errMsg"] == "" %>
+        <!--% else %-->
+        <% unless response_closed.kind_of? String %>
+            <div id="restock">
+              <% if @totalpage_closed_rma > 0 %>
+                  <small> <%= I18n.t("pagination",:scope => "agusta.agusta_inquiry",:start_page => params[:closed_page], :end_page => @totalpage_closed_rma ).html_safe %></small>
+              <% end %>
+              <br/>
+            </div>
+
+            <p><b><%= t 'rma.rma_listing' %> - <%= t 'rma.closed_rma' %></b></p>
+            <div class="rma_result" style="overflow-y:scroll; height:280px;">
+              <table class="table tablesorter">
+                <thead>
+                <th><%= t 'rma.rma' %>#</th>
+                <th><%= t 'rma.date' %></th>
+                <th><%= t 'rma.invoice' %>#</th>
+                <th><%= t 'rma.status' %></th>
+                <th><%= t 'rma.detail_status' %></th>
+                <th style="display:none;" class="filter-false">&nbsp;</th>
+                <th style="display:none;" class="filter-false">&nbsp;</th>
+                </thead>
+
+                <% response_closed["invoiceNos"].each_with_index do |value,id| %>
+                    <tr>
+                      <td><%= response_closed["rmaNos"][id] %></td>
+                      <td><%= response_closed["issueDates"][id] %></td>
+                      <td><a href="/rma/invoice/<%= response_closed["invoiceNos"][id]%>?disable_fields=1&rma=<%=response_closed["rmaNos"][id]%>"><%= response_closed["invoiceNos"][id] %></a></td>
+                      <td><%= response_closed["currentStatus"][id] %></td>
+                      <td><a href="javascript:void(0);" onclick="getRMAdetails(<%= response_closed["rmaNos"][id] %>);">View</a></td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                    </tr>
+                <% end %>
+              </table>
+            </div>
+            <div id="rmadetails"></div>
+            <div id="detailstatus"></div>
+            <%= will_paginate @result_closed_rma, :param_name => 'closed_page' %>
+        <% end %>
+    <% end %>
+<% end %>

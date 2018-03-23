@@ -1,0 +1,50 @@
+<% if @response_supersedence["errMsg"].blank? %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4">
+            <b><%= t('Supersedence_Search',:scope => "floor_views._superinc")%>:</b>
+          </div>
+          <div class="col-sm-8"><%= t('for',:scope => "supersedence._supersedence")%>:
+            <span class="body_text_subhead"><%= params["txt_part_number"].try(:upcase) %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span><%= image_seperator %></span>
+    <% @response_supersedence["newPartNoList"].each_index do |index| %>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <div class="col-sm-4"><%= t('Original_Part_Number',:scope => "floor_views._superinc") %></div>
+              <div class="col-sm-8">
+                <%= label_tag @response_supersedence["oldPartNoList"][index], nil, :class => "upper_case" %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"><%= t('New_Superseding_Part_Number',:scope => "floor_views._superinc") %></div>
+              <div class="col-sm-8">
+                <%= label_tag @response_supersedence["newPartNoList"][index], nil, :class => "upper_case" %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"><%= t('Reason',:scope => "floor_views._superinc") %></div>
+              <div class="col-sm-8">
+                <%= label_tag @response_supersedence["reasonList"][index], nil, :class => "upper_case" %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"><%= t('Results',:scope => "floor_views._superinc") %></div>
+              <div class="col-sm-8">
+                <strong><%= t('part_has_been_superseded',:scope => "supersedence._supersedence") %></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%= image_seperator %>
+    <% end %>
+<% else %>
+    <div class="alert_msg">
+      <strong><%= @response_supersedence["errMsg"] %></strong>
+    </div>
+<% end %>

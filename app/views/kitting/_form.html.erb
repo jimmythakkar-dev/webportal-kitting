@@ -1,0 +1,144 @@
+
+<%= form_tag({:action => 'update',:id => CGI.escape(@kitting_response["kitNo"])}) do %>
+  <%= hidden_field_tag :_method, "put" %>
+    <p class="body_text_subhead">Kit Information</p>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4"><%= label_tag 'Kit Number :', nil, :class=>"some_space" %></div>
+          <div class="col-sm-8"><strong><%= @kitting_response["kitNo"].upcase %></strong></div>
+          <%= hidden_field_tag :kit_number, @kitting_response["kitNo"] %>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= label_tag 'Site:', nil,:class=>"some_space" %></div>
+          <div class="col-sm-8"><%= render 'show_site'%></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= label_tag 'Description:', nil,:class=>"some_space" %></div>
+          <div class="col-sm-8">
+            <% if params[:kit_description] %>
+              <%= text_field_tag :kit_description, params[:kit_description], :class => "desc_box" %>
+            <% else %>
+              <%= text_field_tag :kit_description, @kitting_response["kitDesc"].upcase, :class => "desc_box" %>
+            <% end %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= label_tag 'Location:', nil,:class=>"control-label" %></div>
+          <div class="col-sm-8">
+            <% if params[:kit_location] %>
+              <%= text_field_tag :kit_location, params[:kit_location] %>
+            <% else %>
+              <%= text_field_tag :kit_location, @kitting_response["kitLoc"].upcase %>
+            <% end %></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4">
+              <%= label_tag 'Status :', nil, :class => "control-label" %>
+            </div>
+              <div class="col-sm-8 controls">
+                <% if params["kitStatus"] %>
+                  <%= radio_button_tag :kit_status, "1", params["kitStatus"] == "1" ? true : false %>
+                  <%= label_tag :Active, nil, :class => "radio inline"  %>
+                  <%= radio_button_tag :kit_status, "2", params["kitStatus"] == "2" ? true : false %>
+                  <%= label_tag :Pending, nil,:class=>"radio inline" %>
+                  <%= radio_button_tag :kit_status, "6", params["kitStatus"] == "6" ? true : false  %>
+                  <%= label_tag :Inactive, nil,:class=>"radio inline" %>
+                <% else %>
+                  <%= radio_button_tag :kit_status, "1", @kitting_response["kitStatus"] == "1" ? true : false %>
+                  <%= label_tag :Active, nil, :class => "radio inline"  %>
+                  <%= radio_button_tag :kit_status, "2", @kitting_response["kitStatus"] == "2" ? true : false %>
+                  <%= label_tag :Pending, nil,:class=>"radio inline" %>
+                  <%= radio_button_tag :kit_status, "6", @kitting_response["kitStatus"] == "6" ? true : false  %>
+                  <%= label_tag :Inactive, nil,:class=>"radio inline" %>
+                <% end %>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4"><%= label_tag 'Last Revised / By :', nil, :class=>"some_space" %></div>
+            <div class="col-sm-8"><%= @kitting_response["kitDate"] +' - '+ @kitting_response["kitTime"] +' / ' +
+                                           @kitting_response["kitUser"] %></div>
+          </div>
+        </div>
+      </div>
+
+    <%= image_seperator %>
+      <div class="row">
+        <div class="col-sm-12">
+          <% if @kitting_response["kitNotes"].length > 0 %>
+            <% @kitting_response["kitNotes"].each_index do |index| %>
+              <div class="row">
+                <div class="col-sm-1"> &nbsp;
+                </div>
+                <div class="col-sm-11">
+                  <small><em>by: <strong><%= @kitting_response["kitNoteUser"][index] +' - ' +
+                             @kitting_response["kitNoteDate"][index] + ' - ' +
+                                                     @kitting_response["kitNoteTime"][index].upcase %>
+                    </strong></em></small>
+                   <br> <%= @kitting_response["kitNotes"][index] %>
+                    </div>
+                  </div>
+              <% end %>
+          <% end %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-1"><%= label_tag 'Note :', nil, :class=>"some_space" %></div>
+        <% if params[:kit_Notes] %>
+          <div class="col-sm-11"><%= text_area_tag "kit_Notes#{[params[:kit_Notes]]}", params[:kit_Notes].values[0],
+                                                :rows => 2, :cols => '60%'%></div>
+        <% else %>
+          <div class="col-sm-11"><%= text_area_tag "kit_Notes#{[params[:kit_Notes]]}", nil, :rows => 2, :cols => '60%'%></div>
+        <% end%>
+      </div>
+
+    <%= image_seperator %>
+
+    <table id="table">
+      <thead>
+       <p class="body_text_subhead">Kit Parts</p>
+         <th>TRAY</th>
+         <th>PART NUMBER</th>
+         <th>QTY</th>
+         <th>UM</th>
+         <th>BIN NUMBER</th>
+         <th>&nbsp;</th>
+      </thead>
+      <tbody>
+
+      <% if params[:part_count] %>
+        <% num_count = params[:part_count] %>
+      <% else %>
+        <% num_count = @kitting_response["partNo"].length %>
+      <% end %>
+
+      <% for i in 0..num_count.to_i - 1 %>
+
+        <tr>
+          <td><%= text_field_tag "kit_tray#{[i]}", (params[:kit_tray] && params[:kit_tray][i.to_s]) || @kitting_response["misc1"][i] , :class =>'kit_tray input-mini' %></td>
+          <% unless @kitting_response["partNo"][i].blank? %>
+            <td><%= label_tag "kit_part_number#{[i]}", @kitting_response["partNo"][i], class: 'col-sm-10' %>
+                <%= hidden_field_tag "kit_part_number#{[i]}", @kitting_response["partNo"][i] %>
+            </td>
+          <% else %>
+             <td><%= text_field_tag "kit_part_number#{[i]}", (params[:kit_part_number] && params[:kit_part_number][i.to_s]), class: 'part_number' %></td>
+          <% end %>
+          <td><%= text_field_tag "kit_quantity#{[i]}", (params[:kit_quantity] && params[:kit_quantity][i.to_s]) || @kitting_response["qty"][i] , :class =>'kit_quantity input-mini' %></td>
+          <td><%= select_tag "um#{[i]}", options_for_select([["EA"],["LB"],["HU"],["TH"]], (params[:um] && params[:um][i.to_s]) || @kitting_response["um"][i]), :class => "col-sm-12" %></td>
+          <td><%= text_field_tag "bin_number#{[i]}", (params[:bin_number] && params[:bin_number][i.to_s]) || @kitting_response["misc2"][i], :class =>'bin_number input-medium' %></td>
+          <td class="adjust_image"><%= link_to (image_tag src="cross.gif", class: 'kitting_part_number') %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <div class="row">
+    <div class="col-sm-3"><%= link_to 'Add Additional Parts', nil, class: 'add_part_number' %></div>
+    <div class="col-sm-3 "><%= link_to 'Remove Last Part', nil, class: 'last_part_number' %></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3"><%= submit_tag "Update Kit" ,id:'validate_update_btn' , class: 'btn btn-primary' %></div>
+    <div class="col-sm-3 "><%= link_to 'Cancel', kitting_path(:id => CGI.escape(@kitting_response["kitNo"])) ,data: { confirm: 'Are you sure?'}, class: 'btn btn-default' %></div>
+  </div>
+<% end %>
+
+

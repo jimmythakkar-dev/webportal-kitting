@@ -1,0 +1,14 @@
+<h2 class="body_header" style="line-height: 12px;">QC Laboratory</h2>
+<%= image_seperator %>
+<p>Please enter a Part Number, Control Number, Manufacturing Lot Number or Manufacturer Name to check the status of QC Lab Testing status.</p>
+<%= image_seperator %>
+
+<%= form_tag(qc_laboratory_search_path, :method => 'post', class: "form-inline") do %>
+    <div class="form-group">
+        <%= select_tag :search_type, options_for_select(@search_by_values,:selected => params[:search_type]),class: "form-control"  %>
+        <%= text_field_tag :txtPartNo, params[:txtPartNo].try(:upcase) || params[:id].try(:upcase), required:  true, class: "form-control"  %>
+        <%= submit_tag 'Search', id:'validate_eng_check_btn', :class=>"btn btn-primary" %>
+    </div>
+<% end %>
+
+<%= image_seperator %>

@@ -1,0 +1,71 @@
+<div style="overflow: scroll">
+<table style="width: 1000px;height:140px; white-space: nowrap" class="table tablesorter" >
+  <thead>
+  <tr style="font-size:10px">
+    <th><%= t("invoice_date",:scope => "open_orders._shipped_order_table") %></th>
+    <th><%= t("po_num",:scope => "open_orders._open_order") %></th>
+    <th><%= t("invoice_num",:scope => "open_orders._shipped_order_table") %></th>
+    <th><%= t("part_num",:scope => "open_orders._open_order") %></th>
+    <th><%= t("order_qty",:scope => "open_orders._shipped_order_table") %></th>
+    <th><%= t("ship_qty",:scope => "open_orders._open_order") %></th>
+    <th><%= t("track_num",:scope => "open_orders._shipped_order_table") %></th>
+    <th><%=  @response_orders["shippingStatus"]["miscTitle1"]%></th>
+    <th><%=  @response_orders["shippingStatus"]["miscTitle2"]%></th>
+    <th><%=  @response_orders["shippingStatus"]["miscTitle3"]%></th>
+    <th><%=  @response_orders["shippingStatus"]["miscTitle4"]%></th>
+    <th style="display: none;" class="filter-false"></th>
+    <th style="display: none;" class="filter-false"></th>
+  </tr>
+  </thead>
+  <!--- Looping through Shipped orders --->
+  <% @response_orders["shippingStatus"]["invNo"].each_index do |index_of_shipping_status| %>
+      <% @shipped_order_found = 1 %>
+      <tr>
+        <td>
+          <%= @response_orders["shippingStatus"]["invDt"][index_of_shipping_status] %>
+        </td>
+        <td>
+          <%= label_tag @response_orders["shippingStatus"]["poNo"][index_of_shipping_status]%>
+        </td>
+        <td class="td_align_center">
+          <% if session[:user_level] < "4" %>
+              <%= @response_orders["shippingStatus"]["invNo"][index_of_shipping_status] %>
+          <% else %>
+              <%= link_to @response_orders["shippingStatus"]["invNo"][index_of_shipping_status],
+                          invoice_display_open_order_path(@response_orders["shippingStatus"]["invNo"][index_of_shipping_status]),
+                          :onclick=>"window.open(this.href,'create_invoice', 'height=600, width=800');return false;", :class => "link_add" %>
+          <% end %>
+        </td>
+        <td>
+          <%= @response_orders["invoiceRecords"][index_of_shipping_status]["pNLines"][9] %>
+        </td>
+        <td class="td_align_right">
+          <%= @response_orders["invoiceRecords"][index_of_shipping_status]["pNLines"][8] %>
+        </td>
+        <td class="td_align_right">
+          <%= @response_orders["invoiceRecords"][index_of_shipping_status]["pNLines"][13] %>
+        </td>
+        <td class="td_align_center">
+          <% if @response_orders["shippingStatus"]["hlink"][index_of_shipping_status] == "Err" %>
+            <%= @response_orders["shippingStatus"]["tracNo"][index_of_shipping_status] %>
+          <% else %>
+            <%= link_to (@response_orders["shippingStatus"]["hlink"][index_of_shipping_status].split('&')[4].split('=').last), @response_orders["shippingStatus"]["hlink"][index_of_shipping_status],target: "_blank" %>
+          <% end %>
+        </td>
+        <td class="td_align_center">
+          <%= label_tag @response_orders["shippingStatus"]["misc1"][index_of_shipping_status] %>
+        </td>
+        <td class="td_align_center">
+          <%= label_tag @response_orders["shippingStatus"]["misc2"][index_of_shipping_status] %>
+        </td>
+        <td class="td_align_center">
+          <%= label_tag @response_orders["shippingStatus"]["misc3"][index_of_shipping_status] %>
+        </td>
+        <td class="td_align_center">
+          <%= label_tag @response_orders["shippingStatus"]["misc4"][index_of_shipping_status] %>
+        </td>
+      </tr>
+  <% end %>
+<!--- End of Looping through Shipped orders --->
+</table>
+</div>

@@ -1,0 +1,20 @@
+<% if @bom_data.present? %>
+<% if @bom_data.status == "COMPLETED" and @bom_data.is_downloaded == false %>
+$("#toPopup").fadeOut("normal");
+$("#report_status").attr("val","");
+$.msgBox({
+    title:"KIT BOM ",
+    content:"Your KIT BOM is Ready , Accept to View the result ?",
+    type:"confirm",
+    buttons:[{value:"Accept"}],
+    success:function(result){
+        if(result=="Accept"){
+            $.fileDownload("/kitting/kits/csv_export?id="+<%=@bom_data.id %>+"&bom_download=true")
+    }
+        else {
+          alert("You didn't accept the File, If you want to view the BOM Report .Generate a new KIT BOM report. ");
+        }
+    }
+});
+<% end %>
+<% end %>

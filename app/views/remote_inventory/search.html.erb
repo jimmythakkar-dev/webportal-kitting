@@ -1,0 +1,91 @@
+<p class="body_header"><%= t("title",:scope => "remote_inv.index") %></p>
+<%= image_seperator %>
+<p class="error"><%= render :partial => "layouts/message_display" %></p>
+<% if @error_orders %>
+    <div class="row">
+      <div class="col-sm-12">
+        <span class="alert_msg"><%= @error_orders.html_safe %></span>
+      </div>
+    </div>
+<% end %>
+<%= form_tag search_remote_inventory_index_path, class: 'form-horizontal', :id => "remote_lookup" do %>
+    <% if @response_get_bins %>
+        <style>
+            .table-row{
+                display:table-row;
+                text-align: left;
+            }
+            .col{
+                display:table-cell;
+                border: 0px;
+            }
+            .table-container{
+                width: 90%;
+                display:table;
+                border-collapse: collapse;
+            }
+        </style>
+        <div class="table-container">
+          <%= render :partial => "remote_inventory/remote_inv_header"%>
+        </div>
+        <%= image_seperator %>
+        <% if @error_get_bins && @error_get_bins.present? %>
+            <div class="row">
+              <div class="col-sm-12">
+                <p class="alert alert-danger"><%= @error_get_bins %></p>
+              </div>
+            </div>
+        <% end %>
+        <%= hidden_field_tag :parts_to_restock, nil %>
+        <!-- CODE BLOCK FOR DISPLAYING SEARCHED PART RESULTS -->
+        <div id="remote_inv_searched_result">
+          <%= render :partial => "remote_inv_bin_map"%>
+        </div>
+        <div class="print_div">
+          <div class="restock_parts" style="display:none;">
+            <%= image_seperator %>
+
+            <div class="table_title">
+              <strong>
+                <%= t('selected_parts_to_restock',:scope=>"remote_inv.search") %>
+              </strong>
+            </div>
+            <div class="table-responsive">
+              <table class="table" id="restock_table">
+                <thead>
+                <th><%= t('part',:scope => "remote_inv.search") %></th>
+                <th><%= 'KLX' %></th>
+                <th><%= t('bin',:scope => "floor_views._location_search")%></th>
+                <th><%= t('BIN_QTY',:scope => "panstock_requests.bulk_form_process") %></th>
+                <th><%= t('pck_qty',:scope=>"bin_line_station.search_part_number") %></th>
+                <th><%= t('remove',:scope=>"remote_inv.search") %></th>
+                </thead>
+              </table>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 text-right">
+                <%= submit_tag "#{t('order',:scope => "remote_inv.search")}", :name => "order_send_parts", :id => "order_send_parts", class: 'btn btn-default', :onclick => "loadTxtPartNo('#{@part_number}');" %>&nbsp;&nbsp;
+                <a class="btn btn-default btn-sm" onclick="PrintElem('.print_div')"><span id="print-sign" class="glyphicon glyphicon-print"></span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+    <% end %>
+    <%= image_seperator %>
+    <div class="row">
+      <div class="col-sm-2">
+        <%= label_tag :part_number_inv, "#{t('part_num',:scope => "rma")}:" %>
+      </div>
+      <div class="col-sm-3">
+        <%= text_field_tag :part_number_inv, nil,:class => 'form-control' %>
+        <%= hidden_field_tag :ship_to, @customer_number %>
+      </div>
+      <div class="col-sm-3">
+        <%= link_to "#{t('search',:scope => "rma")}", "#", :name => "search", :id => "search_remote_inventory", class: 'btn search_async btn-default' %>
+      </div>
+      <div class="col-sm-3">
+        <%= submit_tag "#{t('open_orders',:scope => "reports.index")}", :name => "open_orders", class: 'btn btn-default' %>
+      </div>
+    </div>
+    <br/>
+<% end %>

@@ -1,0 +1,19 @@
+BE PORTAL UPGRADE
+
+This is an Ruby On Rails application which is in a conversion process from ColdFusion.
+The aim for this application is for Productivity , Performance and a Better Software/UI Platform to the Users.
+
+Steps to Run this App
+ 
+ Softwares/Frame works required
+ Ruby Version -1.9.3p362
+ Rails Version - 3.2.12
+ Oracle DB
+ 
+ First:
+  bundle install
+  rake db:create 
+  rake db:migrate
+  rails server.
+ 
+ 

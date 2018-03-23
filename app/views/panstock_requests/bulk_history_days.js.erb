@@ -1,0 +1,5 @@
+$('#loading').css('visibility','hidden');	//show the rotating gif animation
+$("#bulk_history").html("<%= escape_javascript(render(:partial => "bulk_history_days", :days => "params[:days]"  )) %>")
+$("#days").change(function(){
+    $('#loading').css('visibility','visible');
+});

@@ -1,0 +1,268 @@
+<% if params[:commit] == "Submit Changes" || params[:commit] == "Invia modifiche" %>
+    <h2 class="body_header"><%= t('bin_line_stn_update',:scope => "bin_line_station.new_part_to_location") %></h2>
+    <%= image_seperator %>
+    <p><%= t('_desc_new_part_to_loc',:scope => "bin_line_station.new_part_to_location") %></p>
+    <%= image_seperator %>
+    <%if params[:delete_part] == "false"%>
+        <%  if params[:amc_qty] == params[:old_amc_qty] &&  params[:pack_qty] == params[:old_pack_qty] &&
+                params[:bin] == params[:old_bin] && params[:part_number] == params[:old_part_number]%>
+            <div>
+              <%= t('browser_back',:scope => "bin_line_station.update_line_station") %>
+            </div>
+            <br/>
+            <FORM><INPUT TYPE="BUTTON" VALUE="<%= t('back',:scope => "bin_line_station.update_line_station") %>" ONCLICK="javascript: history.go(-1)" class="btn btn-warning"></FORM>
+            <div class="clear"></div>
+        <%else%>
+            <%if @linestation_email_response["errCode"] == "" %>
+                <div class="alert alert-success">
+                  <p><%= t('email_sent',:scope => "bin_line_station.update_line_station") %></p>
+                </div>
+                <h5><%= t('line_station_action_request',:scope => "bin_line_station.update_line_station") %></h5>
+                <b> <%= session[:full_name] %> (Cust. #<%= session[:customer_number] %>) </b> <%= t('has_requested_to',:scope => "bin_line_station.update_line_station") %> <font color=red><b>CHANGE</b></font> <b><%= params[:WHSDESC] %></b><br />
+                <br />
+                <table border="0" cellspacing="4">
+                  <tr style="text-align: left">
+                    <td class="align_left"><%= t('Submitted_On',:scope => "panstock_requests.send_panstock_changes") %></td>
+                    <td class="align_left"><strong><%= Date.today%></strong></td>
+                  </tr>
+                  <tr>
+                    <td class="align_left"><%= t('Originator',:scope => "bin_line_station.update_line_station") %></td>
+                    <td class="align_left"><strong><%= session[:user_name]%></strong></td>
+                  </tr>
+                </table>
+                <br />
+                <table border="0" cellspacing="4">
+                  <tr>
+                    <td colspan="2" class="align_left"><b> <%= "#{t('bin_detail',:scope => "bin_line_station.new_part_to_location")}:" %> </b></td>
+                  </tr>
+                  <tr>
+                    <td class="align_left"><%= t('loc_line_stn',:scope => "bin_line_station.update_line_station") %></td>
+                    <td class="align_left"><strong><%= params[:WHSDESC] %></strong></td>
+                  </tr>
+                  <tr>
+                    <td class="align_left"><%= t('scancode',:scope => "bin_line_station.new_part_to_location") %> </td>
+                    <td class="align_left"><strong><%= params[:Scancode]%></strong></td>
+                  </tr>
+                  <tr>
+                    <td class="align_left"><%= "#{t('part_num',:scope => "bin_line_station.new_part_to_location")}:" %></td>
+                    <td class="align_left"><strong><%= params[:partno]%></strong></td>
+                  </tr>
+
+                  <% if  params[:bin] == params[:old_bin] %>
+                      <tr><td class="align_left"><%= t('Bin',:scope => "panstock_requests.send_panstock_changes") %></td><td class="align_left"><strong><%= params[:old_bin] %></strong></td></tr>
+                  <%end%>
+
+                  <% if params[:part_number] == params[:old_part_number] %>
+                      <tr><td class="align_left"><%= t('reference',:scope => "bin_line_station.new_part_to_location") %></td><td class="align_left"><strong><%= params[:old_part_number] %></strong></td></tr>
+                  <%end%>
+
+                  <% if params[:amc_qty] == params[:old_amc_qty] %>
+                      <tr><td class="align_left"><%= t('amc_qty',:scope => "bin_line_station.update_line_station") %></td><td class="align_left"><strong><%= params[:old_amc_qty] %></strong></td></tr>
+                  <%end%>
+
+                  <% if  params[:pack_qty] == params[:old_pack_qty] %>
+                      <tr><td class="align_left"><%= t('pack_qty',:scope => "bin_line_station.update_line_station") %></td><td class="align_left"><strong><%= params[:old_pack_qty] %></strong></td></tr>
+                  <%end%>
+
+                </table>
+                <br/>
+                <table border="0" cellspacing="4" width="100%" style="border-collapse: inherit; border-spacing: 2px;">
+                  <tr style="">
+                    <td align="center" style="color: #FFFFFF; background-color:#006699; width:30%;" ><b><%= t('change',:scope => "bin_line_station.update_line_station") %></b></td>
+                    <td align="center" style="color: #FFFFFF; background-color:#006699; width:30%;"><b><%= t('from',:scope => "bin_line_station.update_line_station") %></b></td>
+                    <td align="center" style="color: #FFFFFF; background-color:#006699; width:40%;"><b><%= t('to',:scope => "bin_line_station.update_line_station") %></b></td>
+                  </tr>
+                  <% @deltadex = 1%>
+                  <% if  params[:bin] != params[:old_bin] %>
+                      <tr <%if @deltadex % 2 == 0%> style="background-color: #E0E5E5" <% end %>>
+                        <td class="align_left"><%= t('Bin',:scope => "panstock_requests.send_panstock_changes") %></td><td class="align_left"><strong><%= params[:old_bin] %></strong></td><td class="align_left"><strong><%= params[:bin] %></strong></td></tr><% @deltadex = @deltadex+1  %>
+                  <%end%>
+
+                  <% if params[:part_number] != params[:old_part_number] %>
+                      <tr <%if @deltadex % 2 == 0%> style="background-color: #E0E5E5" <% end %>>
+                        <td class="align_left"><%= t('reference',:scope => "bin_line_station.new_part_to_location") %></td><td class="align_left"><strong><%= params[:old_part_number] %></strong></td><td class="align_left"><strong><%= params[:part_number] %></strong></td></tr><% @deltadex =  @deltadex+1 %>
+                  <%end%>
+
+                  <% if params[:amc_qty] != params[:old_amc_qty] %>
+                      <tr <%if @deltadex % 2 == 0%> style="background-color: #E0E5E5" <% end %>>
+                        <td class="align_left"><%= t('amc_qty',:scope => "bin_line_station.update_line_station") %></td><td class="align_left"><strong><%= params[:old_amc_qty] %></strong></td><td class="align_left"><strong><%= params[:amc_qty] %></strong></td></tr><% @deltadex =  @deltadex+1 %>
+                  <%end%>
+
+                  <% if  params[:pack_qty] != params[:old_pack_qty] %>
+                      <tr <%if @deltadex % 2 == 0%> style="background-color: #E0E5E5" <% end %>>
+                        <td class="align_left"><%= t('pack_qty',:scope => "bin_line_station.update_line_station") %></td><td class="align_left"><strong><%= params[:old_pack_qty] %></strong></td><td class="align_left"><strong><%= params[:amc_qty] %></strong></td></tr><% @deltadex =  @deltadex+1 %>
+                  <%end%>
+                </table><br/><br/>
+                <%= button_to t('bin_search',:scope => "bin_line_station.update_line_station") , bin_line_station_index_path, :class => "button", :method => :get %>
+            <%end%>
+        <%end%>
+    <%else%>
+        <%if @linestation_email_response["errCode"] == "" %>
+            <div class="alert alert-success">
+              <p><font color=red><b><%= t('delete_part',:scope => "bin_line_station.update_line_station") %></b></font><%= t('email_sent',:scope => "bin_line_station.update_line_station") %> </p>
+            </div>
+            <h5><%= t('line_station_action_request',:scope => "bin_line_station.update_line_station") %></h5>
+            <b> <%= session[:full_name] %> (Cust. #<%= session[:customer_number] %>) </b> <%= t('has_requested_to',:scope => "bin_line_station.update_line_station") %> <font color=red><b> <%= t('delete_scancode',:scope => "bin_line_station.update_line_station") %></b></font> <b><%= params[:WHSDESC] %></b><br />
+            <br />
+            <table border="0" cellspacing="4">
+              <tr style="text-align: left">
+                <td class="align_left"><%= t('Submitted_On',:scope => "panstock_requests.send_panstock_changes") %></td>
+                <td class="align_left"><strong><%= Date.today%></strong></td>
+              </tr>
+              <tr>
+                <td class="align_left"><%= t('Originator',:scope => "bin_line_station.update_line_station") %> </td>
+                <td class="align_left"><strong><%= session[:user_name]%></strong></td>
+              </tr>
+            </table>
+            <br />
+            <table border="0" cellspacing="4">
+              <tr>
+                <td colspan="2" class="align_left"><b><%= "#{t('bin_detail',:scope => "bin_line_station.new_part_to_location")}:" %> </b></td>
+              </tr>
+              <tr>
+                <td class="align_left"><%= t('loc_line_stn',:scope => "bin_line_station.update_line_station") %> </td>
+                <td class="align_left"><strong><%= params[:WHSDESC] %></strong></td>
+              </tr>
+              <tr>
+                <td class="align_left"><%= t('scancode',:scope => "bin_line_station.new_part_to_location") %> </td>
+                <td class="align_left"><strong><%= params[:Scancode]%></strong></td>
+              </tr>
+              <tr>
+                <td class="align_left"><%= "#{t('part_num',:scope => "bin_line_station.new_part_to_location")}:" %></td>
+                <td class="align_left"><strong><%= params[:partno]%></strong></td>
+              </tr>
+
+              <tr>
+                <td class="align_left"><%= t('Bin',:scope => "panstock_requests.send_panstock_changes") %></td>
+                <td class="align_left"><strong><%= params[:bin] %></strong></td>
+              </tr>
+
+              <tr>
+                <td class="align_left"><%= t('reference',:scope => "bin_line_station.new_part_to_location") %></td>
+                <td class="align_left"><strong><%= params[:part_number] %></strong></td>
+              </tr>
+
+              <tr>
+                <td class="align_left"><%= t('amc_qty',:scope => "bin_line_station.update_line_station") %></td>
+                <td class="align_left"><strong><%= params[:amc_qty] %></strong></td>
+              </tr>
+
+              <tr>
+                <td class="align_left"><%= t('pack_qty',:scope => "bin_line_station.update_line_station") %></td>
+                <td class="align_left"><strong><%= params[:pack_qty] %></strong></td>
+              </tr>
+            </table>
+            <%= button_to t('bin_search',:scope => "bin_line_station.update_line_station") , bin_line_station_index_path, :class => "button", :method => :get %>
+        <%end%>
+    <%end%>
+
+<% else %>
+
+    <html>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>Print Label</title>
+      <%= favicon_link_tag 'favicon.ico' %>
+      <style>
+          body,div{
+              margin: 0px; padding: 0px;
+              font-family: 'Arial';
+          }
+          .partnumber{
+              text-align: center;
+              font-weight:bold;
+              font-size: 16px;
+              padding: 10px 0px;
+          }
+          .location{
+              padding-left: 20px;
+              font-size: 12px;
+              padding-bottom: 10px;
+          }
+          .bin{
+              float: left;
+              width: 50%;
+              height: 20px;
+              margin-right: 5px;
+              padding-left: 20px;
+              font-size: 12px;
+          }
+          .scancode{
+              margin-left: 50%;
+              font-size: 12px;
+          }
+
+          .trace{
+              width: 12%;
+              float: left;
+              font-size: 12px;
+              padding-left: 15px;
+          }
+          .time{
+              text-align: center;
+              padding-top: 3px;
+              font-size:8px;
+              font-weight:bold;
+          }
+          .part_barcode,.scan_barcode{
+              text-align: center;
+              padding: 1px 0px;
+          }
+          .underline{
+              float: left;
+              width: 60%;
+              padding-left: 50px;
+              border-bottom: 2px solid #000;
+
+          }
+          .clear_both{
+              clear: both;
+          }
+          .barcode-text{
+              position: relative;
+              bottom: 10px;
+              text-align: center;
+              padding: 0px;
+          }
+          .barcode-text span{
+              font-size: 11px;
+              font-weight: bold;
+              background-color: #fff;
+              padding: 0px 10px;
+
+          }
+          .barcode_size{
+              width: 90%;
+              height: 27px;
+
+          }
+      </style>
+    </head>
+    <body>
+    <% generate_barcode_for_all_in_one(params[:part_number].upcase) %>
+    <% generate_barcode_for_all_in_one(params[:Scancode].upcase) %>
+
+    <div class="partnumber"><%= params[:part_number].upcase %></div>
+    <div class="location"><strong>      <%= "#{t('loc',:scope => "floor_views._location_search")}" %> : <%= params[:WHSDESC] %></strong></div>
+    <div class="bin"><strong>   <%= "#{t('bin',:scope => "floor_views._location_search")}" %> : <%= params[:bin] %></strong></div>
+    <div class="scancode"><strong>      <%= "#{t('scan_code',:scope => "floor_views._location_search")}" %> : <%= params[:Scancode] %></strong></div>
+    <div class="clear_both"></div>
+    <br/>
+    <div class="trace"><strong>         <%= "#{t('trace',:scope => "floor_views._location_search")}" %> :</strong></div><div class="underline">&nbsp;</div>
+    <div class="clear_both"></div>
+
+
+    <div class="time"><strong><%= (Time.now).strftime("%-m/%-d/%y - %-I:%M%p - #{t('by',:scope => "floor_views._location_search")} : ") + session[:user_name] %></strong></div>
+    <div class="part_barcode">
+      <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+params[:part_number].split("").map(&:ord).join("")+'.png', class: 'barcode_size' ) %>
+      <div class="barcode-text"><span><%=params[:part_number].upcase %></span></div>
+    </div>
+
+    <div class="scan_barcode">
+      <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+params[:Scancode].split("").map(&:ord).join("")+'.png', class: 'barcode_size' ) %>
+      <div class="barcode-text"><span><%=params[:Scancode].upcase %></span></div>
+    </div>
+
+    </body>
+    </html>
+<% end %>

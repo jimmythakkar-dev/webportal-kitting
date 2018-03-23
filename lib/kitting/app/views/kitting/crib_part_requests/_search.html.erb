@@ -1,0 +1,30 @@
+<%= image_seperator %>
+<% if controller.action_name == "index" %>
+    <p>Please enter part number or cancellation date to print pick list and bag labels for that request.</p>
+<% elsif controller.action_name == "ship_crib_part_list" %>
+    <p>Please select part number and click ship to ship part.</p>
+<% elsif controller.action_name == "history" %>
+    <p>Please enter part number to view history.</p>
+<% end %>
+<%= image_seperator %>
+<% form_submit_val = controller.action_name == "index" ? crib_part_requests_path : controller.action_name == "ship_crib_part_list" ? ship_crib_part_list_crib_part_requests_path : history_crib_part_requests_path%>
+<%= form_tag( form_submit_val, :method => 'get', :class => "form-inline") do %>
+    <div class="form-group">
+      <%= label_tag 'Part Number', nil %>
+      <%= text_field_tag :ag_part_number_search, params[:ag_part_number_search], class: 'form-control', placeholder: "Part Number" %>
+    </div>
+    <% if controller.action_name == "index" %>
+        <div class="form-group">
+          <%= label_tag 'Cancellation date within', nil %>
+          <%= select_tag :cancellation_date, options_for_select(OrderPartDetail.get_cancellation_date, :selected => params[:cancellation_date]),class: "form-control" %>
+        </div>
+    <% end %>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <%= submit_tag 'Search', :class => "btn btn-primary text-center" %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>

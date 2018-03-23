@@ -1,0 +1,74 @@
+
+<% whole_group = create_group @cups, @kit.kit_media_type.name %>
+<% whole_group.each_with_index do |group,index| %>
+    <div <%= add_class_and_id_to_gridster(@kit.kit_media_type.name,index) %> >
+      <% if index == 0  %>
+          <div align="right">
+            <span id="add_widget" data-group="<%= index + 1 %>" class="add">Add Cup</span>
+            <div id="save_layout" class="add js-seralize">Save layout</div>
+          </div>
+      <% end %>
+      <ul id="configurable_cups" style="overflow: hidden !important;">
+        <% group.sort_by {|cup| cup.cup_number.to_i }.each_with_index do |cup,i| %>
+            <% cup_to_display = Kitting::Cup.find_by_kit_id_and_commit_id(@kit.id,cup.id) %>
+            <% if cup_to_display.present? %>
+                <% if cup_to_display.status %>
+                    <% cup_dimension = cup_to_display.cup_dimension.split(",") %>
+                    <li rel="<%= (cup_to_display.ref1 || cup_to_display.ref2 || cup_to_display.ref3)? "tooltip" : ""  %>" title='<%= cup_to_display.ref1+', ' if cup_to_display.ref1 %> <%= cup_to_display.ref2+', ' if cup_to_display.ref2 %> <%= cup_to_display.ref3 if cup_to_display.ref3 %>'
+                        <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %>>
+                      <span class="box-no"><%= cup_to_display.cup_number %></span>
+                      <div class="block_area">
+                        <%= raw get_configurable_drafted_cup_parts(cup).join('') %>
+                      </div>
+                      <div id="cup_parts<%= cup.cup_number %>" class="btn_area">
+                        <span><a id="add_part_config" class="btn btn-default popup configurable-btn"><span id="plus-sign" class="glyphicon glyphicon-plus-sign" data-toggle="modal"></span></a></span>
+                        <!--<span><a id="edit-part" class="btn btn-small popup-delete configurable-btn"><i id="edit-sign" class="icon-edit" data-toggle="modal"></i></a></span>-->
+                      </div>
+                      <!--<span><a class="btn btn-small remove"><i class="glyphicon glyphicon-remove-sign"></i></a></span>-->
+                      <% if @kit.kit_media_type.name != "Small Configurable TB" %>
+                          <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                      <% elsif @kit.kit_media_type.name == "Small Configurable TB" && index == 1  %>
+                          <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                      <% end %>
+                    </li>
+                <% end %>
+            <% else %>
+                <% cup_dimension = cup.cup_dimension.split(",") %>
+                <li rel="<%= (cup.ref1 || cup.ref2 || cup.ref3)? "tooltip" : ""  %>" title='<%= cup.ref1+', ' if cup.ref1 %> <%= cup.ref2+', ' if cup.ref2 %> <%= cup.ref3 if cup.ref3 %>'
+                    <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %> >
+                  <span class="box-no"><%= cup.cup_number %></span>
+                  <div class="block_area">
+                    <%= raw get_configurable_drafted_cup_parts(cup).join('') %>
+                  </div>
+                  <div id="cup_parts<%= cup.cup_number %>" class="btn_area">
+                    <span><a id="add_part_config" class="btn btn-default popup configurable-btn"><span id="plus-sign" class="glyphicon glyphicon-plus-sign" data-toggle="modal"></span></a></span>
+                    <!--<span><a id="edit-part" class="btn btn-small popup-delete configurable-btn"><i id="edit-sign" class="icon-edit" data-toggle="modal"></i></a></span>-->
+                  </div>
+                  <!--<span><a class="btn btn-small remove"><i class="glyphicon glyphicon-remove-sign"></i></a></span>-->
+                  <% if @kit.kit_media_type.name != "Small Configurable TB" %>
+                      <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                  <% elsif @kit.kit_media_type.name == "Small Configurable TB" && index == 1  %>
+                      <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                  <% end %>
+                </li>
+            <% end %>
+        <% end %>
+      </ul>
+      <% if index != 0 && @kit.kit_media_type.name != "Small Configurable TB" %>
+          <br />
+          <div align="left">
+            <span id="add_widget" data-group="<%= index + 1 %>" class="add ">Add cup to <%= index == 1 ? 'bottom left' : 'bottom right' %> |  <span class="glyphicon glyphicon-arrow-up"></span></span>
+          </div>
+      <% end %>
+    </div>
+<% end %>
+
+<script type='text/javascript'>
+    <%if @kit.kit_media_type.name == "Small Removable Cup TB" %>
+    <%= render(:partial => 'small_removable_cup_tb', :handlers => [:erb], :formats => [:js]) %>
+    <% elsif @kit.kit_media_type.name == "Large Removable Cup TB"  %>
+    <%= render(:partial => 'large_removable_cup_tb', :handlers => [:erb], :formats => [:js]) %>
+    <% elsif @kit.kit_media_type.name == "Small Configurable TB"  %>
+    <%= render(:partial => 'c_small_config_tb', :handlers => [:erb], :formats => [:js]) %>
+    <% end %>
+</script>

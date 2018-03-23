@@ -1,0 +1,22 @@
+<% if @quantity_on_hand %>
+    <div>
+      <div class="col-sm-4"><%= t('Quantity_on-hand',:scope => "floor_views._quantity_on_hand")%> </div>
+      <div class="col-sm-6"><strong><%= t('Warehouse',:scope => "floor_views._quantity_on_hand")%></strong></div>
+      <div class="col-sm-2"><strong><%= t('Quantity',:scope => "floor_views._quantity_on_hand")%></strong></div>
+    </div>
+    <div>
+      <% @quantity_on_hand["whseList"].each_index do |index| %>
+          <div>
+            <div class="col-sm-4">&nbsp; </div>
+            <div class="col-sm-6"><%= @quantity_on_hand["whseList"][index]%></div>
+            <div class="col-sm-2"><%= @quantity_on_hand["qtyOnHandList"][index]%></div>
+          </div>
+      <%end%>
+      <div>
+        <div class="col-sm-4">&nbsp; </div>
+        <div class="col-sm-6"><%= t('Total',:scope => "floor_views._quantity_on_hand")%></div>
+        <div class="col-sm-2"><%= label_tag @quantity_on_hand["qtyOnHandList"].inject(0){|sum,item| sum + item.to_i}%></div>
+      </div>
+    </div>
+    <div class="sep_large"><%= image_seperator %></div>
+<%end%>

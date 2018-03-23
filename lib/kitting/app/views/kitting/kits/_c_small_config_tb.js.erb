@@ -1,0 +1,384 @@
+$(document).ready(function() {
+//    jQuery.noConflict();
+
+    var gridster1;
+    var gridster2;
+    var gridster3;
+//    jQuery(function(){
+
+    gridster1 = jQuery("#demo-1 ul").gridster({
+        namespace: '#demo-1',
+        widget_margins: [5, 5],
+        widget_base_dimensions: [120, 120],
+        min_cols: 6,
+        max_cols: 6,
+        min_rows: 1,
+        max_rows: 1,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: false,
+            max_size: [2, 2],
+
+            start: function(e, ui, $widget) {
+                //alert("start");
+            },
+            resize: function(e, ui, $widget) {
+                //alert("resized");
+            },
+            stop: function (e, ui, $widget) {
+
+                /// Data Row 1 ///
+                if($widget.attr("data-row") == 1) {
+                    gridster1.resize_widget($widget, 2, 1);
+                }
+
+            }
+
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+                //alert("Drag Start");
+            },
+
+            drag: function(e, ui, $widget) {
+                //alert("Drag Dragging");
+            },
+
+            stop: function(e, ui, $widget) {
+                //  alert("Drag Stop");
+            }
+        }
+
+
+    }).data('gridster').disable();
+
+    ///////////////////////////////////////////////////////////////////// 3.1 /////////////////////////////////////////////////////
+
+    gridster2 = jQuery("#demo-2 ul").gridster({
+        namespace: '#demo-2',
+        widget_margins: [5, 5],
+        widget_base_dimensions: [120, 120],
+        min_cols: 6,
+        max_cols: 6,
+        min_rows: 1,
+        max_rows: 1,
+        enabled: true,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [Infinity, 1],
+            start: function(e, ui, $widget) {
+                //alert("start");
+            },
+            resize: function(e, ui, $widget) {
+                //alert("resized");
+            },
+            stop: function(e, ui, $widget) {
+
+                /// Data Row 2 ///
+                if($widget.attr("data-row") == 1) {
+                    if($widget.attr("data-sizex") == 1) {
+                        gridster2.resize_widget($widget, 2, 1);
+                    }
+                    else if($widget.attr("data-sizex") == 3) {
+                        gridster2.resize_widget($widget, 4, 1);
+                    }
+                    else if($widget.attr("data-sizex") == 5) {
+                        gridster2.resize_widget($widget, 6, 1);
+                    }
+                }
+//                alert('sdsdsd');
+                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+                //alert("Drag Start");
+            },
+
+            drag: function(e, ui, $widget) {
+                //alert("Drag Dragging");
+            },
+
+            stop: function(e, ui, $widget) {
+                //  alert("Drag Stop");
+//                $("#save_layout").trigger( "click" );
+            }
+        }
+
+
+    }).data('gridster').disable();
+
+
+    ///////////////////////////////////////////// Remove /////////////////////////////////////////////////////
+
+    function resetboxno() {
+        var count = 1;
+        $(".gs-w").each(function(){
+            $(this).find(".box-no").text(count);
+            count++;
+        });
+    }
+
+    // Method to remove Cup from Configurable KMT
+    $(".remove_cup").click(function(){
+        var result = confirm("Are you sure ?");
+        if (result == true){
+            cup_to_disable = $(this).parent().attr("id");
+            var disabled_cups = new Array();
+            disabled_cups.push(cup_to_disable);
+            if (cup_to_disable != "") {
+                $.ajax ({
+                    url: '/kitting/cups/disable_cup',
+                    type: 'GET',
+                    data: "cup_id="+disabled_cups,
+                    onLoading: start_configuring(),
+                    success: function(data) {
+                        stop_configuring();
+//                    alert(data);
+                    }
+                });
+                gridster1.remove_widget($(this).parent("li"), true);
+                gridster2.remove_widget($(this).parent("li"), true);
+                gridster3.remove_widget($(this).parent("li"), true);
+                setTimeout(function() {
+                    resetboxno();
+                }, 500);
+            }
+        }
+    });
+
+    ///////////////////////////////////////////// Add /////////////////////////////////////////////////////
+
+    $("span.add").on('click', function(){
+        var kit_number = $("#mmt_kit_number").val() == '' ? $("#kit_number").val() : $("#mmt_kit_number").val();
+        var group_id = 2;
+        $.ajax({
+            url: '/kitting/kits/add_widget_kit_layout',
+            data: {"kit_number" : kit_number},
+            type: "PUT",
+            dataType: 'json',
+            onLoading: start_configuring(),
+            success: function(data){
+                stop_configuring();
+                if(data.cup_id != 0){
+                    create_cup_id = data.cup_id;
+                    var widgets = [
+                        ['<li id='+create_cup_id+' data-group='+group_id+'><span class="box-no">New</span> <span class="remove">Remove</span></li>', 2, 1]
+                    ];
+
+                    $.each(widgets, function(i, widget){
+                            gridster2.add_widget('<li id='+create_cup_id+' data-group='+group_id+' data-row="1" data-sizex="2" data-sizey="1"><span class="box-no"></span>' +
+                                    '<div class="btn_area">' +
+                                    '<span><a class="btn btn-default popup configurable-btn" id="add_part_config"><span data-toggle="modal" class="glyphicon glyphicon-plus-sign" id="plus-sign"></span></a></span>' +
+                                    '<span><a class="" id="edit-part"><span data-toggle="modal" class="" id="edit-sign"></span></a></span>' +
+                                    '</div>' +
+                                    '<span class="btn btn-small remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></span></li>', 2, 1);
+                    });
+                    setTimeout(function() {
+                        resetboxno();
+                    }, 500);
+                    $("#save_layout").trigger( "click" );
+                }
+                else {
+                    alert( "Unable to Create Cup, Contact KLX Administrator");
+                }
+            },
+            error: function(data) {
+                stop_configuring();
+                alert( "Unable to add");
+            }
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////// 3.1 /////////////////////////////////////////////////////
+
+    gridster3 = jQuery("#demo-3 ul").gridster({
+        namespace: '#demo-3',
+        widget_margins: [5, 5],
+        widget_base_dimensions: [120, 120],
+        min_cols: 6,
+        max_cols: 6,
+        min_rows: 1,
+        max_rows: 1,
+        enabled: false,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: false,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+                //alert("start");
+            },
+            resize: function(e, ui, $widget) {
+                //alert("resized");
+            },
+            stop: function(e, ui, $widget) {
+
+                /// Data Row 3 ///
+                if($widget.attr("data-row") == 1) {
+                    if($widget.attr("data-sizex") == 1) {
+                        gridster3.resize_widget($widget, 2, 1);
+                    }
+                }
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+                //alert("Drag Start");
+            },
+
+            drag: function(e, ui, $widget) {
+                //alert("Drag Dragging");
+            },
+
+            stop: function(e, ui, $widget) {
+                //  alert("Drag Stop");
+            }
+        }
+
+
+    }).data('gridster').disable();
+    ///////////////////////////////////////////// Serialize /////////////////////////////////////////////////////
+
+    $('.js-seralize').click (function() {
+
+        var s = gridster1.serialize();
+        var T = gridster2.serialize();
+        var U = gridster3.serialize();
+
+        $('#log').val(JSON.stringify(s));
+        $('#log_2').val(JSON.stringify(T));
+        $('#log_3').val(JSON.stringify(U));
+
+        $('.gridster li').each(function() {
+            if( ($(this).attr("data-row")>="2")){
+                $(this).remove();
+            }
+        });
+    });
+
+    var update_cup_id = new Array();
+    var disabled_cups = new Array();      // Stores Disabled Part Information.
+    var disabled_cups_id = new Array();   // Stores Disabled Cup Ids.
+
+    $("#save_layout").click(function(){
+        var kit_number = $("#mmt_kit_number").val() == '' ? $("#kit_number").val() : $("#mmt_kit_number").val();
+        var serialize_data = $("#log").val();
+        var serialize_data_2 = $("#log_2").val();
+        var serialize_data_3 = $("#log_3").val();
+        find_disable_and_update_cup(serialize_data,1);
+        find_disable_and_update_cup(serialize_data_2,1);
+        find_disable_and_update_cup(serialize_data_3,1);
+
+        if(disabled_cups_id.length > 0){
+            if (disabled_cups.length > 0)
+            {
+                var result = confirm("Part Number with quantity " +disabled_cups+" will be destroyed, Are you Sure to Continue ?");
+                if (result == true){
+                    $.ajax ({
+                        url: '/kitting/cups/disable_cup',
+                        type: 'GET',
+                        data: "cup_id="+disabled_cups_id,
+                        onLoading: start_configuring(),
+                        success: function(data) {
+                            stop_configuring();
+                            $.ajax({
+                                url: '/kitting/kits/update_kit_layout',
+                                data: {"kit_number" : kit_number, "serialize_data": serialize_data,"serialize_data_2": serialize_data_2,"serialize_data_3": serialize_data_3},
+                                type: "PUT",
+                                onLoading: start_configuring(),
+                                success: function(data){
+                                    stop_configuring();
+//                        window.location.reload();
+                                },
+                                error: function(data) {
+                                    stop_configuring();
+                                    alert( "Unable to update after delete cup with part");
+                                }
+                            });
+                        },
+                        error: function(data) {
+                            stop_configuring();
+                            alert( "Unable to delete cup with part");
+                        }
+                    });
+                }
+                else
+                {
+                    start_configuring();
+                    window.location.reload();
+                }
+            }
+            else{
+                $.ajax ({
+                    url: '/kitting/cups/disable_cup',
+                    type: 'GET',
+                    data: "cup_id="+disabled_cups_id,
+                    onLoading: start_configuring(),
+                    success: function(data) {
+                        stop_configuring();
+                        $.ajax({
+                            url: '/kitting/kits/update_kit_layout',
+                            data: {"kit_number" : kit_number, "serialize_data": serialize_data,"serialize_data_2": serialize_data_2,"serialize_data_3": serialize_data_3},
+                            type: "PUT",
+                            onLoading: start_configuring(),
+                            success: function(data){
+                                stop_configuring();
+//                        window.location.reload();
+                            },
+                            error: function(data) {
+                                stop_configuring();
+                                alert( "Unable to update after delete cup");
+                            }
+                        });
+                    },
+                    error: function(data) {
+                        stop_configuring();
+                        alert( "Unable to delete cup");
+                    }
+                });
+            }
+        }
+        else
+        {
+            $.ajax({
+                url: '/kitting/kits/update_kit_layout',
+                data: {"kit_number" : kit_number, "serialize_data": serialize_data,"serialize_data_2": serialize_data_2,"serialize_data_3": serialize_data_3},
+                type: "PUT",
+                onLoading: start_configuring(),
+                success: function(data){
+                    stop_configuring();
+//                    window.location.reload();
+                },
+                error: function(data) {
+                    stop_configuring();
+                    alert( "Unable to update");
+                }
+            });
+        }
+    });
+
+
+    function find_disable_and_update_cup(serialize_data,row_cnt) {
+
+        $.each(eval(serialize_data),function(index,value){
+            if(value.row > row_cnt ) {
+                if($("li[id="+value.id+"] div.block_area").children().length > 0 ){
+                    $("li[id="+value.id+"] div.block_area span.part_block").map(function() {
+                        disabled_cups.push( $(this).text() );
+                    });
+                    disabled_cups_id.push(value.id);
+                }
+                else{
+                    disabled_cups_id.push(value.id);
+                }
+            }
+            else{
+                update_cup_id.push(value.id);
+            }
+        });
+    }
+});

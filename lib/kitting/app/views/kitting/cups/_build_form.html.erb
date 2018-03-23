@@ -1,0 +1,110 @@
+<%= fields_for cup do |f| %>
+    <%= hidden_field_tag "cup_ref_id", f.object.id %>
+
+    <div class="col-lg-9">
+      <% @cup = cup.commit_id.nil? ? cup : Kitting::Cup.find_by_id(cup.commit_id)  %>
+      <ul class="thumbnails nav nav-pills" style="background-color: #EFEFEF; margin: 0px; padding: 10px 0px;min-height: 240px;">
+        <%= cup_part_count = raw (get_drafted_cup_parts @cup,true).join("") %>
+      </ul>
+
+      <nav>
+        <% @cups = Kitting::Cup.find_all_by_kit_id_and_commit_id_and_status(@cup.kit.id,nil,1) %>
+        <% sorted_cups = @cups.sort_by &:cup_number %>
+        <ul class="pagination">
+          <% sorted_cups.each_with_index do |c,index| %>
+              <% cup_to_display = Kitting::Cup.find_by_kit_id_and_commit_id(c.kit.id,c.id) %>
+              <% if cup_to_display.present? %>
+                  <% if cup_to_display.status %>
+                      <li><a id='<%= c.id %>' class='btn btn-default popup_pages <%= cup_to_display.id == cup.id ? 'active' : '' %>'><%=cup_to_display.cup_number %></a></li>
+                  <% end %>
+              <% else %>
+                  <li><a id='<%= c.id %>' class='btn btn-default popup_pages <%= c.id == @cup.id ? 'active' : ''%>'><%=c.cup_number %></a></li>
+              <% end %>
+          <% end %>
+        </ul>
+      </nav>
+
+      <script>
+          <% if cup_part_count == "" %>
+          $("#non_contract_div").css("display","block");
+          <% else %>
+          $("#non_contract_div").css("display","none");
+          <% end %>
+          var li = $('.pagination li');
+          li.sort(function(a, b) {
+              if(parseInt($(a).find("a").text()) > parseInt($(b).find("a").text()))
+                  return 1;
+              else return -1;
+          });
+          $('.pagination').empty().html(li)
+      </script>
+    </div>
+
+
+
+    <div class="col-lg-3">
+      <div class="row">
+        <div class="col-lg-12" style="font-size: 11px; font-weight: bold; padding: 5px 0 10px 15px;text-align: left;">
+          References
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="row">
+            <label class="col-lg-1"><%= "1" %></label>
+            <div class="col-lg-9"><%= f.text_field :ref1, :class => "form-control" %></div>
+          </div>
+          <div class="row">
+            <label class="col-lg-1"><%= "2" %></label>
+            <div class="col-lg-9"><%= f.text_field :ref2, :class => "form-control" %></div>
+          </div>
+          <div class="row">
+            <label class="col-lg-1"><%= "3" %></label>
+            <div class="col-lg-9"><%= f.text_field :ref3, :class =>"form-control" %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<% end %>
+<script type="application/javascript">
+    clear_add_new_part_row();
+    hide_add_new_popup();
+
+
+    $(".edit_popup_part_qty, .wl_edit_popup_part_qty").on("click",function(){
+        to_do_on_edit_btn_click($(this));
+    });
+
+    $(".non_edit_popup_part_qty").on("click",function(){
+        var $nonContractPartCheck = $("#non_contract_part_check");
+        var $nonContractDiv = $("#non_contract_div");
+
+        to_do_on_edit_btn_click($(this));
+
+        $nonContractPartCheck.prop("checked", true);
+        $nonContractPartCheck.attr("disabled", true);
+        if($(".popup_thumbnail").length <= 1){
+            $nonContractDiv.css("display","block");
+        }
+        else{
+            $nonContractDiv.css("display","none");
+        }
+
+    });
+
+    $(".remove_part").on("click",function(){
+        clear_add_new_part_row();
+    });
+
+    $("#cancel_update, .popup_pages").on("click",function(){
+        clear_add_new_part_row();
+        $("#non_contract_div").css("display","none");
+        $(".popup_thumbnail").css('display','block');
+        $(".popup_thumbnail").removeClass('hide_cup_part_thum');
+        show_hide_add_update_btn("block","none","none");
+        hide_add_new_popup();
+    });
+
+</script>

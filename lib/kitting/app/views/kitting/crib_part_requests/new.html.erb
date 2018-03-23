@@ -1,0 +1,117 @@
+<h2 class="body_header">CRIB REQUEST</h2>
+<span class="text-center">
+<%= render 'layouts/message_display' %>
+</span>
+<% if @error.blank? && @aircraftId.present? %>
+    <%= form_for @crib_request,:url => crib_part_requests_path, :method => "POST" do |f| %>
+        <div class="selection_area">
+          <div class="selection_row">
+            <div class="selection_block agusta_aircraft_id">
+              <div class="s_title"><%= t 'agusta.id' %>*</div>
+              <%= f.select :project_id, options_for_select(@aircraftId), {:prompt => t('agusta.select')},{:id => 'philly_acId',:class=> "form-control",:onchange => "getKitPartNumbers($(this).prop(\"selectedIndex\"),'aircraft_id');"} %>
+            </div>
+            <!-- Start Selection Block Kit Part No -->
+            <div class="selection_block agusta_kit_part_no input-append">
+              <div class="s_title"><%= t 'agusta.kit_part_no' %></div>
+              <%= f.select :kit_part_number, options_for_select(@kit_part_nos), {:prompt => t('agusta.select')}, {:id => 'philly_kpnId',:class=> "form-control",:disabled => true,:onchange => "getKitPartNumbers($(this).prop(\"selectedIndex\"),'kit_part_number');"} %>
+            </div>
+            <!-- End Selection Block -->
+            <div class="clearfix"></div>
+            <!-- Start Selection Block Stations -->
+            <div class="selection_block agusta_station">
+              <div class="s_title"><%= t 'agusta.station' %></div>
+              <%= f.select :station_name, options_for_select(@stations), {:prompt => t('agusta.select')},{:id => 'philly_stId',:class=> "form-control",:disabled => true} %>
+            </div>
+            <!-- End Selection Block -->
+            <!-- Start Selection Block Delivery Points -->
+            <div class="selection_block agusta_discharge_point">
+              <div class="s_title"><%= t 'agusta.discharge_point' %></div>
+              <%= f.select :discharge_point_name, options_for_select(@delivery_points), {:prompt => t('agusta.select')}, {:id => 'philly_dpId',:class=> "form-control",:disabled => true } %>
+            </div>
+            <!-- End Selection Block -->
+            <div class="clearfix"></div>
+          </div>
+          <div id="kitComponentsDetailsID"></div>
+        </div>
+    <% end %>
+    <!--  modal content -->
+    <div class="modal fade" id="addmore_parts_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick='$(".extra_order_div .extra_order_tr").remove();$("#autocomplete_kpn").val("");$(".err_msg").hide();'>X</button>
+            <h3><%= t 'agusta.additional_parts' %></h3>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            <span class="err_msg agusta_part_validation_error"><%= render :partial => "layouts/message_display" %></span>
+            <form onsubmit="return false;" action="" class="form-inline">
+              <div class="order_request_div">
+                <div class="table-responsive">
+                  <table id="table" class="table ext_order_req">
+                    <tbody>
+                    <tr>
+                      <th>Id</th>
+                      <th><%= t 'agusta.part_no' %></th>
+                      <th><%= t 'agusta.station' %></th>
+                      <th><%= t 'agusta.discharge_point' %></th>
+                      <th><%= "UOM" %></th>
+                      <th>&nbsp;</th>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span id="aircraft_id"></span>
+                      </td>
+                      <td align="left" style="text-align:left; width:220px;">
+                        <input type="text" size="10" id="autocomplete_kpn" class="PartNo form-control"/>
+                      </td>
+                      <td>
+                        <span id="station_code"></span>
+                      </td>
+                      <td>
+                        <span id="discharge_point"></span>
+                      </td>
+                      <td>
+                        <input type="text" size="5" id="add_uom" class="PartNo form-control"/>
+                      </td>
+                      <td>
+                        <p id="additionalPhillyPartID" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></p>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="extra_order_div">
+                  <div class="table-responsive">
+                    <table class="table extra_order_req" id="table">
+                      <tbody>
+                      <tr>
+                        <th><%= t 'agusta.part_no' %></th>
+                        <th><%= t 'agusta.part_qty' %></th>
+                        <th><%= "UOM" %></th>
+                        <th><%= t 'agusta.quantity' %></th>
+                        <th><%= t 'agusta.motive' %></th>
+                        <th><%= t 'agusta.note' %></th>
+                        <th>Action</th>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="btn_row text-right">
+                <input type="submit" class="btn btn-default btn-info" value="<%= t 'agusta.add' %>" name="commit" id="add_order_record" disabled />
+                &nbsp;
+                <input type="submit" class="btn btn-default btn-info" value="<%= t 'agusta.close' %>" data-dismiss="modal" aria-hidden="true" name="commit" id="order_close" onclick='$(".extra_order_div .extra_order_tr").remove();$("#autocomplete_kpn").val("");$(".err_msg").hide();'/>
+              </div>
+            </form>
+            <div id="additionalPartsDetailsID"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End modal content -->
+<% else %>
+    <div class="alert alert-danger"><%= @error %></div>
+<% end %>

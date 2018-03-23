@@ -1,0 +1,227 @@
+<style>
+    #show_message{
+        border: 1px solid;
+        margin: 10px 0px;
+        padding:15px 10px 15px 50px;
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        position:static;
+        color: #00529B;
+        background-color: #BDE5F8;
+    }
+</style>
+<h2 class="body_header">Kit Filling</h2>
+<%= render 'layouts/message_display' %>
+<%= image_seperator %>
+<p class="body_text_subhead">Kit Information</p>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-sm-3">Kit Number :</div>
+      <div class="col-sm-3"><%= @kit_copy.kit_version_number %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">Kit Media Type :</div>
+      <div class="col-sm-3"><%= @kit_copy.kit.kit_media_type.name %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">Kit Bin Center :</div>
+      <div class="col-sm-3"><%= @kit_copy.kit.bincenter %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">Part Bin Center :</div>
+      <div class="col-sm-3"><%= @kit_copy.kit.part_bincenter %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">Kit Status :</div>
+      <div class="col-sm-3"><%= display_status @kit_copy.kit.status %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">Kit Description :</div>
+      <div class="col-sm-3"><%= @kit_copy.kit.description rescue "" %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">Kit Notes :</div>
+      <div class="col-sm-3"><%= @kit_copy.kit.notes.html_safe rescue "" %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 text-right"><%= link_to 'Kit Completion List',kit_filling_index_path  %></div>
+    </div>
+  </div>
+</div>
+<%= image_seperator %>
+<p class="text-right">
+  <% if session[:user_level] %>
+      <% if session[:user_level] > "3" %>
+          <%= link_to 'Fill all cups', fill_all_cups_kit_filling_path(@kit_filling.id), class: 'btn btn-success' %>
+      <%end%>
+  <%end%>
+</p>
+<div id="show_message"  style="display:none; margin-bottom: 0px;"></div>
+<p class="body_text_subhead">Cups Information</p>
+<%= hidden_field_tag :kit_version_check_interval, APP_CONFIG['kit_version_check_interval']%>
+<%= hidden_field_tag :kit_id, params[:id] %>
+<%= hidden_field_tag :kit_number, @kit_copy.kit.kit_number %>
+<%= hidden_field_tag :bincenter, @kit_copy.kit.bincenter %>
+<% if  @kit_copy.kit.kit_media_type.kit_type == "binder" %>
+    <p class="success_qty"></p>
+    <table class="table table-bordered">
+      <thead>
+      <p class="body_text_subhead">Kit Parts</p>
+      <th>Sleeves</th>
+      <th>Part Number</th>
+      <th>Quantity</th>
+      <th>Fill Quantity </th>
+      </thead>
+      <tbody>
+      <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading" %>
+      <% @row_count = 0 %>
+      <% @kit_copy.kit.cups.where(:commit_status => true,:status => true).order(:cup_number).each_with_index do |cup,cup_index|  %>
+          <% unless cup.parts.blank?  %>
+              <% cup.cup_parts.where(:commit_status => true,:status => true).each_index do |index| %>
+                  <% unless cup.cup_parts[index].status == false %>
+                      <% @row_count = @row_count + 1 %>
+                      <tr>
+                        <td>
+                          <%= text_field_tag "kit_tray[]", @row_count, :class =>'kit_tray form-control' %>
+                        </td>
+                        <td><%= @kit_copy.kit.cups[cup_index].parts[index].part_number %> </td>
+                        <td><%= @kit_copy.kit.cups[cup_index].cup_parts[index].demand_quantity %> </td>
+                        <%qty=Array(0..@kit_copy.kit.cups[cup_index].cup_parts[index].demand_quantity.to_i) %>
+                        <% val_for_wl = ['E','S','WL'] %>
+                        <% val_for_wl.each { |q| qty.unshift(q) } %>
+                        <%# selected_data = Kitting::KitFillingDetail.find_all_by_cup_part_id(@kit_filling.kit_copy.kit.cups[cup_index].cup_parts[index].id).first.filled_quantity rescue "0"%>
+                        <td><%= select(:filled_quantity, :qty,Array[*qty.collect {|v,i| [v,qty.index(v) - 3] }], {:prompt => "Select Quantity"}, :class => "col-sm-12",:data => { :remote => true, :url => url_for(:controller => "kit_filling", :action => "kit_filling_edit", :member_data=> { :kit_number=>@kit_copy.kit.kit_number, :kit_filling_id => @kit_filling.id, :kit_id=>@kit_copy.kit_id, :kit_cup_number=>@kit_copy.kit.cups[cup_index].id, :cup_part_id=>@kit_copy.kit.cups[cup_index].cup_parts[index].id,:part_numbers=>@kit_copy.kit.cups[cup_index].parts[index].part_number, :actual_quantities=>@kit_copy.kit.cups[cup_index].cup_parts[index].demand_quantity  } ), :method => "post"}) %></td>
+                      </tr>
+                  <% end %>
+              <% end %>
+          <% end %>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <!-- Form for Cup Search Start -->
+    <%= form_tag("/", :method => 'post', :class => "form-horizontal search_cup") do %>
+        <div class="row">
+          <div class="col-sm-1"><%= label_tag 'Search Part :', nil, :class => "control-label" %></div>
+          <div class="col-sm-2"><%= text_field_tag :part_number_search, nil, :tabindex => 1,class: 'kit_number_search_box form-control'  %></div>
+          <div class="col-sm-3 cup_list"></div>
+        </div>
+        <div class="control-group">
+          <div class="controls">
+            <%= submit_tag 'Search Cup', :class => "btn"%>
+          </div>
+        </div>
+    <% end %>
+    <!-- Form for Cup Search Stop -->
+    <% @cups = get_cups_layout @kit_copy.kit.cups.where(:commit_status => true), @kit_copy.kit.kit_media_type.compartment_layout %>
+    <% index = 0%>
+    <% @cups.each_with_index do |row, row_index| %>
+        <div class="cup_table">
+          <table class="thumbnails cups">
+            <tr>
+              <% row.each_with_index do |value, col_index| %>
+                  <td>
+                    <div class="thumbnail">
+                      <div class="caption">
+                        <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                        <ul id="cup_parts<%= index + 1 %>" data-id="<%= value.try(:id) %>">
+                          <%= raw get_commited_parts(value, params[:kit_filling_id]).join('') if value %>
+                        </ul>
+                        <%if get_commited_parts(value, params[:kit_filling_id]).join('').blank? %>
+                            <p style="height:10px;"></p>
+                        <% else %>
+                            <p id='kit_filling_create' class="btn glyphicon glyphicon-shopping-cart fill-pop-up" data-id='<%= value.try(:id) %>'></p>
+                        <% end %>
+                      </div>
+                    </div>
+                  </td>
+                  <% index += 1 %>
+              <% end %>
+            </tr>
+          </table>
+        </div>
+    <% end %>
+<% end %>
+<!--KIT FILLING STATUS FORM START-->
+<%= form_for @kit_filling do |f|%>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-2">Queue :</div>
+          <div class="col-sm-4">
+            <%= f.select 'location_id', options_for_select(Kitting::Location.all.select { |s| s.name == "SOS Queue" || s.name == "Send to Stock"|| s.name == "Ship/Invoice" }.map { |s| [s.name, s.id] }.unshift(['Select Queue', 0])),class: 'col-sm-12', required: true, :selected => @kit_filling.kit_copy.location.name %>
+            <%#= f.select 'location_id', options_from_collection_for_select(Kitting::Location.all, 'id', 'name',@kit_filling.kit_copy.location_id) ,class: 'col-sm-12', required: true, :selected => @kit_filling.kit_copy.location.name  %>
+          </div>
+          <div class="col-sm-2"><%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading" %></div>
+          <div class="text-danger col-sm-4" id="order_status" style="padding-top: 5px; visibility: hidden ;" ></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">Order No :</div>
+          <div class="col-sm-4">
+            <%= select_tag 'kit_order_number' %>
+            <%= hidden_field_tag 'kit_order_number_list'%>
+          </div>
+          <div class="col-sm-2">Scan Code :</div>
+          <div class="col-sm-4">
+            <%= select_tag 'kit_scan_code'%>
+            <%= hidden_field_tag 'kit_scan_code_list' %>
+          </div>
+        </div>
+        <% if session[:user_level] %>
+            <% if session[:user_level] > "3" %>
+                <%= f.submit 'Save changes', class: "btn btn-info", id:'save_filling' %>
+            <%end%>
+        <%end%>
+        <%= link_to "Cancel Filling", kit_filling_path(@kit_filling.id, :location_name => @location_name), :confirm => "Are you sure?", :method => :delete, class: 'btn' %>
+      </div>
+    </div>
+<% end %>
+<!--KIT FILLING STATUS FORM END -->
+<%= image_seperator %>
+<!-- Modal -->
+<div id="fill-pop-up_modal" class="modal hide fade fill">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2 class="body_header">Kit Filling</h2>
+  </div>
+  <%= form_tag kit_filling_edit_kit_filling_path do %>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <div class="col-sm-2">Kit Number:</div>
+              <div class="col-sm-10"><%= text_field_tag 'kit_number', @kit_copy.kit.kit_number, class: 'form-control',:readonly => true %>
+                <%= hidden_field_tag 'kit_filling_id', params[:kit_filling_id] || @kit_filling.id, readonly: true %>
+                <%= hidden_field_tag 'kit_id', @kit_copy.id %></div>
+              <%= hidden_field_tag 'bom_kit',@kit_copy.kit.id %>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= label_tag 'Cup Number:' %></div>
+              <div class="col-sm-10"><%= text_field_tag 'cup_number_count', nil, class: 'form-control',:readonly => true %></div>
+              <%= hidden_field_tag 'kit_cup_number',nil, class: 'input-medium',:readonly => true %>
+            </div>
+          </div>
+        </div>
+        <table id="table-create">
+          <thead>
+          <th>Part Number</th>
+          <th>Demand Quantity</th>
+          <th>Filled Quantity</th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <div id="note"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <% if session[:user_level] %>
+            <% if session[:user_level] > "3" %>
+                <%= submit_tag 'Save changes',id: 'cup_filling_btn', class: "btn btn-info"  %>
+            <%end%>
+        <%end%>
+  <% end %>
+  </div>
+</div>
+<%= render 'change_data_modal'%>

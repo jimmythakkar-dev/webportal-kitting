@@ -1,0 +1,50 @@
+<h2 class="body_header"><%= t 'rma.inquiry' %></h2>
+<div class="breadcrumb flat">
+  <a href="#"><%= t 'rma.request_rma' %></a>
+  <a href="#"><%= t 'rma.rma_approved' %></a>
+  <a href="#"><%= t 'rma.sales_qa_approval' %></a>
+  <a href="#"><%= t 'rma.credit' %></a>
+</div>
+<br />
+<span class="err_msg"></span>
+<%= image_seperator %>
+<div class="row">
+  <div class="col-sm-12">
+    <%= form_tag search_rma_index_path, :method => 'get',:class=> "form-horizontal" do %>
+        <div class="row">
+          <div class="col-sm-3"><%= t 'rma.invoice' %>#</div>
+          <div class="col-sm-3"><b><%= text_field_tag :invoice_number, params[:invoice_number], :class => "form-control" %></b></div>
+          <div class="col-sm-3"><%= t 'rma.purchase_order' %>#</div>
+          <div class="col-sm-3"><%= text_field_tag :po_number, params[:po_number], :class => "form-control" %></div>
+        </div>
+        <div class="clear"></div>
+        <div class="row">
+          <div class="col-sm-3"><%= t 'rma.part_num' %></div>
+          <div class="col-sm-3"><%= text_field_tag :part_number, params[:part_number], :class => "form-control" %></div>
+          <div class="col-sm-2"><%= t 'rma.date_range' %></div>
+          <div class="col-sm-2"><%= text_field_tag :begin_date_rma,  params[:begin_date_rma] || ((Time.now - "180".to_i.days).strftime("%m/%d/%Y")), :class => "datepicker form-control", :required => true, :autocomplete => "off" %></div>
+          <div class="col-sm-2"><%= text_field_tag :end_date_rma, params[:end_date_rma] || (Time.now.strftime("%m/%d/%Y")), :class => "datepicker form-control", :required => true, :autocomplete => "off" %></div>
+        </div>
+        <div class="clear"></div>
+        <div class="row">
+          <div class="col-sm-3"><%= t 'rma.quantity' %></div>
+          <div class="col-sm-3"><%= text_field_tag :qty, params[:qty], :class => "form-control", :min => "1", :type => "number" %></div>
+          <div class="col-sm-6"><button type="submit" id ="search_rma_btn" class="btn btn-primary" ><%= t 'rma.search' %></button></div>
+        </div>
+    <% end %>
+  </div>
+</div>
+<%= image_seperator %>
+<%= render :partial => "layouts/message_display" %>
+<% if @response_open_rma %>
+    <div class="paginate_ajax_open">
+      <%= render 'open_rma_search_result', {response: @response_open_rma} %>
+    </div>
+<%end%>
+
+<% if @response_closed_rma%>
+    <div class="paginate_ajax_closed">
+      <%= render 'closed_rma_search_result', {response_closed: @response_closed_rma} %>
+    </div>
+<%end%>
+

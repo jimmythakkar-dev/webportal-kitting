@@ -1,0 +1,10 @@
+<span class="body_header">Kit Search</span>
+<div style="display: none;">
+  <% if params[:approved] == "true" %>
+      <% if check_bailment_status( params[:kit_number],params[:version] )%>
+        <%= link_to "BailmentInfo", bailment_info_print_kits_path(:kit_number => params[:kit_number],:version=>params[:version]),:method => "post", :id => "bailment",:target=> "_blank",:hidden => true%>
+      <% end %>
+  <% end %>
+</div>
+<%= render 'search' %>
+<%= render 'layouts/message_display' %>

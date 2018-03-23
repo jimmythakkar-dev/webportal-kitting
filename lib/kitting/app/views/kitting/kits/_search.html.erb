@@ -1,0 +1,91 @@
+<%= image_seperator %>
+<p>Please enter Kit Number to view the details for that Kit. If you do not know the Kit Number,<br />
+  you can search by Part Number. Selecting a Kit status is optional.</p>
+<%= image_seperator %>
+<% if session[:user_level] %>
+    <% if session[:user_level] >= "3" %>
+        <div class="col-sm-12 col-xs-12">
+          <p class="text-right">
+            <%= link_to "Create New Kit", new_kit_path %>
+            <% if session[:user_level] > "4" %>
+                /<%= link_to " Upload Kit(s)", upload_kits_path %>
+            <% end %>
+            <% if session[:user_level] > "4" %>
+                /<%= link_to " Download Kit BOM", kit_details_path %>
+            <% end %>
+          </div>
+        </p>
+        <br>
+        <br>
+    <% end %>
+<% end %>
+<%= form_tag(kit_search_path, :method => 'get', :class => "form-horizontal") do %>
+    <div class="form-group">
+      <%= label_tag 'Search :', nil, class: "col-sm-2 control-label" %>
+      <div class="col-sm-2 col-xs-12">
+        <%= hidden_field_tag "kit_search_type",params[:kit_search_type].present? ? params[:kit_search_type] : "SK" %>
+        <div class="dropdown col-sm-12">
+          <button class="btn btn-default dropdown-toggle" type="button" id="kit_search_type_val" data-toggle="dropdown" aria-expanded="true">
+            <%= params[:kit_search_type].present? ? params[:kit_search_type] == "SK" ? "Kit" : params[:kit_search_type] == "SP" ? "Part" : "Location" : "Kit"%>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="kit_search_type_val">
+            <li role="presentation"><a role="menuitem" tabindex="-1" val="SK" href="#">Kit</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" val="SP" href="#">Part</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" val="SL" href="#">Location</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-sm-4 col-xs-12">
+        <%= text_field_tag :kit_number_search, params[:kit_number_search].try(:strip).try(:upcase) || params[:id].try(:strip).try(:upcase), class: 'kit_number_search_box form-control'  %>
+      </div>
+      <div class="col-sm-3 col-xs-12">
+        <%= select_tag 'media_type_search', options_from_collection_for_select(@kit_media_types, 'id', 'name',params[:media_type_search]),{:prompt => "Select a Media Type",:class => "form-control"} %>
+      </div>
+    </div>
+    <div class="form-group">
+      <% kit_statuses =[[ "1","Active","true"],["2","Pending"],["6","Inactive" ]] %>
+      <%= label_tag 'Status :', nil, :class=>"col-sm-2 control-label" %>
+      <div class="col-sm-10 col-xs-12">
+        &nbsp;&nbsp;
+        <% if @kitting_response && !@kitting_response["kitStatus"].blank?%>
+            <% status_select ="" %>
+            <% status_select = @kitting_response["kitStatus"] %>
+            <% kit_statuses.each do |status| %>
+
+                <%= check_box_tag 'kit_status[]', status[0],  status_select == status[0] ? true : false  %>
+                <%= label_tag status[1], nil, class: "control-label" %>
+            <% end %>
+        <% else %>
+            <% kit_statuses.each do |status| %>
+
+                <% if params[:kit_status] %>
+                    <%= check_box_tag 'kit_status[]', status[0], (params[:kit_status].include? status[0]) ? true :false %>
+                <% else %>
+                    <%= check_box_tag 'kit_status[]', status[0], status[2]%>
+                <% end %>
+                <%= label_tag status[1], nil, class: "control-label"%>
+            <% end %>
+        <% end %>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="col-sm-offset-2 col-sm-10 col-xs-12">
+        <%= submit_tag 'Search', :class => "btn btn-primary"%>
+
+      </div>
+    </div>
+<% end%>
+<%= image_seperator %>
+<% if session[:user_level] %>
+    <% if session[:user_level] >= "3" %>
+        <p class="text-right">
+          <% if session[:user_level] %>
+              <% if session[:user_level] >= "3" %>
+                  <%= link_to "Draft Kits", kit_in_draft_kits_path %>
+              <%end%>
+          <%end%>
+        </p>
+    <%end%>
+<%end%>

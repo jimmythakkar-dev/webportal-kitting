@@ -1,0 +1,10 @@
+#KitCopyNumber*,RFID*
+Kit_copy_test,TestRFID123RTD678NMO1236Y
+Kit_copy_test1,TestRFIDSERIALNUMBER6789567
+,
+,
+# Instructions,
+# To Comment a line  start it with #,
+# Fields marked with * can not have empty values .,
+# RFID should be alphanumeric values.,
+# RFID should be minimum of 24 characters.,

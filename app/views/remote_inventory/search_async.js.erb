@@ -1,0 +1,4 @@
+$(".alert").remove();
+$(".table-container").html("<%= j render :partial => "remote_inventory/remote_inv_header" %>");
+$("#remote_inv_searched_result").html("<%= j render :partial => "remote_inventory/remote_inv_bin_map" %>");
+$("table").tablesorter();

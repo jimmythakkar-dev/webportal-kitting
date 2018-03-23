@@ -1,0 +1,109 @@
+<h2 class="body_header" style="line-height: 12px;"><%= t('bin_locator',:scope => "bin_line_station.search_by_location") %></h2>
+<%= image_seperator %>
+<% unless @locations["binCenterList"].first.blank? %>
+    <% if @bin_center_part_response["errMsg"] == "" %>
+        <div class="row">
+          <div class="col-sm-4" id="bin_label"><%= t('bin_location',:scope => "bin_line_station.search_by_location") %></div>
+          <div class="col-sm-5">
+            <strong><%= @bin_center_part_response["binCenter"] %></strong>
+            <%= "[" + current_user + "]" if current_user %>
+          </div>
+          <div class="col-sm-3">
+            <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :title => "View/Download as Excel Spreadsheet"), download_excel_bin_line_station_index_path(location: params[:location], page: params[:page]) %>
+          </div>
+        </div>
+
+        <div class="row" style="background-color: #F3F3F3;">
+          <div class="col-sm-4" id="bin_label"><%= label_tag 'Customer:',t('customer',:scope => "bin_line_station.search_by_location") %></div>
+          <div class="col-sm-8">
+            <%= @shipping_address["shipTo"].empty? ? "No Shipping Address Found" : raw(@shipping_address["shipTo"])   %>
+          </div>
+        </div>
+        <div class="sep_large"><%= image_seperator %></div>
+        <p>
+          <% start_page = params[:page].to_i * 100 - 99 %>
+          <% end_page = (params[:page].to_i * 100 > @bin_center_part_response["totalRecords"].to_i ?  @bin_center_part_response["totalRecords"].to_i : params[:page].to_i * 100 ) %>
+          <small><%= "#{t('paginate_message',:start_page => start_page, :end_page => end_page,:total_records => @bin_center_part_response["totalRecords"].to_i , :first_page => params[:page],:last_page =>  @total_page,:scope => "bin_line_station.search_by_location")}".html_safe %></small>
+        </p>
+        <div class="row">
+          <div class="col-sm-9">&nbsp;</div>
+          <%if session[:user_level] %>
+              <%if session[:user_level] >= "2" %>
+                  <div class="col-sm-3"><%=  link_to t("Add_Part_to_Location",:scope => "bin_line_station.search_by_location"), new_part_to_location_bin_line_station_index_path(:actions => 'N', :location => params[:location]) %></div>
+              <%end%>
+          <%end%>
+        </div>
+        <%= hidden_field :cust_no, :value => params[:cust_no] %>
+        <%= hidden_field :location, :value => params[:location] %>
+        <div class="table_title"> <%= t('PARTS_AT_LOCATION',:scope => "bin_line_station.search_by_location") %> <%= params[:location]  %></div>
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead>
+            <tr>
+              <th><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></th>
+              <th><%= t('s/c',:scope => "panstock_requests.action_history").upcase %></th>
+              <th><%= t('Line_Station',:scope => "panstock_requests.action_history").upcase %></th>
+              <th><%= t('amcq',:scope => "bin_line_station.search_by_location") %></th>
+              <th><%= t('pakq',:scope => "bin_line_station.search_by_location") %></th>
+              <th><%= t('UM',:scope => "panstock_requests.send_panstock_changes") %></th>
+              <th><%= t('Bin',:scope => "panstock_requests.send_panstock_changes").html_safe %></th>
+              <th><%= t('on_hand',:scope => "bin_line_station.search_by_location") %></th>
+              <th><%= t('exclude',:scope => "bin_line_station.search_by_location") %></th>
+            </tr>
+            </thead>
+            <% @total = @bin_center_part_response["ref"].length %>
+            <% (0..@total-1).each do  |i|%>
+                <tr <%if session[:user_level] == "1"%>title="Click on Heading to Sort or Click Row to Display Part Information"<% else %>title="Click on Heading to Sort or Click Row to Display Part Information - Click LINSTATION or BIN to PRINT PART" <% end %>>
+                  <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["ref"][i] %></td>
+                  <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["scancode"][i]%></td>
+                  <td onclick="window.open('','_new').location.href='<%= bin_line_station_print_part_label_path(:part_number => @bin_center_part_response["ref"][i],:bin => @bin_center_part_response["bin"][i], :scancode => @bin_center_part_response["scancode"][i],:location => @bin_center_part_response["whsdesc"][i])%>'"><strong><%= @bin_center_part_response["whsdesc"][i]%></strong></td>
+                  <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["amcQty"][i]%></td>
+                  <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["packQty"][i]%></td>
+                  <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["um"][i]%></td>
+                  <td onclick="window.open('','_new').location.href='<%= bin_line_station_print_part_label_path(:part_number => @bin_center_part_response["ref"][i],:bin => @bin_center_part_response["bin"][i], :scancode => @bin_center_part_response["scancode"][i],:location => @bin_center_part_response["whsdesc"][i])%>'"><strong><%= @bin_center_part_response["bin"][i]%></strong></td>
+                  <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["qtyOnHand"][i]%></td>
+                  <% if @bin_center_part_response["partExclusionList"][i] == "EXCLUDE" %>
+                      <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>><%= @bin_center_part_response["partExclusionList"][i]%></td>
+                  <% else %>
+                      <td <%if session[:user_level] > "1"%> onclick="location.href='<%= new_part_to_location_bin_line_station_index_path(:pnum => @bin_center_part_response["ref"][i], :lstation => @bin_center_part_response["whsdesc"][i], :amc => @bin_center_part_response["amcQty"][i], :pakq => @bin_center_part_response["packQty"][i], :bin => @bin_center_part_response["bin"][i], :scode => @bin_center_part_response["scancode"][i], :um => @bin_center_part_response["um"][i], :exculde => @bin_center_part_response["partExclusionList"][i] )%>'"<% end %>></td>
+                  <% end %>
+                </tr>
+            <%end%>
+          </table>
+        </div>
+        <div class="pager">
+          <% if @total_records >= 1 %>
+              <%if (params[:page].to_i > 1) %>
+                  <% @prev_page = params[:page].to_i - 1 %>
+                  <%= link_to  image_tag("prev.png",:alt => "previous",title: "Previous"), bin_line_station_search_by_location_path(page: @prev_page, location: params[:location]), class: "prev" %>
+              <%else%>
+                  <%= image_tag("prev.png",alt: "previous",title: "Previous", class: "disabled") %>
+              <%end%>
+
+              <% (1..@total_page).each do |i| %>
+                  <%if i != params[:page].to_i %>
+                      <%= link_to "#{i}", bin_line_station_search_by_location_path(page: i, location: params[:location]),class: "page"  %>
+                  <%else%>
+                      <span class="current"><%= i %></span>
+                  <%end%>
+              <%end%>
+
+              <% if (params[:page].to_i < @total_page) %>
+                  <% @next_page = params[:page].to_i + 1 %>
+                  <%= link_to image_tag("next.png",alt: "next",title: "Next"), bin_line_station_search_by_location_path(page: @next_page, location: params[:location]), class: "next"  %>
+              <%else%>
+                  <%= image_tag("next.png",:alt => "next",title: "Next", class: "disabled") %>
+              <%end%>
+          <%end%>
+        </div>
+    <% end %>
+<% end %>
+<% if @locations["binCenterList"].first.blank?  %>
+    <div class="row">
+      <div class="alert alert-danger"><%= t('empty_bin',:current_user => current_user, :scope => "bin_line_station.search_by_location") %></div>
+    </div>
+<% elsif @bin_center_part_response["errMsg"]!= "" %>
+    <div class="row">
+      <div class="alert alert-danger"><%= t('acct_switched',:current_user => current_user, :scope => "bin_line_station.search_by_location" ) %></div>
+    </div>
+<% end %>

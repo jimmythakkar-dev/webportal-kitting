@@ -1,0 +1,57 @@
+<p class="body_header"><%= t('title',:scope => "file_transfer._pick_file_list") %></p>
+<%= image_seperator %>
+<br />
+<%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, title: t('download_excel',:scope => "file_transfer.index")),
+            download_pick_list_excel_path(grid_key: params[:grid_key], my_site_code: @my_site_code,format: 'xls')  %>
+
+<p><%= link_to t('back_to_pick_list',:scope => "file_transfer._pick_file_list"), 'javascript:history.back();' %></p>
+
+
+<% if pick_file_list.size > 0 %>
+  <b><%= t('pick_part',:scope => "file_transfer._pick_file_list") %></b> <%= t('for',:scope => "file_transfer.index") %> - <i><b><%= params[:grid_key]  %> </b></i>
+  <div class="text-right"><small class="text-left"><em> <%= page_entries_info(pick_file_list).gsub('hashes','items').html_safe %></em></small></div>
+  <div style="width: 100% ;overflow-x: auto">
+    <div class="table-responsive">
+        <table class="table tablesorter center-align">
+          <thead>
+          <tr>
+            <th><%= t('part_no',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('qty',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('uom',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('demand_stockroom',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('order_no',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('order_line_no',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('delivery_location',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('req_date',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('req_source',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('business_unit',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('file_name',:scope => "file_transfer._pick_file_list") %></th>
+            <th><%= t('payload_id',:scope => "file_transfer._pick_file_list") %></th>
+          </thead>
+          </tr>
+          <% pick_file_list.each do |file| %>
+            <tr title="Click on Heading to Sort - Click Part Number Row to SEARCH all PICK FILES containing this PART. - Click PAYLOAD ID to view Payload">
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'"><%= file['part_no'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['qty'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['uom'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['demand_stockroom'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['order_no'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['order_line_no'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['delivery_location'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= FileTransferStatus.get_yyyy_mm_dd_h_m_s_format file['req_date'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['req_source'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['business_unit'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'SP',grid_key: file['part_no'])%>'" ><%= file['filename'] %></td>
+              <td onclick="location.href='<%= file_transfer_status_path(act: 'PLD',grid_key: file['payload_id'])%>'" ><strong><%= file['payload_id'] %></strong></td>
+            </tr>
+          <% end %>
+        </table>
+    </div>
+  </div>
+  <%= will_paginate pick_file_list  %>
+<% else %>
+  <p class="text-danger"><%= flash[:alert] = t('no_pick_file',:scope => "file_transfer.index") %></p>
+<% end %>
+
+
+

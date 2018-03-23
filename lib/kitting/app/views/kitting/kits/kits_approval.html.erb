@@ -1,0 +1,92 @@
+<h2 class="body_header">Kit Approval</h2>
+<%= image_seperator %>
+<p>Please Select the kit which  you want to approve.</p>
+<%= image_seperator %>
+<%= form_tag(kits_approval_kits_path, :method => 'get', :class => "form-horizontal") do %>
+    <div class="form-group">
+      <%= label_tag 'Search :', nil, :class => "col-sm-2 control-label" %>
+      <div class="col-sm-4">
+        <%= text_field_tag :kit_number_search, params[:kit_number_search], class: "form-control" %>
+      </div>
+      <div class="col-sm-4 pull-right">
+        <% if session[:user_level] > "4" %>
+            <%= link_to "Upload Kit(s)", upload_kits_path, :class => 'btn btn-info' %>
+        <% end %>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <%= submit_tag 'Search', :class => "btn btn-primary"%>
+
+      </div>
+    </div>
+<% end%>
+<%= image_seperator %>
+<%if flash[:notice]%>
+    <div class="alert alert-danger">
+      <%= flash[:notice]%>
+      <%= flash[:notice] = nil%>
+    </div>
+<%end%>
+<%if flash[:message]%>
+    <div class="alert alert-danger">
+      <%= flash[:message] %>
+    </div>
+<%else%>
+    <% unless @kits.nil? %>
+        <!--<small><em>We Are <%#= page_entries_info(@kits ,html: false) %></em></small>-->
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead>
+            <th>Kit Number </th>
+            <th>Kit Bin Center </th>
+            <th>Part Bin Center </th>
+            <th>Created By</th>
+            <th class="filter-false"> Action</th>
+            </thead>
+            <% @kits.each_with_index do |kit,index| %>
+                <%= form_tag(approve_kits_kits_path, :method => 'get') do %>
+
+                    <tr>
+                      <% if  kit.commit_id == nil and kit.status == 2 %>
+                          <td><%= link_to kit.kit_number, kits_detail_design_path(kit_number: kit.kit_number,
+                                                                                  kit_media_type: kit.kit_media_type.name,compartments: kit.kit_media_type.compartment,
+                                                                                  compartment_layout: kit.kit_media_type.compartment_layout, kit_id: kit.id, bincenter: kit.bincenter,kit_action: "D",approve: true ) %></td>
+                      <% else %>
+                          <% kit_rec= Kitting::Kit.where(:id => kit.commit_id).first %>
+                          <% if kit_rec.present? %>
+                              <td><%= link_to kit_rec.kit_number, kits_detail_design_path(kit_number: kit_rec.kit_number,
+                                                                                          kit_media_type: kit_rec.kit_media_type.name,compartments: kit_rec.kit_media_type.compartment,
+                                                                                          compartment_layout: kit_rec.kit_media_type.compartment_layout, kit_id: kit_rec.id, bincenter: kit_rec.bincenter,kit_action: "D",approve: true) %></td>
+                          <% else %>
+
+                          <% end %>
+                      <% end %>
+                      <!--<td><%#= link_to kit.kit_number, kit, kit_number: kit.kit_number %></td>-->
+                      <td><%= kit.bincenter %></td>
+                      <td><%= select_tag "part_bincenter", options_for_select(@binCenters, kit.part_bincenter), {:class => "form-control part_bin_center",:val=> kit.kit_number, :prompt => "Select Part Bin Center"}%>
+                      </td>
+                      <td><%= kit.customer.cust_name rescue "" %></td>
+                      <% if  kit.commit_id == nil and kit.status == 2 %>
+                          <%= hidden_field_tag "kit_number", kit.kit_number%>
+                          <td><%= submit_tag 'Approve', :class => "btn btn-default approve_kits", :val=> kit.kit_number,:confirm => "Are you sure to approve #{kit.kit_number}?" %>
+                      <% else %>
+                          <% kit_rec= Kitting::Kit.where(:id => kit.commit_id).first %>
+                          <% if kit_rec.present? %>
+                              <%= hidden_field_tag "kit_number", kit_rec.kit_number%>
+                              <td>
+                                <%= submit_tag 'Approve', :class => "btn btn-default approve_kits", :val=> kit.kit_number, :confirm => "Are you sure to approve #{kit_rec.kit_number}?" %>
+                              </td>
+                          <% else %>
+
+                          <% end %>
+                      <% end %>
+                      </td>
+                    </tr>
+                <%end%>
+            <% end %>
+          </table>
+        </div>
+        <%#= will_paginate @Kits %>
+    <% end %>
+<%end%>

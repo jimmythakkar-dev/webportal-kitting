@@ -1,0 +1,86 @@
+$("#filled_qty_<%= params[:cup_identity]%>").html("<%=@kit_filling_details.filled_quantity%>")
+if(typeof $('#kit_type').val() != 'undefined' && $('#kit_type').val() == "configurable") {
+    <% @kit_type = 'configurable' %>
+    $("li[id=<%= params[:cup_identity]%>] div:first").html("<%= escape_javascript(render :partial => 'cup_design',:kit_type => @kit_type) %>")
+    $("ul li div div").not(".cup_img").each(function (i) {
+        var demand_qty = $(this).prev("span").text().replace(/\(|\)/g, '');
+        var filled_qty = $(this).text().replace(/\(|\)/g, '');
+        if(demand_qty == "Water-Level"  || demand_qty == "WL" || filled_qty == "WL" || filled_qty == 'S' ||filled_qty == ''){
+            demand_qty = demand_qty;
+            filled_qty = filled_qty;
+        }
+        else{
+            demand_qty = parseInt(demand_qty);
+            filled_qty = parseInt(filled_qty);
+        }
+
+        if(demand_qty == filled_qty || (demand_qty == "Water-Level" && filled_qty == "WL")){
+            $(this).parent().attr('class','full_filled_quantity');
+        }
+        else{
+            if(filled_qty == 'S' || filled_qty == 'E'){
+                if(filled_qty == 'S' ){
+                    $(this).parent().attr('class','partial_filled_quantity');
+                }
+                else if(filled_qty == 'E' ){
+                    $(this).parent().attr('class','empty_filled_quantity');
+                }
+
+            }
+            else{
+                if((filled_qty > 0 && filled_qty < demand_qty)){
+                    $(this).parent().attr('class','partial_filled_quantity');
+                }
+                else if(filled_qty == 0 || filled_qty == null || filled_qty == ''){
+                    $(this).parent().attr('class','empty_filled_quantity');
+                }
+                else{
+
+                }
+            }
+        }
+    });
+}
+else {
+    <% @kit_type = 'nonconfigurable' %>
+    $("ul[data-id=<%= params[:cup_identity]%>]").html("<%= escape_javascript(render :partial => 'cup_design',:kit_type => @kit_type) %>")
+    $("ul li div").each(function (i) {
+        var demand_qty = $(this).prev("span").text().replace(/\(|\)/g, '');
+        var filled_qty = $(this).text().replace(/\(|\)/g, '');
+        if(demand_qty == "Water-Level"  || demand_qty == "WL" || filled_qty == "WL" || filled_qty == 'S' ||filled_qty == ''){
+            demand_qty = demand_qty;
+            filled_qty = filled_qty;
+        }
+        else{
+            demand_qty = parseInt(demand_qty);
+            filled_qty = parseInt(filled_qty);
+        }
+
+        if(demand_qty == filled_qty || (demand_qty == "Water-Level" && filled_qty == "WL")){
+            $(this).parent().attr('class','full_filled_quantity');
+        }
+        else{
+            if(filled_qty == 'S' || filled_qty == 'E'){
+                if(filled_qty == 'S' ){
+                    $(this).parent().attr('class','partial_filled_quantity');
+                }
+                else if(filled_qty == 'E' ){
+                    $(this).parent().attr('class','empty_filled_quantity');
+                }
+
+            }
+            else{
+                if((filled_qty > 0 && filled_qty < demand_qty)){
+                    $(this).parent().attr('class','partial_filled_quantity');
+                }
+                else if(filled_qty == 0 || filled_qty == null || filled_qty == ''){
+                    $(this).parent().attr('class','empty_filled_quantity');
+                }
+                else{
+
+                }
+            }
+        }
+    });
+}
+hide_spinner();

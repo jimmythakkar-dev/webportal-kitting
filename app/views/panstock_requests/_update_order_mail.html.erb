@@ -1,0 +1,45 @@
+<h3>FLOOR VIEW ACTION REQUEST</h3>
+          <table border='0' cellspacing='4'>
+            <tr>
+              <td>Submitted On:</td>
+              <td align='left'><strong><%= Date.today%></strong></td>
+            </tr>
+            <tr>
+              <td> Originator: </td>
+              <td align='left'><strong><%= session[:user_name]%></strong></td>
+            </tr>
+            <tr>
+             <td>Approved By:</td>
+              <td align='left'><strong><%= params[:approvedBy]%></strong></td>
+            </tr>
+            <tr>
+              <td>Approval Status: </td>
+              <td align='left'><strong><%= params[:ApprovalStatus]%></strong></td>
+            </tr>
+            <tr>
+              <td> Originator: </td>
+              <td align='left'><strong><%= params[:Originator]%></strong></td>
+            </tr>
+          </table>
+        <table border=0 width=100%>
+                      <tr style="background-color:#006699">
+                        <td style="text-align:center;color:#FFFFFF"><strong>ACTION CODE</strong></td>
+                        <td style="text-align:center;color:#FFFFFF"><strong>PART<br/>NUMBER</strong></td>
+                        <td style="text-align:center;color:#FFFFFF"><strong>LOCATION</strong></td>
+                        <td style="text-align:center;color:#FFFFFF"><strong>BIN QTY</strong></td>
+                        <td style="text-align:center;color:#FFFFFF"><strong>UM</strong></td>
+                        <td style="text-align:center;color:#FFFFFF"><strong>BIN</strong></td>
+                        <td style="text-align:center;color:#FFFFFF"><strong>REASON / COMMENTS</strong></td>
+                      </tr>
+
+                      <tr style="background-color:#E0E5E5">
+                        <td style="text-align:center"><%= params[:ActionCode]%></td>
+                        <td style="text-align:center"><%= params[:PartNo]%></td>
+                        <td style="text-align:center"><%= params[:selLocation]%></td>
+                        <td style="text-align:center"><%= params[:OrderQty]%></td>
+                        <td style="text-align:center"><%= params[:UM]%></td>
+                        <td style="text-align:center"><%= params[:Bincenter]%></td>
+                        <td style="text-align:center"><%= params[:ReasonForAction]%></td>
+                      </tr>
+
+        </table>

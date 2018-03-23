@@ -1,0 +1,80 @@
+<%= hidden_field_tag "change_data",@change_data.to_json%>
+<div style="height: 450px; overflow: auto;">
+  <% @change_data.each do |version| %>
+      <table style="width:100%;">
+        <tr>
+          <td colspan="8"><h4>Version: <%= version["fromVersion"]%></h4></td>
+        </tr>
+        <tr>
+          <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+            <tr>
+              <th>Cups</th>
+              <th>Part Number</th>
+              <th>Demand Quantity</th>
+              <th>Updated Quantity</th>
+              <th>Old Quantity</th>
+              <th>Action</th>
+            </tr>
+            <tr>
+              <% if !version["addedCupParts"].blank? %>
+                  <% version["addedCupParts"].each_with_index do |value_for_added_cup_parts,index_for_added_cup_parts| %>
+                    <tr>
+                      <% if value_for_added_cup_parts["box_number"].present? %>
+                        <td style="width:5%"><%= value_for_added_cup_parts["box_number"]%>/<%= value_for_added_cup_parts["tray"].split("-")[1] %></td>
+                      <% else %>
+                        <td style="width:5%"><%= value_for_added_cup_parts["tray"].split("-")[1] %></td>
+                      <% end %>
+                        <td><%= value_for_added_cup_parts["partObj"]["number"] %></td>
+                        <td><%= value_for_added_cup_parts["demand_quantity"] %></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Part Added</td>
+                    </tr>
+                <% end %>
+            <% end %>
+            </tr>
+            <tr>
+              <% count_of_updated_parts = 0 %>
+              <% version["commonCupParts"].each_with_index do |value,index| %>
+                  <% if value["demand_quantity"] != value["previousQty"] %>
+                      <% count_of_updated_parts = count_of_updated_parts + 1 %>
+                    <tr>
+                      <% if value["box_number"].present? %>
+                        <td style="width:5%"><%= value["box_number"]%>/<%= value["tray"].split("-")[1] %></td>
+                      <% else %>
+                        <td style="width:5%"><%= value["tray"].split("-")[1] %></td>
+                      <% end %>
+                        <td><%= value["partObj"]["number"] %></td>
+                        <td>-</td>
+                        <td><%= value["demand_quantity"] %></td>
+                        <td><%= value["previousQty"]%></td>
+                        <td>Quantity Updated</td>
+                    </tr>
+                <% end %>
+            <% end %>
+            </tr>
+            <% if !version["deletedCupParts"].blank? %>
+                <% version["deletedCupParts"].each_with_index do |value_for_deleted_cup_parts,index_for_deleted_cup_parts| %>
+                    <tr>
+                      <% if value_for_deleted_cup_parts["box_number"].present? %>
+                        <td style="width:5%"><%= value_for_deleted_cup_parts["box_number"]%>/<%= value_for_deleted_cup_parts["tray"].split("-")[1] %></td>
+                      <% else %>
+                        <td style="width:5%"><%= value_for_deleted_cup_parts["tray"].split("-")[1] %></td>
+                      <% end %>
+                      <td><%= value_for_deleted_cup_parts["partObj"]["number"] %></td>
+                      <td><%= value_for_deleted_cup_parts["demand_quantity"] %></td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>Part Deleted</td>
+                    </tr>
+                <% end %>
+            <% end %>
+          </table>
+        </tr>
+        <%if version["note"].present? %>
+            <p style="color: red">Note: <%= version["note"] %> in version<%= version["fromVersion"]%>.</p>
+        <%end%>
+      </table>
+
+  <% end %>
+</div>

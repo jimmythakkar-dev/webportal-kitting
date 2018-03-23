@@ -1,0 +1,23 @@
+<ul class="nav nav-pills top-menu pull-right">
+  <li>
+    <% unless session[:menu_description].blank? %>
+        <% if session[:user_type] == 'V' %>
+            <%= link_to image_tag("tab_vend_off.gif", alt: "Vendor Portal", name: "Vendor Portal", border: 0, :mouseover => "tab_vend_off.gif"), "http://klxaerospace.com/" %>
+        <% else %>
+            <%= link_to "KLX Customer Portal", main_app.root_path %>
+        <% end %>
+    <% end %>
+  </li>
+  <li>
+    <%= link_to "KLX Inc.", "http://www.klx.com",target: "_blank" %>
+  </li>
+  <li>
+    <%= link_to "Investors", "http://investor.klx.com/phoenix.zhtml?c=253840&p=irol-irhome", target: "_blank" %>
+  </li>
+  <li>
+    <%= link_to "Contact", "http://www.klxaerospace.com/contact", target: "_blank" %>
+  </li>
+  <li>
+    <%= link_to "Careers", "http://klx.com/careers.cfm", target: "_blank" %>
+  </li>
+</ul>

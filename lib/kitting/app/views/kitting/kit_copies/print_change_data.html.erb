@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="KLX Aerospace, Inc. is the leading provider of interior products and solutions for the commercial, business jet, and military aircraft markets, and a leading distributor of aerospace hardware."/>
+  <meta name="keywords" content="Aerospace, commercial aircraft, business jet, executive aircraft, aircraft interiors,seating, seating environments, super first class, business class, main cabin, premium class, premium economy, galley inserts, aircraft galley, oven products, beverage makers, water boilers, espresso, in-air catering, refrigeration, galley air-chillers, oxygen products, military oxygen, aircraft structures, integration services, wash lighting, mood lighting, aerospace hardware"/>
+  <title>KLX Aerospace</title>
+  <%= favicon_link_tag 'favicon.ico' %>
+</head>
+<style>
+        /*Please input font-size of body,div stop 12 px from 16px*/
+        /*Please input font-size of div.description stop 20 px from 30px*/
+    body,div{
+        margin: 0px; padding: 0px; font-size: 12px;
+    }
+    div.part_15px{
+        text-align: center; margin: 0px;font-family: 'Arial';font-weight: bold;font-size: 15px;
+    }
+    div.part_13px{
+        text-align: center; margin: 0px;font-family: 'Arial';font-weight: bold;font-size: 13px;
+    }
+    span.qty{
+        float: right;
+    }
+    div.cup_qty{
+        margin: 0px; padding: 0px 5px;font-family: 'Arial';font-weight: bold;font-size: 11px;
+    }
+    .page{ display:block; clear:both; page-break-after:always;margin: 4% 2% 2% 2% ;
+    }
+    hr {  border: 0; border-top: 1px solid #000; }
+
+    div.kit { padding-left: 5px; font-family: 'Arial'; font-size: large;font-size: 18px;  }
+    div.bin_center { padding: 7px 5px 0px 5px;font-family: 'Arial';  }
+
+    div.description{ padding: 0px 5px 5px 5px;font-weight: bold;text-align: center; font-size: 20px;}
+    span.kit_small { float: right; padding-right: 5px; }
+    span.bin_center { padding-left: 5px; }
+</style>
+
+<body>
+<% if params[:commit] == 'Print' %>
+    <p><h4>Kit Number: <%= @change_data.first["kit"]["kit_number"] %></h4></p>
+    <% @change_data.each do |version| %>
+        <table style="width:100%;">
+          <tr>
+            <td colspan="8"><h4>Version: <%= version["fromVersion"]%></h4></td>
+          </tr>
+          <tr>
+            <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+              <tr>
+                <th>Cups</th>
+                <th>Part Number</th>
+                <th>Demand Quantity</th>
+                <th>Updated Quantity</th>
+                <th>Old Quantity</th>
+                <th>Action</th>
+              </tr>
+              <tr>
+                <% unless version["addedCupParts"].blank? %>
+                    <% version["addedCupParts"].each_with_index do |value_for_added_cup_parts,index_for_added_cup_parts| %>
+                      <tr>
+                      <% if value_for_added_cup_parts["box_number"].present? %>
+                        <td style="width:5%"><%= value_for_added_cup_parts["box_number"]%>/<%= value_for_added_cup_parts["tray"].split("-")[1] %></td>
+                      <% else %>
+                        <td style="width:5%"><%= value_for_added_cup_parts["tray"].split("-")[1] %></td>
+                      <% end %>
+                        <td><%= value_for_added_cup_parts["partObj"]["number"] %></td>
+                        <td><%= value_for_added_cup_parts["demand_quantity"] %></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Part Added</td>
+                      </tr>
+                  <% end %>
+              <% end %>
+              </tr>
+              <tr>
+                <% count_of_updated_parts = 0 %>
+                <% version["commonCupParts"].each_with_index do |value,index| %>
+                    <% if value["demand_quantity"] != value["previousQty"] %>
+                        <% count_of_updated_parts = count_of_updated_parts + 1 %>
+                      <tr>
+                        <% if value["box_number"].present? %>
+                          <td style="width:5%"><%= value["box_number"]%>/<%= value["tray"].split("-")[1] %></td>
+                        <% else %>
+                          <td style="width:5%"><%= value["tray"].split("-")[1] %></td>
+                        <% end %>
+                        <td><%= value["partObj"]["number"] %></td>
+                        <td>-</td>
+                        <td><%= value["demand_quantity"] %></td>
+                        <td><%= value["previousQty"]%></td>
+                        <td>Quantity Updated</td>
+                      </tr>
+                  <% end %>
+              <% end %>
+              </tr>
+              <% unless version["deletedCupParts"].blank? %>
+                  <% version["deletedCupParts"].each_with_index do |value_for_deleted_cup_parts,index_for_deleted_cup_parts| %>
+                      <tr>
+                        <% if value_for_deleted_cup_parts["box_number"].present? %>
+                          <td style="width:5%"><%= value_for_deleted_cup_parts["box_number"]%>/<%= value_for_deleted_cup_parts["tray"].split("-")[1] %></td>
+                        <% else %>
+                          <td style="width:5%"><%= value_for_deleted_cup_parts["tray"].split("-")[1] %></td>
+                        <% end %>
+                          <td><%= value_for_deleted_cup_parts["partObj"]["number"] %></td>
+                          <td><%= value_for_deleted_cup_parts["demand_quantity"] %></td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>Part Deleted</td>
+                      </tr>
+                  <% end %>
+              <% end %>
+            </table>
+          </tr>
+          <%if version["note"].present? %>
+            <p style="color: red">Note: <%= version["note"] %> in version<%= version["fromVersion"]%>.</p>
+          <%end%>
+        </table>
+    <% end %>
+<% elsif params[:commit] == 'Print Internal Label' %>
+    <% @change_data.each do |version| %>
+        <% unless version["addedCupParts"].blank? %>
+            <% version["addedCupParts"].each_with_index do |value_for_added_cup_parts,index_for_added_cup_parts| %>
+                <% generate_barcode_for_all_in_one(value_for_added_cup_parts["partObj"]["number"].upcase) %>
+                 <% if value_for_added_cup_parts["box_number"].present? %>
+                    <%= "<div class='page'>
+                    <div class='#{(value_for_added_cup_parts["partObj"]["number"].size.to_i>14)? 'part_13px':'part_15px'}'>#{value_for_added_cup_parts["partObj"]["number"]}</div>
+                    <div class='cup_qty'><span class='cup'>Box#{value_for_added_cup_parts["box_number"]}-#{value_for_added_cup_parts["tray"].split("-")[1]}</span><span class='qty'>#{(value_for_added_cup_parts["demand_quantity"].downcase=='wl')? " " : "Qty- #{value_for_added_cup_parts["demand_quantity"]}"}</span></div><hr/>
+                    <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+value_for_added_cup_parts["partObj"]["number"].upcase.split("").map(&:ord).join("")+'.png' )}</div>
+                    <div class='part'>&nbsp;</div><div class='cup_qty'><span class='cup'>&nbsp;</span><span class='qty'>&nbsp;</span></div>
+                    </div>".html_safe %>
+                 <% else %>
+                    <%= "<div class='page'>
+                    <div class='#{(value_for_added_cup_parts["partObj"]["number"].size.to_i>14)? 'part_13px':'part_15px'}'>#{value_for_added_cup_parts["partObj"]["number"]}</div>
+                    <div class='cup_qty'><span class='cup'>#{value_for_added_cup_parts["tray"].split("-")[1]}</span><span class='qty'>#{(value_for_added_cup_parts["demand_quantity"].downcase=='wl')? " " : "Qty- #{value_for_added_cup_parts["demand_quantity"]}"}</span></div><hr/>
+                    <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+value_for_added_cup_parts["partObj"]["number"].upcase.split("").map(&:ord).join("")+'.png' )}</div>
+                    <div class='part'>&nbsp;</div><div class='cup_qty'><span class='cup'>&nbsp;</span><span class='qty'>&nbsp;</span></div>
+                    </div>".html_safe %>
+                 <% end %>
+            <% end %>
+        <% end %>
+
+        <% version["commonCupParts"].each_with_index do |value,index| %>
+            <% if value["demand_quantity"] != value["previousQty"] %>
+                <% generate_barcode_for_all_in_one(value["partObj"]["number"].upcase) %>
+                <% if value["box_number"].present? %>
+                  <%= "<div class='page'>
+                    <div class='#{(value["partObj"]["number"].size.to_i>14)? 'part_13px':'part_15px'}'>#{value["partObj"]["number"]}</div>
+                    <div class='cup_qty'><span class='cup'>Box#{value["box_number"]}-#{value["tray"].split("-")[1]}</span><span class='qty'>#{(value["demand_quantity"].downcase=='wl')? " " : "Qty- #{value["demand_quantity"]}"}</span></div><hr/>
+                    <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+value["partObj"]["number"].upcase.split("").map(&:ord).join("")+'.png' )}</div>
+                    <div class='part'>&nbsp;</div><div class='cup_qty'><span class='cup'>&nbsp;</span><span class='qty'>&nbsp;</span></div>
+                    </div>".html_safe %>
+                <% else %>
+                  <%= "<div class='page'>
+                    <div class='#{(value["partObj"]["number"].size.to_i>14)? 'part_13px':'part_15px'}'>#{value["partObj"]["number"]}</div>
+                    <div class='cup_qty'><span class='cup'>#{value["tray"].split("-")[1]}</span><span class='qty'>#{(value["demand_quantity"].downcase=='wl')? " " : "Qty- #{value["demand_quantity"]}"}</span></div><hr/>
+                    <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+value["partObj"]["number"].upcase.split("").map(&:ord).join("")+'.png' )}</div>
+                    <div class='part'>&nbsp;</div><div class='cup_qty'><span class='cup'>&nbsp;</span><span class='qty'>&nbsp;</span></div>
+                    </div>".html_safe %>
+                <% end %>
+            <% end %>
+        <% end %>
+    <% end %>
+<% end %>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<% if response["errMsg"] == "" %>
+    <div class="text-right">
+      <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :title => "View/Download as Excel Spreadsheet"), download_excel_custom_kits_path(params),method: :post %>
+    </div>
+<% end %>
+<% unless response.kind_of? String %>
+    <!--<div id="restock">-->
+      <!--<%# if @totalpage > 0 %>-->
+          <!--<small> <%#= I18n.t("pagination",:scope => "agusta.agusta_inquiry",:start_page => params[:page], :end_page => @totalpage ).html_safe %></small>-->
+      <!--<%# end %>-->
+      <!--<br/>-->
+    <!--</div>-->
+    <div id="inquiry_result" style="overflow-x:scroll;">
+      <p><b><%= t 'custom_kits.delivery_reports.reports' %></b></p>
+      <table style="height:140px; white-space: nowrap !important; " class="table tablesorter">
+        <thead>
+        <tr>
+          <th><%= t('custom_kits.delivery_reports.binLocation') %></th>
+          <th><%= t('custom_kits.delivery_reports.aircraftSn') %></th>
+          <th><%= t('custom_kits.delivery_reports.dateOrder') %></th>
+          <th><%= t('custom_kits.delivery_reports.reqId') %></th>
+          <th><%= t('custom_kits.delivery_reports.kitMaster') %></th>
+          <th><%= t('custom_kits.delivery_reports.dueDate') %></th>
+          <th><%= t('custom_kits.delivery_reports.dueTime') %></th>
+          <th><%= t('custom_kits.delivery_reports.sta') %></th>
+        </tr>
+        </thead>
+        <% if response["errMsg"] == "" %>
+            <% @delivery_report["aircraftSn"].each_with_index do |result,i| %>
+                <tr>
+                  <td><%= response["binLocation"][i] %></td>
+                  <td><%= response["aircraftSn"][i] %></td>
+                  <td><%= response["dateOrder"][i] %></td>
+                  <td><%= response["reqId"][i] %></td>
+                  <td><%= response["kitMaster"][i] %></td>
+                  <td><%= response["dueDate"][i] %></td>
+                  <td><%= response["dueTime"][i] %></td>
+                  <td><%= response["sta"][i] %></td>
+                </tr>
+            <% end %>
+        <% end %>
+      </table>
+    </div>
+    <%# if (response && response["errMsg"] == "") %>
+        <%#= will_paginate @result %>
+    <%# end %>
+<% else %>
+    <br/>
+    <p class="alert alert-danger"><%= response %></p>
+<% end %>

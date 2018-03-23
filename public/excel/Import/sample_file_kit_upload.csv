@@ -1,0 +1,14 @@
+#KitNo*,Name,KitBincenter*,PartNo*,TrayNo**,Qty*,MesaOemBinNo,Customer Number*,Kit Media Type ID,Kit Media Type Name **,# of copies*,Notes*,partBinCenter* ,uom* , KitReceiveFlag
+New Kit,RAMP FLOOR KIT 6,1322,NAS390B8P,3,55,,29540,B,24 RTB Tacklebox,3,,RACK56,EA,TRUE
+New kit_test,RAMP FLOOR KIT 6,1322,NAS2005V03,6,65,,29540,B,24 RTB Tacklebox,3,,RACK56,EA,TRUE
+
+
+# Instructions
+# To Comment a line  start it with #
+# Fields marked with * can not have empty values .
+# Available Media Types Are : (case sensitive)	24 RTB Tacklebox	8 RTB Tacklebox	24 Dividable Large Tub	8 Dividable Small Tub	16 Dividable Medium Tub.
+# KitBincenter , Kit Media Type , PartBinCenter ,# of Copies fields are mandatory only for the first line of a new kit.
+# For creating a new kit with a randomly generated number its kitNo should start with 'new' keyword followed by anything, it will automatically create a kit with the next sequential number.
+# For Eg if you want to create a new kit with three parts in it. Its Kit Number can be 'New kit' in all the three rows.
+# If Kit Media Type Name is not provided , the system Configure the kit automatically for Configurable media Type.
+# For AutoConfigurable Process , if no tray number is provided , the parts will be arranged in descending cup size order (i.e . Large , Medium , Small ).

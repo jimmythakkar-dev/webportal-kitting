@@ -1,0 +1,74 @@
+<% if @response_get_bins && !@response_get_bins["whsid"].reject(&:blank?).empty? %>
+    <div class="table_title">
+      <strong><%= t('bin_map_for_part_no',:scope=>"remote_inv.search") %> <%= @part_number %></strong>
+    </div>
+    <div class="table-responsive">
+      <table class="table tablesorter" >
+        <thead>
+        <% if session[:order_flag] == "Y" %>
+            <th><%= 'RE-STOCK' %></th>
+        <% end %>
+        <th><%= 'KLX' %></th>
+        <th><%= t('loc',:scope=>"open_orders._open_order") %></th>
+        <th><%= t('BIN_QTY',:scope => "panstock_requests.bulk_form_process") %></th>
+        <th><%= t('pck_qty',:scope=>"bin_line_station.search_part_number") %></th>
+        <th><%= t('UM',:scope => "panstock_requests.send_panstock_changes")%></th>
+        <th><%= t('bin_id',:scope => "bin_line_station.search_part_number")%></th>
+        <th><%= t('cust_ref_id',:scope => "remote_inv.search").html_safe%></th>
+        <th><%= t('order_date',:scope=>"bin_line_station.search_part_number") %></th>
+        <th><%= t('order_qty',:scope=>"bin_line_station.search_part_number") %></th>
+        </thead>
+        <% amc_qty_arr = EngineeringCheck.get_convert_to_array(@response_get_bins["amcQty"]) %>
+        <% order_date = BinLineStation.set_order_date @response_get_bins %>
+        <% order_quantity = BinLineStation.set_order_quantity @response_get_bins %>
+        <% @response_get_bins["whsid"].join(",").split(",").each_index do |index| %>
+            <tr>
+              <% if session[:order_flag] == "Y" %>
+                  <td>
+                    <% ysn_selected =  "#{@part_number}!#{@response_get_bins["whsid"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["bin"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["amcQty"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["packQty"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["scancode"].join(",").split(",")[index].gsub('&nbsp;','0')}"%>
+                    <% if session[:multorder] == "Y" || !(@stock.include? ysn_selected)  %>
+                        <% value = "#{@part_number}!#{@response_get_bins["whsid"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["bin"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["amcQty"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["packQty"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["scancode"].join(",").split(",")[index].gsub('&nbsp;','0')}" %>
+                        <%= content_tag(:p,"",class: "btn btn-default re_stock", value: value,onclick: "addRemoveToCart('#{value}',this);" ) do %>
+                            <span class="glyphicon glyphicon-plus"></span>
+                        <% end %>
+                        <%#= check_box_tag 'chkorder[]', "#{@part_number}!#{@response_get_bins["whsid"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["bin"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["amcQty"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["packQty"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["scancode"].join(",").split(",")[index].gsub('&nbsp;','0')}",false,:onclick => "addRemoveToCart('#{@part_number}');" %>
+                    <% else %>
+                        <% value = "#{@part_number}!#{@response_get_bins["whsid"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["bin"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["amcQty"].join(",").split(",")[index].gsub('&nbsp','0')}!#{@response_get_bins["packQty"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@response_get_bins["scancode"].join(",").split(",")[index].gsub('&nbsp;','0')}" %>
+                        <%= content_tag(:p,"",class: "btn btn-default re_stock", value: value,onclick: "addRemoveToCart('#{value}',this);",disabled: "disabled" ) do %>
+                            <span class="glyphicon glyphicon-ok"></span>
+                        <% end %>
+                    <% end %>
+                  </td>
+              <% end %>
+              <td><%= @response_get_bins["whsid"].join(",").split(",")[index].gsub('&nbsp','0') %></td>
+              <td><%= @response_get_bins["whsdesc"].join(",").split(",")[index]%></td>
+              <td><%= @response_get_bins["amcQty"].join(",").split(",")[index].gsub('&nbsp','0') %></td>
+              <td><%= @response_get_bins["packQty"].join(",").split(",")[index].gsub('&nbsp;','0') %></td>
+              <td><%= @response_get_bins["um"].join(",").split(",")[index] %></td>
+              <td><%= @response_get_bins["bin"].join(",").split(",")[index].gsub('&nbsp;','0') %></td>
+              <td><%= @response_get_bins["ref"].join(",").split(",")[index].gsub('&nbsp;','0') %></td>
+              <td><%= order_date[index] %></td>
+              <td><%= order_quantity[index]%></td>
+            </tr>
+        <% end %>
+        <% total_amc_qty = amc_qty_arr.map(&:to_i).inject{|sum,val| sum + val }%>
+      </table>
+    </div>
+    <% unless total_amc_qty.blank? %>
+        <% if total_amc_qty > 0 %>
+            <div class="table_title text-right">
+              <strong><%= t('Total',:scope => "floor_views.index")%>:&nbsp;<%= total_amc_qty %></strong>
+            </div>
+        <% end %>
+    <% end %>
+<% else %>
+    <% if request.xhr? %>
+        <% if @error_get_bins && @error_get_bins.present? %>
+            <div class="row">
+              <div class="col-sm-12">
+                <p class="alert alert-danger"><%= @error_get_bins %></p>
+              </div>
+            </div>
+        <% end %>
+    <% end %>
+<% end %>

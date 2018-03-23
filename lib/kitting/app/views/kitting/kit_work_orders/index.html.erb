@@ -1,0 +1,96 @@
+<h2 class="body_header">Work Order</h2>
+<%= render 'search' %>
+<span class="text-center">
+<%= render 'layouts/message_display' %>
+</span>
+<% if @kit_work_orders && @kit_work_orders.present? %>
+    <div class="row">
+      <div class="col-lg-9">
+        <p><%= page_entries_info @kit_work_orders %></p>
+      </div>
+      <div class="col-lg-3 text-right">
+        <%= link_to "Shipped Orders", kitting.kit_work_orders_path(:location => @location.try(:id)) %>
+      </div>
+    </div>
+    <br>
+    <%= form_tag kit_work_orders_print_path, :target =>'_blank' do  %>
+        <!--<div style="height: 400px; overflow-y: auto">-->
+        <div class="table-responsive work_order_list">
+          <table class="table tablesorter">
+            <thead>
+            <th>Kit Number </th>
+            <th>W/O Number</th>
+            <th>Queue </th>
+            <th>Due Date</th>
+            <% unless @block_pick %>
+                <th class="filter-false">Pick Sheet</th>
+                <th class="filter-false">Bag Label</th>
+            <% end %>
+            </thead>
+            <% @kit_work_orders.each_with_index do |kwo_no,index| %>
+                <% check_kwo = chk_kwo_present(kwo_no.id) %>
+                <tr>
+                  <td title=<%= kwo_no.kit.kit_media_type.name %>><%= link_to kwo_no.kit.customer_kit_part_number, kit_work_order_path(kwo_no) %></td>
+                  <td><%= kwo_no.work_order.order_number %></td>
+                  <td><span class="text-muted"><%= kwo_no.location.name %></span></td>
+                  <td><span class="text-muted"><%= link_to kwo_no.due_date.strftime("%m/%d/%Y"), edit_kit_work_order_path(kwo_no)  %></span></td>
+                  <% unless @block_pick %>
+                      <td class="text-center td_for_pct"><%= check_box_tag 'multi_pick_ticket[]',kwo_no.id, false %></td>
+                      <td class="text-center ch_td_for_wo"><%= check_box_tag 'print_label[]', kwo_no.id if check_kwo %></td>
+                  <% end %>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+        <!--</div>-->
+        <br>
+
+        <%= will_paginate @kit_work_orders %>
+        <% unless @block_pick %>
+            <div class="row">
+              <label class="col-sm-2 text-right">Sort By :</label>
+              <div class="col-sm-2">
+                <select name="pick_sort_by" class="form-control">
+                  <option>Bin Loc</option>
+                  <option>Part Number</option>
+                  <option>Seq Number</option>
+                </select>
+              </div>
+              <label class="col-sm-2 text-right">Picking Style :</label>
+              <div class="col-sm-3">
+                <select name="pick_style" class="form-control">
+                  <option>One Sheet per Kit</option>
+                  <option>Combine All</option>
+                </select>
+              </div>
+              <div class="col-sm-3">
+                <%= submit_tag 'Print Picksheet', class: 'btn btn-primary', id: 'print_selected_wo' %>
+              </div>
+            </div>
+            <%= image_seperator %>
+            <div class="row">
+              <label class="col-sm-2 text-right">Sort By :</label>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <select name="print_sort_by" class="form-control">
+                    <option>Seq Number</option>
+                    <option>Bin Location</option>
+                    <option>Part Number</option>
+                  </select>
+                <span class="input-group-btn">
+                        <%= submit_tag 'Print Inner Labels', class: 'btn btn-primary', id: 'print_in_labels_for_wo' %>
+                      </span>
+                </div>
+              </div>
+              <div class="col-sm-4 text-right">
+                <%= submit_tag 'Print Outer Labels', class: 'btn btn-primary', id: 'print_out_labels_for_wo' %>
+
+              </div>
+            </div>
+        <% end %>
+        <br>
+    <% end %>
+<% else %>
+    <p class="text-primary">No records found</p>
+<% end %>
+

@@ -1,0 +1,60 @@
+.alt {
+  background: none repeat scroll 0 0 #F3F3F3;
+}
+
+th {
+  color: #888888;
+  font-weight: normal;
+}
+
+.ft_blue {
+  color: #006699;
+}
+
+table {
+  &.email_table {
+    width: 100%;
+    tr {
+      th {
+        background-color: #006699;
+        text-align: center;
+        color: #FFFFFF;
+      }
+      td {
+        text-align: center;
+      }
+    }
+  }
+  td.left_align {
+    text-align: left;
+  }
+  &.fuzzy_table {
+    border: 0;
+    width: 620px;
+    font-size: 10px;
+  }
+  tr th.floor_center_align {
+    text-align: center;
+  }
+  .location_table {
+    border: 0;
+    width: 620px;
+  }
+  tr th .location_table {
+    width: 20%;
+    vertical-align: top;
+    text-align: left;
+  }
+}
+
+.thankyou_msg {
+  background: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #cc0000;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.thankyou_table tr {
+  float: left;
+}

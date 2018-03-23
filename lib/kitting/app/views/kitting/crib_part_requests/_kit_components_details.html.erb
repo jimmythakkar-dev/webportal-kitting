@@ -1,0 +1,63 @@
+<% if @kit_parts_details.empty? %>
+    <strong> No parts found for selected Kit. </strong>
+<% else %>
+    <div class="main_order_div">
+      <div class="table-responsive">
+        <table id="table" class="<%= params[:additional_part].present? ? "extra_order_req" : "main_order_req" %> table">
+          <tbody>
+          <tr>
+            <th><%= t 'agusta.part_no' %></th>
+            <th><%= t 'agusta.part_qty' %></th>
+            <th><%= "UOM" %></th>
+            <th><%= t 'agusta.quantity' %></th>
+            <th><%= t 'agusta.motive' %></th>
+            <th><%= t 'agusta.note' %></th>
+            <th style="background: #ffffff"></th>
+          </tr>
+          <% @kit_parts_details.each_with_index do |kit_component, index| %>
+              <tr class='<%= "philly_tr_#{index}" %>'>
+                <td align="left" style="text-align:left">
+                  <p id="philly_qty_<%= index %>" val="<%= kit_component.demand_quantity %>" style="display:none;"></p>
+                  <input type="hidden" value="<%=kit_component.part.part_number%>" name="order[order_part_details_attributes][<%= index %>][part_number]" id="philly_pn_<%= index %>">
+                  <input type="hidden" value="<%=kit_component.uom %>" name="order[order_part_details_attributes][<%= index %>][uom]" id="philly_uom_<%= index %>">
+                  <%=kit_component.part.part_number%>
+                </td>
+                <td>
+                  <%= kit_component.demand_quantity %>
+                </td>
+                <td>
+                  <%= kit_component.uom %>
+                </td>
+                <td>
+                  <input type="text" value="0" size="10" name="order[order_part_details_attributes][<%= index %>][quantity]" id="philly_quantity_<%= index %>" class="form-control phillyQuantity">
+                </td>
+                <td>
+                  <select name="order[order_part_details_attributes][<%= index %>][reason_code]" id="philly_motive_<%= index %>" class="form-control">
+                    <option title="Select" selected="selected" value="Select">Select</option>
+                    <option value="Requesting a part not called out in BOM">Requesting a part not called out in BOM</option>
+                    <option value="Requesting 1-up/1-down from part called out in BOM">Requesting 1-up/1-down from part called out in BOM</option>
+                    <option value="Alternative for Job Card or Standard Kit Shortage">Alternative for Job Card or Standard Kit Shortage</option>
+                    <option value="Part kitted was damaged/lost">Part kitted was damaged/lost</option>
+                    <option value="Kit packed incorrectly">Kit packed incorrectly</option>
+                    <option value="Additional qty needed">Additional qty needed</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" size="10" name="order[order_part_details_attributes][<%= index %>][note]" id="philly_comment_<%= index %>" class="form-control agustaPart">
+                </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+      <p id="tr_count" style="display:none;" value="<%= @kit_parts_details.count %>"><%= @kit_parts_details.count %></p>
+      <div class="col-sm-12">
+        <%= submit_tag t("agusta.reset_form"), :class => "btn btn-info btn-large", :onclick => "agustaPhillyResetFM();return false;" %>&nbsp;
+        <%= submit_tag t("agusta.send"), :id => "cribSubmit", :class => "btn btn-info btn-large" %>&nbsp;
+        <div style="float: right;">
+          <a href="javascript:void(0);" onclick="agustaPhillyAddParts();return false;" class="btn btn-info btn-large"><%= t 'agusta.pop_up' %></a>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+<% end %>

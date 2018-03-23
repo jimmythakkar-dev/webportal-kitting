@@ -1,0 +1,12 @@
+<%= form_tag(search_cardex_kits_path,method: 'POST', :class => "form-horizontal") do %>
+    <div class="form-group">
+      <%= label_tag 'Search Kit', nil, :class => "control-label col-sm-3" %>
+      <div class="col-sm-4">
+        <%= text_field_tag :kit_number, params[:kit_number].try(:strip).try(:upcase) || params[:id].try(:strip).try(:upcase), class: 'kit_number_search_box form-control',:required => true  %>
+      </div>
+      <%= submit_tag 'Search', :class => "btn btn-primary", id: "searchCardexKit" %>
+    </div>
+<% end%>
+<script>
+    document.getElementById("kit_number").value = "";
+</script>

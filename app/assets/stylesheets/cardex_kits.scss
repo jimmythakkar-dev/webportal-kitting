@@ -1,0 +1,306 @@
+//colors
+$white: #ffffff;
+$black: #000000;
+$color_blumine_approx: #275583;
+$color_storm_dust_approx: #646464;
+$color_alto_approx: #dddddd;
+$color_celeste_approx: #ccc;
+$color_pink_swan_approx: #bbb;
+$color_gallery_approx: #eee;
+$color_star_dust_approx: #a1a1a1;
+$color_east_bay_approx: #33577b;
+$color_cadet_blue_approx: #a5b0c0;
+$color_vis_vis_approx: #fff0a2;
+$color_quill_gray_approx: lightgray;
+$color_tuatara_approx: #343434;
+$color_bon_jour_approx: #e1e1e1;
+$color_silver_chalice_approx: #adadad;
+$color_chicago_approx: #5a5a5a;
+$color_fuscous_gray_approx: #545454;
+
+//@extend-elements
+//original selectors
+//#small_yellow_kit li p, .kit_container li p
+%extend_1 {
+    font-size: 9px;
+    font-weight: normal;
+    white-space: nowrap;
+    list-style: none;
+}
+
+//original selectors
+//.gridster.gridster_part_3 ul, .gridster.gridster_part_3_0 ul
+%extend_2 {
+     width: 850px;
+     height: 440px !important;
+     top: 10px;
+     overflow: hidden;
+ }
+
+
+body {
+    padding: 0;
+    margin: 0 auto;
+    font-size: 13px;
+}
+.main {
+    width: 100%;
+    display: inline-block;
+    background-color: $white;
+    color: $black;
+h2 {
+    color: $color_blumine_approx;
+}
+a {
+    color: $color_storm_dust_approx;
+    padding: 10px;
+    font-size: 14px;
+    text-decoration: none;
+}
+}
+.main-box {
+    margin-left: 250px;
+    padding: 100px 0 0 100px;
+}
+.part_list {
+    border-right: 1px solid #DDDDDD;
+ul li {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-bottom: 1px solid #D0D0D0;
+    color: #33577B;
+    list-style: outside none none;
+    padding: 10px 15px 10px 5px;
+    text-align: right;
+&:hover {
+     background-color: #A5B0C0;
+     color: $white;
+     cursor: pointer;
+ }
+span {
+    color: #FFF0A2;
+    padding-left: 10px;
+}
+}
+}
+.template_btn {
+    float: left;
+    background-color: $white;
+    border: 1px solid $color_celeste_approx;
+    margin: 10px;
+    text-decoration: none;
+//Instead of the line below you could use @includeborder-radius($radius, $vertical-radius)
+border-radius: 10px;
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 0 9px 0 $color_pink_swan_approx;
+p {
+    padding: 0 10px;
+    color: $black;
+}
+img {
+    padding: 10px;
+}
+}
+.fill_all {
+    padding: 5px 10px;
+    color: $black;
+    text-decoration: none;
+    background: $color_gallery_approx;
+    border: 1px solid $color_star_dust_approx;
+    z-index: 10;
+}
+.page-header {
+    background-color: $white;
+    text-align: center;
+    margin: 0;
+}
+.page-footer {
+    background-color: $color_quill_gray_approx;
+    color: $color_tuatara_approx;
+    padding: 10px 10px 0 10px;
+    text-align: left;
+    font-size: 11px;
+}
+.page-title {
+    padding: 10px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+.box-no {
+    font-size: 13px;
+    position: absolute;
+    left: 5px;
+    bottom: 6px;
+    opacity: 1;
+}
+.gridster {
+    padding-top: 20px;
+    opacity: 1;
+.gs-w {
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 0 6px 0 $color_fuscous_gray_approx;
+}
+&.gridster_part_3 {
+     width: 850px;
+     padding-top: 0;
+ul {
+@extend %extend_2;
+}
+}
+&.gridster_part_3_0 {
+     width: 850px;
+     padding-top: 0;
+ul {
+@extend %extend_2;
+}
+}
+&.gridster_part_3_1 {
+     width: 180px;
+     top: 10px;
+     float: left;
+ul {
+    width: 180px;
+    height: 180px !important;
+    overflow: hidden;
+}
+}
+&.gridster_part_3_2 {
+     width: 180px !important;
+     top: 10px;
+     float: right;
+ul {
+    width: 180px;
+    height: 180px !important;
+    overflow: hidden;
+}
+}
+}
+.container {
+    background-color: $white;
+}
+#myTab {
+    background-color: $color_alto_approx;
+    padding: 5px 5px 0 5px;
+}
+.selected_cup {
+}
+.part_tooltip {
+    position: absolute;
+    z-index: 20;
+    background-color: $color_bon_jour_approx;
+    padding: 10px;
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 2px 8px 0 $color_silver_chalice_approx;
+    border: 1px solid $color_celeste_approx;
+//Instead of the line below you could use @includeborder-radius($radius, $vertical-radius)
+border-radius: 5px;
+    display: none;
+}
+.main-div {
+    position: relative;
+    z-index: 1;
+}
+#small_yellow_kit {
+    width: 420px !important;
+    margin: 0 auto;
+li p {
+@extend %extend_1;
+}
+}
+#eight_rtb_tackle_box {
+    width: 560px !important;
+    margin: 0 auto;
+.gs-w {
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 0 6px 0 $color_fuscous_gray_approx;
+}
+li {
+    font-size: 8px;
+    font-weight: normal;
+    white-space: nowrap;
+    list-style: none;
+}
+}
+#twenty_four_rtb_tackle_box {
+    width: 720px !important;
+    margin: 0 auto;
+.gs-w {
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 0 6px 0 $color_fuscous_gray_approx;
+}
+li {
+    font-size: 8px;
+    font-weight: normal;
+    white-space: nowrap;
+    list-style: none;
+}
+}
+.small_orange_kit {
+    margin-left: 30px;
+}
+************************************ {
+#eight_rtb_tackle_box ul {
+    background-color: $white;
+    border: 2px solid $color_alto_approx;
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 0 8px 0 #5A5A5A;
+    width: 560px;
+    height: 250px !important;
+    overflow: hidden;
+}
+&.gridster ul {
+     background-color: $white;
+     border: 2px solid $color_alto_approx;
+ //Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+ box-shadow: 0 0 8px 0 #5A5A5A;
+     width: 360px;
+     height: 480px !important;
+     overflow: hidden;
+ }
+}
+.kit_container {
+    width: 850px;
+    margin: 0 auto;
+li p {
+@extend %extend_1;
+}
+}
+@media print {
+    .part_list {
+        display: none;
+    }
+    .print {
+        display: none;
+    }
+    .gridster {
+        display: block;
+    }
+}
+a.back_btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding: 5px 10px;
+    color: $black;
+    text-decoration: none;
+    background: $color_gallery_approx;
+    border: 1px solid $color_star_dust_approx;
+    z-index: 10;
+}
+.cup_parts .box-no {
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+.bs-example.bs-example-tabs {
+    padding-top: 20px;
+}
+************************************************************************ #twenty_four_rtb_tackle_box ul {
+    background-color: $white;
+    border: 2px solid $color_alto_approx;
+//Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+box-shadow: 0 0 8px 0 #5A5A5A;
+    width: 720px;
+    height: 440px !important;
+    overflow: hidden;
+}

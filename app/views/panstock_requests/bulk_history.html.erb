@@ -1,0 +1,109 @@
+<h2 class="body_header f_left" ><%= t('Stock_Action_Request',:scope => "panstock_requests.bulk_history")%> </h2>
+<%= image_seperator %>
+<p><%= t('_desc_bulk_hist',:scope => "panstock_requests.bulk_history").html_safe %> <br /></p>
+<%= image_seperator %>
+<div id="bulk_history">
+  <%if @pan_stock_entry_response["errMsg"] == ""%>
+      <% if !@pan_stock_entry_response["approvalStatusList"].include?("None") %>
+          <div class="row">
+            <div class="col-sm-7">&nbsp;</div>
+            <div class="col-sm-1">
+              <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading", :style =>"visibility:hidden" %>
+            </div>
+            <div class="col-sm-2"><%= t('Date_Range',:scope => "panstock_requests.bulk_history")%></div>
+            <div class="col-sm-2">
+              <%= select_tag(:days, options_for_select(@days_format, :selected => params[:days]), :'data-remote' => 'true', :'data-url' => url_for(:controller => 'panstock_requests', :action => 'bulk_history_days') ,:class => 'form-control') %>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <p class="alert alert-danger"><%= t('unapproved_order',:scope => "panstock_requests.bulk_history").html_safe %> </p>
+            </div>
+          </div>
+      <%else%>
+          <div class="row">
+            <div class="col-sm-12">
+              <% if @pan_stock_entry_response["errCode"] != "1" %>
+                  <div class="col-sm-2" title="View/Download as Excel Spreadsheet">
+                    <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"),panstock_history_excel_panstock_requests_path(params[:days],:format => 'xls') %>
+                  </div>
+                  <div class="col-sm-1">
+                    <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading", :style =>"visibility:hidden" %>
+                  </div>
+              <%else%>
+                  &nbsp;
+              <%end%>
+              <div class ="col-sm-5">&nbsp;</div>
+              <div class = "col-sm-2 text-right"><%= t('Date_Range',:scope => "panstock_requests.bulk_history")%></div>
+              <div class = "col-sm-2 pull-right"><%= select_tag(:days, options_for_select(@days_format, :selected => params[:days]), :'data-remote' => 'true', :'data-url' => url_for(:controller => 'panstock_requests', :action => 'bulk_history_days'), :class => "col-sm-12") %>
+              </div>
+            </div>
+          </div>
+          <% if @pan_stock_entry_response["errCode"] != "1" %>
+              <%= form_tag  bulk_form_process_panstock_requests_path(:days => params[:days]) do%>
+                  <%= hidden_field_tag  "myaction", "5"%>
+                  <%= hidden_field_tag  "form5267", "1"%>
+                  <%= hidden_field_tag  "iAction", "UB"%>
+                  <%= hidden_field_tag  "ApprovalStatus", "Approved" %>
+                  <div><%= t('APPROVE_ALL_CHECKED',:scope => "panstock_requests.bulk_history")%>
+                    <span id="check_all"><%= t('CHECK_ALL',:scope => "panstock_requests.bulk_history")%></span>&nbsp;<span id="uncheck_all"> <%= t('UNCHECK_ALL',:scope => "panstock_requests.bulk_history")%></span> </div>
+                  <table class="table tablesorter" >
+                    <thead>
+                    <tr>
+                      <th><%= t('Approve',:scope => "panstock_requests.bulk_history")%></th>
+                      <th><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></th>
+                      <th><%= t('QUANTITY',:scope => "panstock_requests._edit_panstock") %></th>
+                      <th><%= t('Line_Station' ,:scope => "panstock_requests._edit_panstock") %></th>
+                      <th><%= t('Date',:scope => "panstock_requests._edit_panstock")%></th>
+                      <th><%= t('by',:scope => "panstock_requests.bulk_history") %></th>
+                      <th><%= t('ACTION',:scope => "panstock_requests._edit_panstock") %></th>
+                    </tr>
+                    </thead>
+                    <%(0..@len-1).each do |i|%>
+                        <% if @pan_stock_entry_response["approvalStatusList"][i] == "None" %>
+                            <tr>
+                              <td><%= check_box_tag 'approval107[]', @pan_stock_entry_response['idlist'][i] %></td>
+                              <td><%= @pan_stock_entry_response["originalPNList"][i]  %></td>
+                              <td><%= @pan_stock_entry_response["qtyList"][i]%></td>
+                              <td><%= @pan_stock_entry_response["lineStationList"][i].join(",")%></td>
+                              <td><%= Date.strptime(@pan_stock_entry_response["actionDateList"][i],"%m/%d/%Y").strftime("%m/%d/%y") %></td>
+                              <td><%= @pan_stock_entry_response["originatorList"][i]%></td>
+                              <td><%= @pan_stock_entry_response["actionCodeList"][i]%></td>
+                            </tr>
+                        <% end %>
+                    <%end%>
+                  </table>
+                  <div>
+                    <%= t('approved_by',:scope=> "panstock_requests.action_history")%>
+                    <%= text_field_tag :ApprovedBy %>
+                    <%= submit_tag t('Submit_Request',:scope => "panstock_requests.bulk_history"), :id => "panstock_bulk_submit" %>
+                  </div>
+              <%end%>
+
+          <%end%>
+      <%end%>
+  <%else%>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="col-sm-7">&nbsp;</div>
+          <div class="col-sm-1">
+            <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading", :style =>"visibility:hidden" %>
+          </div>
+          <div class="col-sm-2"><%= t('Date_Range',:scope => "panstock_requests.bulk_history")%></div>
+          <div class="col-sm-2">
+            <%= select_tag(:days, options_for_select(@days_format, :selected => params[:days]), :'data-remote' => 'true', :'data-url' => url_for(:controller => 'panstock_requests', :action => 'bulk_history_days'),:class => 'col-sm-12') %>
+          </div>
+        </div>
+      </div>
+      <%if params[:days] == "0" || params[:days] == ""%>
+          <% @errmsg = "Today"%>
+      <%elsif params[:days] == "365"%>
+          <%@errmsg = "This Year"%>
+      <%elsif params[:days] == "1000"%>
+          <%@errmsg = "All Records"%>
+      <%else%>
+          <%@errmsg = "#{params[:days]}" + 'days' %>
+      <%end%>
+      <p class="alert alert-danger"><%= t('no_record',:scope => "panstock_requests.bulk_history")%> <%= "#{@errmsg}"%> </p>
+  <%end%>
+</div>

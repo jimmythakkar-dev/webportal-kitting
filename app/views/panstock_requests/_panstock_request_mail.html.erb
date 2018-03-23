@@ -1,0 +1,67 @@
+<h3>PANSTOCK ACTION REQUEST</h3>
+<table class="action_request">
+  <tr>
+    <td class="date_coloum">Submitted On: </td>
+    <td colspan="5"><b><%= Date.today.strftime("%_m/%d/%y") %></b></td>
+  </tr>
+  <tr>
+    <td>Building:  </td>
+    <td><b><%= params[:sendTo]%> </b></td>
+    <td> Line Station:  </td>
+    <td><b>  <%= params[:selLocation] %> </b></td>
+    <td>Bin</td>
+    <td><b><%= params[:Bincenter] %></b></td>
+  </tr>
+  <tr>
+    <td>Originator: </td>
+    <td><b> <%= params[:Originator] %> </b></td>
+    <td>Originator Tel: </td>
+    <td><b><%= params[:OriginatorPhone] %></b></td>
+    <td>Originator Pager: </td>
+    <td><b><%= params[:OriginatorPager] %></b></td>
+  </tr>
+  <tr>
+    <td>Requestor:  </td>
+    <td><b><%= params[:RequestorName] %></b></td>
+    <td>Requestor Tel: </td>
+    <td><b><%= params[:RequestorPhone] %></b></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Foreman: </td>
+    <td><b><%= params[:ForemanName] %></b></td>
+    <td>Foreman Tel: </td>
+    <td><b><%= params[:ForemanPhone] %></b></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<br />
+
+<table class="email_table">
+  <tr >
+    <td class="panstock_mail_head"><strong>ACTION CODE</strong></td>
+    <td class="panstock_mail_head"><strong>PART NUMBER</strong></td>
+    <td class="panstock_mail_head"><strong>QTY</strong></td>
+    <td class="panstock_mail_head"><strong>UM</strong></td>
+    <td class="panstock_mail_head"><strong>ONE TIME NEED?</strong></td>
+    <td class="panstock_mail_head"><strong>REASON / COMMENTS</strong></td>
+  </tr>
+  <%(0..14).each do |i|%>
+  <%if !@PartNoIn[i].nil?%>
+  <tr><td><%= @actioncode[i] %></td>
+    <td><%= @PartNoIn[i] %></td>
+    <td><%= @orderqty[i] %></td>
+    <td><%= @UMIn[i] %></td>
+    <td><%= @OneTimeNeedIn[i] %></td>
+    <td><%= @reasonForActionIn[i] %></td>
+  </tr>
+  <%end%>
+<%end%>
+<% if session[:autoApprove] == "Y" && session[:user_level] > "3" %>
+  <tr>
+    <td colspan="6"><%= "This request has been Auto Approved." %> </td>
+  </tr>
+<% end %>
+</table>

@@ -1,0 +1,76 @@
+//$("#kit_table").html("<%#= escape_javascript render(:partial => "kits/add_queue") %>")
+//$('.tablesorter').tablesorter({
+//// this will apply the bootstrap theme if "uitheme" widget is included
+//// the widgetOptions.uitheme is no longer required to be set
+//theme : "bootstrap",
+//
+//widthFixed: true,
+//
+//headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+//
+//// widget code contained in the jquery.tablesorter.widgets.js file
+//// use the zebra stripe widget if you plan on hiding any rows (filter widget)
+//widgets : [ "filter", "zebra" ],
+//
+//widgetOptions : {
+//// using the default zebra striping class name, so it actually isn't included in the theme variable above
+//// this is ONLY needed for bootstrap theming if you are using the filter widget, because rows are hidden
+//zebra : ["even", "odd"],
+//
+//// reset filters button
+//filter_reset : ".reset"
+//
+//// set the uitheme widget to use the bootstrap theme class names
+//// this is no longer required, if theme is set
+//// ,uitheme : "bootstrap"
+//
+//}
+//});
+//
+//$.extend($.tablesorter, {
+//// these classes are added to the table. To see other table classes available,
+//// look here: http://twitter.github.com/bootstrap/base-css.html#tables
+//table      : 'table table-bordered',
+//header     : '', // give the header a gradient background
+//footerRow  : '',
+//footerCells: '',
+//icons      : '', // add "icon-white" to make them white; this icon class is added to the in the header
+//  sortNone   : '',
+//  sortAsc    : '',
+//  sortDesc   : '',
+//  active     : '', // applied when column is sorted
+//  hover      : '', // use custom css here - bootstrap class may not override it
+//  filterRow  : '', // filter row class
+//  even       : '', // odd row zebra striping
+//  odd        : ''  // even row zebra striping
+//  });
+//
+//
+//$(".alert").html("<%#= flash[:notice] %>");
+//$("#location_id").change(function(){
+//    var kit = [];
+//    var location_id = $("#location_id").val();
+//    if($('input[type="checkbox"]:checked').length > 0)
+//    {
+//        $(':checkbox:checked').each(function(i){
+//            kit[i] = $(this).val();
+//        });
+//        $.ajax({
+//            url: 'add_queue/'+ kit +'/'+ location_id
+//        });
+//    }
+//    else
+//    {
+//        alert("Please check the kit")
+//        return false;
+//    }
+//});
+//
+//$("#filter_location_id").change(function(){
+//    $(location).attr('href',"/kits?location="+$(this).val());
+//});
+//    $("#kit_shop_id").change(function(){
+//        var numRand = Math.floor(Math.random()*10001)
+//        var part_num = 'KIT'+numRand
+//        $("#kit_kit_number").val(part_num)
+//    });

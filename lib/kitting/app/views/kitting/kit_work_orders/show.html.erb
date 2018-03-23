@@ -1,0 +1,112 @@
+<h2 class="body_header">Kit Information</h2>
+<%= image_seperator %>
+<% unless flash[:notice].blank? %>
+    <%= flash[:notice] %>
+<% end %>
+<div class="row">
+  <label class="col-sm-3">Kit No./ Job Card No.</label>
+  <div class="col-sm-3"><%= @kit.customer_kit_part_number %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">WorkOrder No.: </label>
+  <div class="col-sm-9"><%= @kit_work_order.work_order.order_number %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">stage: </label>
+  <div class="col-sm-9"><%= @kit_work_order.work_order.stage %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Serial Number: </label>
+  <div class="col-sm-9"><%= @kit_work_order.work_order.serial_number %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Due Date: </label>
+  <div class="col-sm-9"><%= @kit_work_order.due_date.strftime("%m/%d/%Y") %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Kit Media Type: </label>
+  <div class="col-sm-9"><%= @kit.kit_media_type.name.upcase %></div>
+</div>
+
+<div class="row">
+  <label class="col-sm-3">Queue: </label>
+  <div class="col-sm-9"><%= @kit_work_order.location.name %></div>
+</div>
+
+<div class="row">
+  <label class="col-sm-3">Bin Center: </label>
+  <div class="col-sm-9"><%= @kit.bincenter %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Part Bin Center: </label>
+  <div class="col-sm-9"><%= @kit.part_bincenter%></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Description </label>
+  <div class="col-sm-9"><%=  @kit.try(:description)%></div>
+</div>
+<%= image_seperator %>
+<div class="row">
+  <div class="col-sm-10">
+  </div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Note </label>
+  <% if @parent_kit_copy %>
+      <div class="col-sm-9"><%= @parent_kit_copy.kit.notes.html_safe %> </div>
+  <% else %>
+      <div class="col-sm-9"><%= @kit.notes.html_safe if @kit.notes.present? %> </div>
+  <% end %>
+  <% if @versions %>
+      <% @versions.each_with_index do |version, index| %>
+        <% if version.item_type == "Kitting::KitWorkOrder" && version.event == "update" %>
+              <div class="col-sm-offset-3 col-sm-9">
+                <small><%= "<em>Duedate</em> <strong>#{version.reify.due_date.strftime("%m/%d/%Y")}</strong><em> updated by</em> #{version.whodunnit} at #{version.created_at.strftime("%m/%d/%Y - %H:%M %p")}<br>".html_safe %></small>
+              </div>
+        <% end %>
+      <% end %>
+  <% end %>
+</div>
+<%= image_seperator %>
+<% if @kit.kit_media_type.kit_type == "binder" %>
+    <table class="table table-bordered">
+      <thead>
+      <p class="body_text_subhead">Kit Parts</p>
+      <th>Bags</th>
+      <th>Part Number</th>
+      <th>Quantity</th>
+      <th>UOM</th>
+      </thead>
+      <tbody>
+      <% @row_count = 0 %>
+      <% @kit.cups.where(:status => true).order(:cup_number).each_with_index do |cup,cup_index|  %>
+          <% unless cup.parts.blank?  %>
+              <% cup.cup_parts.where(:status => true).each_index do |index| %>
+                  <% @row_count = @row_count + 1 %>
+                  <tr>
+                    <td>
+                      <%= cup.cup_number %>
+                    </td>
+                    <td><%= cup.parts[0].part_number %> </td>
+                    <td><%= cup.cup_parts[0].demand_quantity %> </td>
+                    <td><%= cup.cup_parts[0].uom %> </td>
+                  </tr>
+              <% end %>
+          <% end %>
+      <% end %>
+      </tbody>
+    </table>
+<% end %>
+<%= image_seperator %>
+<%= hidden_field_tag :kit_id, @kit.id %>
+<%= hidden_field_tag :kit_type, @kit.kit_media_type.kit_type %>
+<% if session[:user_level] %>
+    <% if session[:user_level] > "3" %>
+        <div class="row">
+          <div class="col-sm-offset-9 col-sm-3">
+            <%= link_to 'Back', :back , class: 'btn btn-default pull-right' %>
+          </div>
+        </div>
+    <%end%>
+<%end%>
+<%= image_seperator %>

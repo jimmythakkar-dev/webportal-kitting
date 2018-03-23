@@ -1,0 +1,13 @@
+$('.gridster_container').html('<%= escape_javascript(render(:partial => '/kitting/kits/update_config_layout')) %>');
+
+
+// -------------------------------------------------------------------------------------
+//        Kit Details.js file's javascript
+// -------------------------------------------------------------------------------------
+$(document).ready(function() {
+    $("#populate_cup_detail").load_compartment();
+
+    $(".popup").click(function() {
+        $(this).add_part_popup();
+    });
+});

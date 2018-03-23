@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  kit_filling_id: 1
+  kit_copy_number: MyString
+  kit_number: MyString
+  user_name: MyString
+  cust_name: MyString
+  filled_state: 1
+  location_name: MyString
+  order_no_closed: MyString
+  scancode_closed: MyString
+  order_no_received: MyText
+  scancode_received: MyText
+
+two:
+  kit_filling_id: 1
+  kit_copy_number: MyString
+  kit_number: MyString
+  user_name: MyString
+  cust_name: MyString
+  filled_state: 1
+  location_name: MyString
+  order_no_closed: MyString
+  scancode_closed: MyString
+  order_no_received: MyText
+  scancode_received: MyText

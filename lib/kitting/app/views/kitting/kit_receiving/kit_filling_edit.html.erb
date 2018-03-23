@@ -1,0 +1,405 @@
+<style>
+    #show_message{
+        border: 1px solid;
+        margin: 10px 0px;
+        padding:15px 10px 15px 50px;
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        position:static;
+        color: #00529B;
+        background-color: #BDE5F8;
+
+    }
+</style>
+<%= render 'layouts/message_display' %>
+<h2 class="body_header">Kit Receiving </h2>
+<%= image_seperator %>
+
+<div class="row">
+  <label class="col-sm-3">Kit Number :</label>
+  <div class="col-sm-6 body_text_subhead"><%= @kit_copy.kit_version_number %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Kit Media Type :</label>
+  <div class="col-sm-6"><%= @kit_copy.kit.kit_media_type.name%>
+    <%= hidden_field_tag 'kit_type', @kit_copy.kit.kit_media_type.kit_type %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Kit Bin Center :</label>
+  <div class="col-sm-6"><%= @kit_copy.kit.bincenter %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Part Bin Center :</label>
+  <div class="col-sm-6"><%= @kit_copy.kit.try(:part_bincenter) %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Kit Status :</label>
+  <div class="col-sm-6"><%= display_status @kit_copy.kit.status %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Queue :</label>
+  <div class="col-sm-6"><%= @kit_copy.try(:location).try(:name) %></div>
+</div>
+<div class="row">
+  <label class="col-sm-3">Kit Description :</label>
+  <div class="col-sm-3"><%= @kit_copy.kit.description rescue "" %></div>
+</div>
+<%= image_seperator %>
+<div class="row">
+  <label class="col-sm-3">Kit Notes :</label>
+  <div class="col-sm-3"><%= @kit_copy.kit.notes.html_safe rescue "" %></div>
+</div>
+<%= image_seperator %>
+<% if @multi_media_kits %>
+    <p class="text-primary"><strong class="text-info"> Kit Media Types</strong> </p>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel mmty-panel">
+          <div class="panel-heading mmty-heading">
+            <ul class="nav mmty-nav-tab nav-tabs">
+              <% box_number = "" %>
+              <% @multi_media_kits.each_with_index do |mmt_kit, index| %>
+                  <li class="<%= @kit.id == mmt_kit.id  ? 'active' : '' %>">
+                    <%= link_to mmt_kit.kit_media_type.name, kit_filling_edit_kit_receiving_path(mmt_kit_id: mmt_kit.id, kit_filling_id: params["kit_filling_id"]) %>
+                    <% if @kit.id == mmt_kit.id %>
+                        <% box_number = index +1  %>
+                    <% end %>
+                  </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row search-panel">
+      <div class="col-sm-6" style=" padding: 10px 25px; color: #ffffff">Box <span><%= box_number %></span> of <%= @kit_filling.kit_copy.kit_version_number.upcase %></div>
+    </div>
+<% end %>
+<div class="row">
+  <div class="col-sm-6">
+    <% unless @kit.kit_media_type.kit_type == "binder" %>
+        <%= form_tag("#", :method => 'post', :class => "form-horizontal search_cup") do %>
+            <div class="form-group">
+              <label class="col-sm-3">Search Part</label>
+              <div class="col-sm-4"><%= text_field_tag :part_number_search, nil, :tabindex => 1,class: 'kit_number_search_box form-control'  %></div>
+              <%= submit_tag 'Search Cup', :class => "btn btn-default"%>
+            </div>
+            <div class="col-sm-3 cup_list"></div>
+        <% end %>
+    <% end %>
+  </div>
+  <div class="col-sm-6">
+    <p class="text-right">
+      <% if session[:user_level] %>
+          <% if session[:user_level] > "3" %>
+              <%= link_to 'Fill all cups', fill_all_cups_kit_receiving_path(params["kit_filling_id"]), class: 'btn btn-success' %>
+          <%end%>
+      <%end%>
+    </p>
+  </div>
+</div>
+<div class="clear"></div>
+<div id="show_message"  style="display:none; margin-bottom: 0px;"></div>
+<%= form_tag pick_ticket_print_kit_receiving_index_path, :target =>'_blank' do  %>
+    <%= hidden_field_tag :kit_version_number, @kit_copy.kit_version_number %>
+    <%= hidden_field_tag :kit_id, Kitting::KitFilling.find_by_id(params[:kit_filling_id]).kit_copy_id %>
+    <%= hidden_field_tag :kit_number, @kit_copy.kit.kit_number %>
+    <%= hidden_field_tag :bincenter, @kit_copy.kit.try(:part_bincenter) %>
+    <%= hidden_field_tag 'version_alert_message', @alert %>
+    <div id="cup_design">
+      <% if  @kit.kit_media_type.kit_type == "binder" %>
+          <p class="success_qty"></p>
+          <table class="table table-bordered binder">
+            <thead>
+            <p class="body_text_subhead">Kit Parts</p>
+            <th style="display:none;"></th>
+            <th>Sleeves</th>
+            <th>Part Number</th>
+            <th>Quantity</th>
+            <th>Fill Quantity </th>
+            </thead>
+            <tbody>
+            <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading" %>
+            <% @row_count = 0 %>
+            <% @kit.cups.where(:commit_status => true,:status => true).order(:cup_number).each_with_index do |cup,cup_index|  %>
+                <% unless @kit.cups[cup_index].parts.blank?  %>
+                    <% @kit.cups[cup_index].cup_parts.where(:commit_status => true).each_index do |index| %>
+                        <% unless @kit.cups[cup_index].cup_parts[index].status == false %>
+                            <% @row_count = @row_count + 1 %>
+                            <tr>
+                              <td style="display:none;">
+                                <% if @multi_media_kits.present? %>
+                                    <% box_no = box_no || @multi_media_kits.index(@multi_media_kits.select { |kit| kit.id == @kit.cups[cup_index].kit_id}.first) + 1 %>
+                                    <% cup_detail = "#{box_no}/#{@row_count} - #{@kit.cups[cup_index].cup_parts[index].cup_id}" %>
+                                    <%= check_box_tag 'select_ids[]', cup_detail%>
+                                <% else %>
+                                    <%= check_box_tag 'select_ids[]', "#{cup.cup_number} - #{cup.cup_parts[index].cup_id}" %>
+                                <% end %>
+                                <%= check_box_tag 'select_ids[]', "#{@row_count} - #{@kit.cups[cup_index].cup_parts[index].cup_id}" %>
+                                <%= hidden_field_tag 'cup_ids[]', @kit.cups[cup_index].cup_parts[index].cup_id %>
+                              </td>
+                              <td>
+                                <%= text_field_tag "kit_tray[]", @row_count, :class =>'kit_tray input-sm', :disabled => true %>
+                              </td>
+                              <td><%= @kit.cups[cup_index].parts[index].part_number %> </td>
+                              <td><%= @kit.cups[cup_index].cup_parts[index].demand_quantity %> </td>
+                              <%qty=Array(0..@kit.cups[cup_index].cup_parts[index].demand_quantity.to_i) %>
+                              <% val_for_wl = ['E','S','WL'] %>
+                              <% val_for_wl.each { |q| qty.unshift(q) } %>
+
+                              <%# selected_data = Kitting::KitFillingDetail.find_all_by_kit_filling_id(@kit_filling.id)[index].filled_quantity  %>
+                              <% selected_data = Kitting::KitFillingDetail.find_all_by_cup_part_id_and_kit_filling_id(@kit.cups[cup_index].cup_parts[index].id,params[:id]).first.filled_quantity rescue "0"%>
+                              <td><%= select(:filled_quantity, :qty,Array[*qty.collect {|v,i| [v,qty.index(v) - 3] }], {:prompt => "Select Quantity"}, :class => "form-control",:data => { :remote => true, :url => url_for(:controller => "kit_filling", :action => "kit_filling_edit", :member_data=> { :kit_number=>@kit.kit_number, :kit_filling_id => @kit_filling.id, :kit_id=>@kit.id, :kit_cup_number=>@kit.cups[cup_index].id, :cup_part_id=>@kit.cups[cup_index].cup_parts[index].id,:part_numbers=>@kit.cups[cup_index].parts[index].part_number, :actual_quantities=>@kit.cups[cup_index].cup_parts[index].demand_quantity  } ), :method => "post"}) %></td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+            </tbody>
+          </table>
+      <% else %>
+          <%if @kit.kit_media_type.kit_type == "configurable" %>
+              <%= @kit.kit_media_type.name != "Small Configurable TB" ? "<div class='gridster_container'>".html_safe : "<div class='gridster small_orange_kit' style='position:relative;'>".html_safe %>
+              <% display_kit = create_group @kit.cups.where('commit_status = ? and status = ?',true, true).sort_by {|cup| cup.cup_number.to_i }, @kit.kit_media_type.name %>
+              <% display_kit.each_with_index do |group,index| %>
+                  <div <%= add_class_and_id_to_gridster(@kit.kit_media_type.name,index) %>>
+
+                    <ul class="filling_page">
+                      <% group.each_with_index do |cup,index| %>
+                          <% cup_dimension = cup.cup_dimension.split(",") %>
+                          <li <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %>>
+                            <span class="box-no"><%= cup.cup_number %></span>
+                            <div class="block_area">
+                              <%= raw get_config_part_filled_qty(cup, params[:kit_filling_id] || @kit_filling.id).join('') %>
+                            </div>
+                            <div class="btn_area">
+                              <%if get_config_part_filled_qty(cup, params[:kit_filling_id] || @kit_filling.id).join('').blank? %>
+                                  <p style="height:38px;"></p>
+                              <% else %>
+                                  <% if !cup.parts.first.nil? && cup.check_in_contract_status("cup_parts") %>
+                                      <% if cup.cup_parts.first.present? %>
+                                          <% if cup.cup_parts.select { |cup_part| cup_part.demand_quantity == "WL" and cup_part.status == true and cup_part.commit_status == true}.empty? %>
+                                              <p id='kit_filling_create' class="btn btn-default fill-pop-up" data-id='<%= cup.try(:id) %>'><span class="glyphicon glyphicon-shopping-cart"></span></p>
+                                          <% else %>
+                                              <% cup_part_id = cup.cup_parts.select { |cup_part| cup_part.demand_quantity == "WL" and cup_part.status == true and cup_part.commit_status == true }.first.id rescue ""%>
+                                              <% filled_quantity = get_filled_quantity(cup_part_id,params[:kit_filling_id] || @kit_filling.id )%>
+                                              <p id='<%= "filled_qty_#{cup.try(:id)}" %>' style= "display:none;"><%= filled_quantity %></p>
+                                              <p id='<%= "cup_part_#{cup.try(:id)}" %>' style= "display:none;"><%= cup_part_id %></p>
+                                              <p id='kit_filling_create' class="btn btn-default toggle_data" data-id='<%= cup.try(:id) %>'><span class="glyphicon glyphicon-retweet"></span></p>
+                                          <% end %>
+                                          <%# else %>
+                                          <!--<p id='kit_filling_create' class="btn icon-shopping-cart fill-pop-up" data-id='<%= cup.try(:id) %>'></p>-->
+                                      <% end %>
+                                  <% end %>
+
+                                  <p style="display:none;">
+                                    <% if @multi_media_kits %>
+                                        <%= check_box_tag 'select_ids[]', "#{box_number}/#{cup.cup_number} - #{cup.id}" %>
+                                    <% else %>
+                                        <%= check_box_tag 'select_ids[]', "#{cup.cup_number} - #{cup.id}" %>
+                                    <% end %>
+                                    <%= hidden_field_tag 'cup_ids[]', cup.id %>
+                                  </p>
+                              <% end %>
+                            </div>
+                          </li>
+                      <% end %>
+                    </ul>
+                  </div>
+              <% end %>
+              </div>
+              <%= display_kit_handle(@kit.kit_media_type.name) %>
+          <% else %>
+              <% @cups = get_cups_layout @kit.cups.where(:commit_status => true), @kit.kit_media_type.compartment_layout %>
+              <% index = 0%>
+              <% @row_count = 0 %>
+              <% @cups.each_with_index do |row, row_index| %>
+                  <div class="cup_table">
+                    <table class="thumbnails cups">
+                      <tr>
+                        <% row.each_with_index do |value, col_index| %>
+                            <td>
+                              <div <%= (!value.parts.first.nil? && !value.check_in_contract_status("cup_parts")) ? "class='thumbnail non-contract-cup'".html_safe : "class='thumbnail'".html_safe %>>
+                                <div class="caption">
+                                  <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                                  <ul class="filling_page" id="cup_parts<%= index + 1 %>" data-id="<%= value.try(:id) %>">
+                                    <%= raw get_commited_parts(value, params[:kit_filling_id]).join('') if value %>
+                                  </ul>
+                                  <%if value.cup_parts.blank? %>
+                                      <p style="height:10px;"></p>
+                                      <% @row_count = @row_count + 1 %>
+                                  <% else %>
+                                      <% if !value.parts.first.nil? && value.check_in_contract_status("cup_parts") %>
+                                          <% if value.cup_parts.first.present? %>
+                                              <% if value.cup_parts.select { |cup_part| cup_part.demand_quantity == "WL" and cup_part.status == true and cup_part.commit_status == true}.empty? %>
+                                                  <p id='kit_filling_create' class="btn btn-default fill-pop-up" data-id='<%= value.try(:id) %>'><span class="glyphicon glyphicon-shopping-cart"></span></p>
+                                              <% else %>
+                                                  <% cup_part_id = value.cup_parts.select { |cup_part| cup_part.demand_quantity == "WL" and cup_part.status == true and cup_part.commit_status == true }.first.id rescue ""%>
+                                                  <% filled_quantity = get_filled_quantity(cup_part_id,params[:kit_filling_id] || @kit_filling.id )%>
+                                                  <p id='<%= "filled_qty_#{value.try(:id)}" %>' style= "display:none;"><%= filled_quantity %></p>
+                                                  <p id='<%= "cup_part_#{value.try(:id)}" %>' style= "display:none;"><%= cup_part_id %></p>
+                                                  <p id='kit_filling_create' class="btn btn-default toggle_data" data-id='<%= value.try(:id) %>'><span class="glyphicon glyphicon-retweet"></span></p>
+                                              <% end %>
+                                              <%# else %>
+                                              <!--<p id='kit_filling_create' class="btn icon-shopping-cart fill-pop-up" data-id='<%= value.try(:id) %>'></p>-->
+                                          <% end %>
+                                      <% end %>
+                                      <% @row_count = @row_count + 1 %>
+                                      <p style="display:none;">
+                                        <% if @multi_media_kits %>
+                                            <%= check_box_tag 'select_ids[]', "#{box_number}/#{@row_count} - #{value.id}" %>
+                                        <% else %>
+                                            <%= check_box_tag 'select_ids[]', "#{@row_count} - #{value.id}" %>
+                                        <% end %>
+                                        <%= hidden_field_tag 'cup_ids[]', value.id %>
+                                      </p>
+                                  <% end %>
+                                </div>
+                              </div>
+                            </td>
+                            <% index += 1 %>
+                        <% end %>
+                      </tr>
+                    </table>
+                  </div>
+              <% end %>
+          <% end %>
+      <% end %>
+      </div>
+      <%= image_seperator %>
+      <div class="row">
+        <div class="col-sm-12">
+          <% if session[:user_level] %>
+              <% if session[:user_level] > "3" %>
+                  <div class="col-sm-4">
+                    <div class="row">
+                      <div class="form-group">
+                        <label class="col-sm-4">Sort By</label>
+                        <div class="col-sm-8">
+                          <select name="sort_by" class="form-control">
+                            <option>BIN Location</option>
+                            <option>Part Number</option>
+                            <option>Cup Number</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <% if @multi_media_kits %>
+                      <%= submit_tag "Print All Current Box", class: "btn btn-primary", id: "submitall" %>&nbsp;
+                      <%= submit_tag 'Print Current Pick Sheet', class: "btn btn-primary", id: "submitselected"%>&nbsp;
+                      <%= submit_tag 'Print Pick Sheet', class: "btn btn-primary" %>
+                      <%= submit_tag 'Print All', class: "btn btn-primary print_all" %>
+                  <% else %>
+                      <%= submit_tag 'Print Pick Sheet', class: "btn btn-primary", id: "submitselected" %>
+                      <%= submit_tag 'Print All', class: "btn btn-primary print_all"%>
+                  <% end %>
+
+
+              <%end%>
+          <% end %>
+        </div>
+      </div>
+      <div class="clear"></div>
+      <div class="row">
+        <div class="col-sm-offset-4 col-sm-8">
+          <%= submit_tag 'Print Alternate Bin', class: "btn btn-primary" , id: "alternatebin" %>&nbsp;
+          <%= link_to 'Save Changes', kit_copies_path, id: 'save_receiving', class: 'btn btn-info'  %>
+        </div>
+      </div>
+<% end %>
+<%= image_seperator %>
+<%= form_tag pick_ticket_print_kit_receiving_index_path , :target =>'_blank' do  %>
+    <div id="bincenter_select_modal" class="modal fade" tabindex="-1"
+         role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="body_header">Part Bin Center Select Page</h2>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <%=  'Part Bin Center'%>
+              </div>
+              <div class="col-sm-4">
+                <%= select_tag 'bincenter', options_for_select(@binCenters.collect{ |u| [u] }) %>
+              </div>
+            </div>
+            <%= hidden_field_tag 'sort_by' %>
+            <%= hidden_field_tag 'kit_number', @kit_copy.kit.kit_number %>
+            <%= hidden_field_tag 'kit_version_number', @kit_copy.kit_version_number %>
+            <%= hidden_field_tag 'kit_id', Kitting::KitFilling.find_by_id(params[:kit_filling_id]).kit_copy_id %>
+            <%= hidden_field_tag 'select_ids_for_alternate[]' %>
+            <%= hidden_field_tag 'version_alert_message', @alert %>
+            <% @kit.cups.each_with_index do |cup_values, cups_index|  %>
+                <% unless @kit.cups[cups_index].parts.blank?  %>
+                    <% @kit.cups[cups_index].cup_parts.each_with_index do |value,index| %>
+                        <% unless @kit.cups[cups_index].cup_parts[index].status == false %>
+                            <%= hidden_field_tag 'part_numbers[]', @kit.cups[cups_index].parts[index].part_number %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+            <div class="modal-footer">
+              <button class="btn btn-info" data-dismiss="modal" aria-hidden="true">Close</button>
+              <% if session[:user_level] %>
+                  <% if session[:user_level] > "3" %>
+                      <%= submit_tag 'Print Pick Ticket', class: 'btn btn-primary' %>
+                  <%end%>
+              <%end%>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>
+
+<div id="fill-pop-up_modal" class="modal fade fill">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h2 class="body_header">Kit Filling</h2>
+      </div>
+      <%= form_tag kit_filling_edit_kit_receiving_path , class: "form-horizontal" do %>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="col-sm-3">Kit Number:</label>
+              <div class="col-sm-4"><%= text_field_tag 'kit_number', @kit_copy.kit.kit_number, class: 'form-control',:readonly => true %>
+                <%= hidden_field_tag 'kit_filling_id', params[:kit_filling_id] || @kit_filling.id, readonly: true %>
+                <%= hidden_field_tag 'kit_id', @kit_copy.id %></div>
+                <%= hidden_field_tag 'mmt_kit_id', params[:mmt_kit_id] %>
+              <%= hidden_field_tag :kit_version_check_interval, APP_CONFIG['kit_version_check_interval']%>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3">Cup Number</label>
+              <div class="col-sm-4"><%= text_field_tag 'cup_number_count', nil, class: 'form-control',:readonly => true %></div>
+              <%= hidden_field_tag 'kit_cup_number',nil, class: 'input-medium',:readonly => true %>
+            </div>
+            <table id="table-create" class="table">
+              <thead>
+              <th>Part Number</th>
+              <th>Demand Quantity</th>
+              <th>Filled Quantity</th>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            <% if session[:user_level] %>
+                <% if session[:user_level] > "3" %>
+                    <%= submit_tag 'Save changes',id: 'cup_filling_btn', class: "btn btn-primary"  %>
+                <%end%>
+            <%end%>
+      <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render 'change_data_modal'%>
+<%= javascript_include_tag "jquery" %>
+<%= render 'layouts/kitting/kit_config_layout' %>

@@ -1,0 +1,159 @@
+<h2 class="body_header">Kit Search Result</h2>
+
+<%= render 'search' %>
+<%= render 'layouts/message_display' %>
+
+<% if params[:actin] == "NK" %>
+  <p class="alert alert-success text-center"><strong> <%= @kitting_response["kitNo"].upcase %></strong>
+    Updated or created  successfully <br />
+    on <%= @kitting_response["kitDate"] %> at <%= @kitting_response["kitTime"] %>
+    by <%= @kitting_response["kitUser"] %>.
+  </p>
+<% end %>
+
+<div class="row">
+  <div class="col-sm-12">
+    <span class="col-sm-3 body_text_subhead">Kit Information </span>
+    <% if params[:KitHistId] %>
+      <span class="col-sm-5 text-success">- History for <strong><%= @kitting_response["kitNo"] %></strong> </span>
+      <% if params[:KitHistId] %>
+        <div class="row">
+          <div class="text-right">
+            <%= link_to 'History List',kitting_history_path(CGI.escape(@kitting_response["kitNo"])) %>
+          </div>
+        </div>
+      <% end  %>
+    <% else %>
+        <% if session[:user_level] > "2" %>
+          <div class="row">
+            <div class="text-right">
+              <%= link_to 'Edit Kit',edit_kitting_path(CGI.escape(@kitting_response["kitNo"])) %>
+            </div>
+          </div>
+        <% else %>
+            &nbsp;
+        <% end %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-sm-4"><%= label_tag 'Kit Number :', nil, :class=>"some_space" %></div>
+      <div class="col-sm-8"><b><%= @kitting_response["kitNo"].upcase %></b></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= label_tag 'Site :', nil,:class=>"some_space" %></div>
+      <div class="col-sm-8"><%= render 'show_site'%></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= label_tag 'Description :', nil, :class=>"some_space" %></div>
+      <div class="col-sm-8"><%= @kitting_response["kitDesc"].upcase %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"> <%= label_tag 'Location :', nil, :class=>"some_space" %></div>
+      <div class="col-sm-8"> <%= @kitting_response["kitLoc"].upcase  %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= label_tag 'Status :', nil, :class=>"some_space" %></div>
+      <div class="col-sm-8"><%= label_tag display_status(@kitting_response["kitStatus"]) %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= label_tag 'Last Revised / By :', nil, :class=>"some_space" %></div>
+      <% if params[:KitHistId] %>
+          <div class="col-sm-6 text-success">
+            <%= @kitting_response["kitDate"] + " - "+ @kitting_response["kitTime"] +" / "+ @kitting_response["kitUser"] %></div>
+      <% else %>
+          <div class="col-sm-6"><%= @kitting_response["kitDate"] + " - "+ @kitting_response["kitTime"] +" / "+ @kitting_response["kitUser"] %></div>
+      <% end %>
+
+      <% if params[:KitHistId].blank? && params[:actin].blank? %>
+        <div class="row">
+          <div class="text-right">
+            <%= link_to 'Kit History',kitting_history_path(CGI.escape(@kitting_response["kitNo"])) %>
+          </div>
+        </div>
+      <% end  %>
+    </div>
+  </div>
+</div>
+
+<%= image_seperator %>
+
+<div class="row">
+  <div class="col-sm-8 body_text_subhead">Note</div>
+  <% unless params[:KitHistId] %>
+      <% if session[:user_level] > "2" %>
+          <div class="row">
+            <div class="text-right">
+              <%= link_to 'Edit Kit',edit_kitting_path(CGI.escape(@kitting_response["kitNo"])) %>
+            </div>
+          </div>
+      <% else %>
+          &nbsp;
+      <% end %>
+  <% end  %>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <% if @kitting_response["kitNotes"].length > 0 %>
+      <% @kitting_response["kitNotes"].each_index do |index| %>
+        <div class="row">
+          <div class="col-sm-1"> &nbsp;</div>
+          <div class="col-sm-11">
+            <small><em>by: <strong><%= @kitting_response["kitNoteUser"][index] +' on ' + @kitting_response["kitNoteDate"][index] +
+            ' at ' + @kitting_response["kitNoteTime"][index].upcase %></strong></em></small><br/><%= @kitting_response["kitNotes"][index] %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<%= image_seperator %>
+
+<div class="col-sm-8 body_text_subhead">Kit Parts</div>
+
+<% unless params[:KitHistId] %>
+  <% if session[:user_level] > "2" %>
+     <div class="row">
+        <div class="text-right">
+           <%= link_to 'Edit Kit',edit_kitting_path(CGI.escape(@kitting_response["kitNo"])) %>
+          </div>
+        </div>
+  <% else %>
+      &nbsp;
+  <% end %>
+<% end  %>
+
+<table class="table tablesorter">
+  <thead>
+  <th>TRAY</th>
+  <th>PART NUMBER</th>
+  <th>DESCRIPTION</th>
+  <th>QTY</th>
+  <th>UM</th>
+  <th>BIN NUMBER</th>
+  </thead>
+
+  <% @kitting_response["partNo"].each_index do |index| %>
+    <tr>
+      <td class="center_align"><%= @kitting_response["misc1"][index] %></td>
+      <td><%= @kitting_response["partNo"][index] %></td>
+      <td><%= @kitting_response["partDesc"][index] %></td>
+      <td><%= @kitting_response["qty"][index] %></td>
+      <td><%= @kitting_response["um"][index] %></td>
+      <td class="center_align"><%= @kitting_response["misc2"][index] %></td>
+    </tr>
+  <% end %>
+</table>
+
+<%= image_seperator %>
+
+<div class="control-group">
+  <div class="controls">
+    <div class="col-sm-4 "><%= link_to 'Search Again', kitting_index_path , class: 'btn btn-primary' %></div>
+  </div>
+</div>

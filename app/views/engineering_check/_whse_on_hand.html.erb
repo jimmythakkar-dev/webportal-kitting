@@ -1,0 +1,26 @@
+<% @my_whse_total = 0 %>
+<% if @whse_on_hand_qty_response["whseList"] %>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row">
+        <div class="col-sm-4"><%= t("Quantity_on-hand", scope:"floor_views._quantity_on_hand") %> </div>
+        <div class="col-sm-6"><%= t("warehouse", scope:"engineering_check._whse_on_hand") %></div>
+        <div class="col-sm-2"><%= t("quantity", scope:"agusta") %></div>
+      </div>
+      <% @whse_on_hand_qty_response["whseList"].each_index do |index| %>
+      <div class="row">
+        <div class="col-sm-4">&nbsp;</div>
+        <div class="col-sm-6"><%= @whse_on_hand_qty_response["whseList"][index] %> </div>
+        <div class="col-sm-2"><%= @whse_on_hand_qty_response["qtyOnHandList"][index] %> </div>
+      </div>
+          <% @my_whse_total = @my_whse_total + @whse_on_hand_qty_response["qtyOnHandList"][index].to_i %>
+      <% end %>
+      <div class="row">
+        <div class="col-sm-4">&nbsp;</div>
+        <div class="col-sm-6"><%= t("Total",scope: 'floor_views.index')%></div>
+        <!--This Total is used in search_result at shipped_orders_history-->
+        <div class="col-sm-2"><%= @my_whse_total %></div>
+      </div>
+    </div>
+  </div>
+<% end %>

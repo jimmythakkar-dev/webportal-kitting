@@ -1,0 +1,9 @@
+<% if @line_station.present? %>
+  $("#line_station").html("<%= escape_javascript(render(:partial => "get_line_station", :line_station => "@line_station" )) %>")
+<% else %>
+  $.msgBox({
+    title:I18n.t("Stock_Action_Request"),
+    content: I18n.t("Select_Building/Ship_To"),
+    type: "info"
+});
+<% end %>

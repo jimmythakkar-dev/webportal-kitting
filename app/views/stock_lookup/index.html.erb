@@ -1,0 +1,26 @@
+<p class="body_header"><%= t('stock_lookup',:scope => "stock_lookup.index")%></p>
+
+<%= image_seperator %>
+<% if @page_action %>
+  <p><%= t("_desc_search",:scope => "stock_lookup.index").html_safe %> </p>
+<% else %>
+  <p><%= t("_desc",:scope => "stock_lookup.index").html_safe %> </p>
+<% end %>
+<%= image_seperator %>
+
+<%= form_tag search_stock_lookup_index_path,
+  :method => 'post', class: "form-inline"  do %>
+  <div class="form-group">
+    <%= label_tag "#{t('part_num',:scope => "rma")}:",nil,class: 'control-label'%>
+    <%= text_field_tag :txt_part_number, nil, required: true, class: 'form-control' %>
+    <%= hidden_field_tag :read %>
+    <%= submit_tag t('Search',:scope => "floor_views.index"), class: 'btn btn-primary' %>
+  </div>
+<% end %>
+
+<%= image_seperator %>
+
+<% if @response_stock_lookup %>
+  <%= render 'stock_lookup' %>
+<%end%>
+

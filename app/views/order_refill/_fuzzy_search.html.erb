@@ -1,0 +1,34 @@
+<% if @response_part_nums.present? && @response_part_nums["errMsg"].blank? %>
+
+  <div class="table_title"><%= label_tag t("part_number_with_value", part_number: params["search_for_refill"], scope: "engineering_check.fuzzy_search"),nil, class: 'control-label'  %></div>
+
+
+  <div class="row">
+    <% @response_part_nums["searchPartList"].each_index do |index| %>
+      <div class="col-sm-3">
+        <%= form_tag search_order_refill_index_path, :method => 'get', :class => 'form-horizontal' do %>
+        <%= hidden_field_tag :search_by_refill, params[:search_by_refill] %>
+        <%= hidden_field_tag :start_date_refill, params[:start_date_refill] %>
+        <%= hidden_field_tag :search_for_refill, @response_part_nums["searchPartList"][index] %>
+        <%= submit_tag @response_part_nums["searchPartList"][index], :class=>"btn btn-link" %>
+        <% end %>
+      </div>
+      <% index = index + 1 %>
+      <% if index != 1 && index % 4 == 0 %>
+        </div>
+        <div class="row">
+      <% end %>
+    <% end %>
+  </div>
+
+<br/>
+<div><%= label_tag t("please_select_to_see_part_details", scope:"engineering_check.fuzzy_search"), nil, class: 'control-label'%></div>
+<% else %>
+    <div class="row">
+      <div class="col-sm-12">
+        <span class="alert_msg"><strong><%= t("no_refill_order",:scope => "order_refill._refill_order")%>
+          <%= params[:search_for_refill].try(:upcase) %>.</strong>
+        </span>
+      </div>
+    </div>
+<% end %>

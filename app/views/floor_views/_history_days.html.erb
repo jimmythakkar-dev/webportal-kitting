@@ -1,0 +1,84 @@
+<div id="history">
+  <div class="row">
+    <div class="col-sm-7" title="View/Download as Excel Spreadsheet">
+      <% if @floor_view_entry_response["errCode"] != "1" %>
+          <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"),  history_excel_floor_views_path(params[:days],:format => 'xls') %>
+      <%else%>
+          &nbsp;
+      <%end%>
+    </div>
+    <div class="col-sm-1">
+      <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading", :style =>"visibility:hidden" %>
+    </div>
+    <div class="col-sm-2"><%= t('Date_Range',:scope => "panstock_requests.bulk_history")%>:</div>
+    <div class="col-sm-2">
+      <%= select_tag(:days, options_for_select(@days_format, :selected => params[:days]), :'data-remote' => 'true', :'data-url' => url_for(:controller => 'floor_views', :action => 'history_days'),:class => 'col-sm-12 form-control')%>
+    </div>
+  </div>
+  <% if @floor_view_entry_response["errCode"] != "1" %>
+      <div style="height:550px;overflow-y:scroll;">
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead >
+            <tr>
+              <th><%= t('STATUS',:scope => "floor_views._history_days")%></th>
+              <th><%= t('TYPE',:scope => "floor_views._history_days")%></th>
+              <th><%= t('PART_NUMBER',:scope => "floor_views._history_days")%></th>
+              <th><%= t('SCANCODE',:scope => "floor_views._history_days")%></th>
+              <th><%= t('LINE_STATION',:scope => "floor_views._history_days")%></th>
+              <th><%= t('DATE',:scope => "floor_views._history_days")%></th>
+              <th><%= t('TIME',:scope => "floor_views._history_days")%></th>
+            </tr>
+            </thead>
+            <tbody>
+            <%(0..@len-1).each do |i|%>
+                <tr onclick="location.href='<%= update_floor_views_path(:CFGRIDKEY => "#{@floor_view_entry_response['idlist'][i].join(',')}",:iaction =>"I") %>'">
+
+                  <%= hidden_field_tag  'CFGRIDKEY',@floor_view_entry_response['idlist'][i]%>
+                  <% if @floor_view_entry_response["approvalStatusList"][i] == "None" %>
+                      <td></td>
+                  <%else%>
+                      <td><%= @floor_view_entry_response["approvalStatusList"][i]%></td>
+                  <%end%>
+                  <td><%= @floor_view_entry_response["actionCodeList"][i]%></td>
+                  <td><%= @floor_view_entry_response["partNoList"][i]%></td>
+                  <td><%= @floor_view_entry_response["scancodeList"][i]%></td>
+                  <%if !@floor_view_entry_response["lineStationList"][i].nil? %>
+                      <td><%= @floor_view_entry_response["lineStationList"][i].join(',')%></td>
+                  <%else%>
+                      <td></td>
+                  <%end%>
+
+                  <%if !@floor_view_entry_response["actionDateList"][i].nil?%>
+                      <td><%= Date.strptime(@floor_view_entry_response["actionDateList"][i],"%m/%d/%Y").strftime("%Y-%m-%d") %></td>
+                  <%else%>
+                      <td></td>
+                  <%end%>
+
+                  <% @t_stamp = @floor_view_entry_response["actionTimeList"][i]%>
+
+                  <% if !@t_stamp.nil?%>
+                      <td><%= Time.strptime(@t_stamp,'%I:%M%P').strftime("%H:%M:%S") %></td>
+                  <%else%>
+                      <td></td>
+                  <%end%>
+
+                </tr>
+            <%end%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  <%else%>
+      <%if params[:days] == "0" || params[:days] == ""%>
+          <%@errmsg = "Today"%>
+      <%elsif params[:days] == "365"%>
+          <%@errmsg = "This Year"%>
+      <%elsif params[:days] == "1000"%>
+          <%@errmsg = "All Records"%>
+      <%else%>
+          <%@errmsg = "#{params[:days]}" + 'days' %>
+      <%end%>
+      <p class="alert alert-danger">There are no records for <%=  "#{@errmsg}"%> </p>
+  <%end%>
+</div>

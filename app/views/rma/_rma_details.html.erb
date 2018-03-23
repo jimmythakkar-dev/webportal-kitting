@@ -1,0 +1,58 @@
+<!-- Modal -->
+<div class="modal fade" id="rma_details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel"><%= t 'rma.rma_details' %></h4>
+      </div>
+      <div class="modal-body">
+        <% if @rma_details["rmaCurrStatus"].blank? && @rma_details["rmaCurrStatusDesc"] != "Closed RMA"%>
+          <% @rma_details["rmaNo"] = "Pending" %>
+        <% else %>
+          <% @rma_details["rmaNo"] = @rma_details["rmaNo"] %>
+        <% end %>
+        <p><b><%= t 'rma.rma' %> <%= t 'rma.number' %>: <%= @rma_details["rmaNo"] %></b></p>
+        <div class="breadcrumb flat">
+          <a href="#" <% if @rma_details["rmaWebChevron"] == "1" || @rma_details["rmaWebChevron"] == "2" || @rma_details["rmaWebChevron"] == "3" || @rma_details["rmaWebChevron"] == "4"%> class="active"<% end %>><%= t 'rma.request_rma' %></a>
+          <a href="#" <% if @rma_details["rmaWebChevron"] == "2" || @rma_details["rmaWebChevron"] == "3" || @rma_details["rmaWebChevron"] == "4" %> class="active"<% end %>><%= t 'rma.rma_approved' %></a>
+          <a href="#" <% if @rma_details["rmaWebChevron"] == "3" || @rma_details["rmaWebChevron"] == "4" %> class="active"<% end %> ><%= t 'rma.sales_qa_approval' %></a>
+          <a href="#" <% if @rma_details["rmaWebChevron"] == "4" %> class="active"<% end %>><%= t 'rma.credit' %></a>
+        </div>
+        <%= image_seperator %>
+        <p class="text-center"><b><%= t 'rma.rma_log' %></b></p>
+        <table id="table" class="table tablesorter">
+          <thead>
+          <th><%= t 'rma.invoice' %>#</th>
+          <th><%= t 'rma.cust_po' %></th>
+          <th><%= t 'rma.date' %></th>
+          <th><%= t 'rma.dept' %></th>
+          </thead>
+          <% if @rma_details["rmaLog"].blank? || @rma_details["rmaLog"].flatten.blank? %>
+            <tr>
+              <td colspan="4" style="text-align: center; color: red"><%= "No Logs Found" %></td>
+            </tr>
+          <% else %>
+            <% @rma_details["rmaLog"].each_index do |index| %>
+              <tr>
+                <td><%= @rma_details["rmaLog"][index][0] %></td>
+                <td><%= @rma_details["rmaLog"][index][2] %></td>
+                <td><%= @rma_details["rmaLog"][index][1] %></td>
+                <td>
+                  <% if @rma_details["rmaLog"][index][3] == "" %>
+                    <%= "Unknown" %>
+                  <% else %>
+                    <%= @rma_details["rmaLog"][index][3] %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><%= t 'rma.close' %></button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

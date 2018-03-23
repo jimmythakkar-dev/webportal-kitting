@@ -1,0 +1,32 @@
+development: &default
+  kitting: "Kitting"
+  bin_line_station: "BIN LOCATOR"
+  critical_watch: "Critical & Watch"
+  engineering_check: "Engineering Check"
+  floor_views: "Floor View"
+  open_orders: "Open Order Status"
+  panstock_requests: "STOCK REQUEST"
+  reports: "Reports"
+  supersedence: "Supersedence"
+  rma: "RMA Request"
+  agusta: "ORDER REQUEST"
+  certs: 'View Certification'
+  stock_certs: 'View Cert: Stk Transfer'
+  min_max_reports: "Min/Max Report"
+  pn_cross_references: "PN Cross Reference"
+  order_refill: "REFILL ORDER STATUS"
+  web_order_request: "Variable Quantity Bin Order"
+  sikorsky: "Sikorsky Web Order"
+  file_transfer_status: "FILE TRANSFER STATUS"
+  stock_lookup: "Stock Lookup"
+  remote_inventory: "Remote Inventory"
+  custom_kits: "CUSTOM KITS"
+
+test:
+  <<: *default
+
+qa:
+  <<: *default
+
+production:
+  <<: *default

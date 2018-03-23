@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="KLX Aerospace, Inc. is the leading provider of interior products and solutions for the commercial, business jet, and military aircraft markets, and a leading distributor of aerospace hardware."/>
+<meta name="keywords" content="Aerospace, commercial aircraft, business jet, executive aircraft, aircraft interiors,seating, seating environments, super first class, business class, main cabin, premium class, premium economy, galley inserts, aircraft galley, oven products, beverage makers, water boilers, espresso, in-air catering, refrigeration, galley air-chillers, oxygen products, military oxygen, aircraft structures, integration services, wash lighting, mood lighting, aerospace hardware"/>
+<title>KLX Aerospace</title>
+<%= favicon_link_tag 'favicon.ico' %>
+<%= wicked_pdf_stylesheet_link_tag 'certs' %>
+</head>
+<body>
+<% if Report.directory_exists?(APP_CONFIG['certification_path']) %>
+  <% if flash[:notice] %>
+    <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+      <tr>
+        <td style="color:red;background-color:#f2dede;border-color:#eed3d7;height:50px;text-align:center;font-size: 25px"><%= flash[:notice] %></td>
+      </tr>
+    </table>
+  <% else %>
+    <% if @files_array.blank? %>
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <tr>
+          <td style="color:red;background-color:#f2dede;border-color:#eed3d7;height:50px;text-align:center;font-size: 25px"><%= "Source tiff file does not exist." %></td>
+        </tr>
+      </table>
+     <% else %>
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+      <% @files_array.each do |file| %>
+        <% if Report.file_exists?(file) %>
+        <tr><td class="page"><%= image_tag(Rails.root.join(file), :width=> '100%') %></td></tr>
+        <% else %>
+        <tr><td style="color:red;background-color:#f2dede;border-color:#eed3d7;height:50px;text-align:center;font-size: 25px"><%= "#{file} source file does not exist." %></td></tr>
+        <% end %>
+      <% end %>
+      </table>
+    <% end %>
+  <% end %>
+<% else %>
+  <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+    <tr>
+      <td style="color:red;background-color:#f2dede;border-color:#eed3d7;height:50px;text-align:center;font-size: 25px"><%= "#{APP_CONFIG['certification_path']} directory does not exists." %></td>
+    </tr>
+  </table>
+<% end %>
+</body>
+</html>

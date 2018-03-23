@@ -1,0 +1,124 @@
+$(document).ready(function() {
+    var gridster;
+    gridster = $("#small_yellow_kit > ul").gridster({
+        namespace: '#small_yellow_kit',
+        widget_margins: [5, 5],
+        widget_base_dimensions: [150, 100],
+        min_cols: 3,
+        max_cols: 3,
+        min_rows: 6,
+        max_rows: 6,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                if (parseInt($widget.attr("data-sizex")) == 2) {
+                    gridster.resize_widget($widget, 2, 2);
+                }
+                if (parseInt($widget.attr("data-row")) == 6) {
+                    gridster.resize_widget($widget, 1, 1);
+                }
+                $("#small_yellow_kit > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt > 6){
+                        var lparts2 = "";
+                        $.each($(this).find("p"), function(i){
+                            lparts2 +=  "<li>" + $(this).text() + "</li>";
+                            gridster.remove_widget($(this).parent().parent(), true);
+                            setTimeout(function() {
+                                resetboxno();
+                            }, 500);
+                        });
+                        $(".part_list ul").prepend(lparts2);
+                    }
+                });
+
+                /********  Last row Blocks End **************/
+//                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                /********  Last row Blocks  **************/
+                $(".gridster > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt == 6){
+                        if(parseInt($(this).attr("data-sizey")) == 2){
+                            gridster.resize_widget($(this), 1, 1);
+                        }
+                    }
+                    else if(row_cnt < 6){
+                        $(this).removeClass('last_row');
+                    }
+                });
+                /********  Last row Blocks End **************/
+//                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster');
+
+    var widgets = [
+        ['<li><span class="box-no">-</span> <span class="remove"></span></li>', 1, 1]
+    ];
+    function resetboxno() {
+        var count = 1;
+        $(".gs-w").each(function(){
+            $(this).find(".box-no").text(count);
+            count++;
+        });
+    }
+
+    $("li.gs-w").on("click",function(){
+        select_cup($(".gridster ul li"), $(this));
+    });
+
+    $(document).on("keyup",function(e) {
+        if (e.keyCode == 88) {
+            if ($(".selected_cup").length == 1){
+                var lparts2 ="";
+                $.each($(".selected_cup").find("p"), function(i){
+                    lparts2 +=  "<li>" + $(this).text() + "</li>";
+                    $(this).remove();
+                });
+                $(".part_list ul").prepend(lparts2);
+            }
+            gridster.remove_widget($(".selected_cup"), true);
+            setTimeout(function() {
+                resetboxno();
+            }, 500);
+        }
+    });
+    $(document).keyup(function(e) {
+        var lparts2 = "";
+
+        if (e.keyCode == 69) {
+            if ($(".selected_cup").length == 1){
+                $.each($(".selected_cup").find("p"), function(i){
+                    lparts2 +=  "<li>" + $(this).text() + "</li>";
+                    $(this).remove();
+                });
+                $(".part_list ul").prepend(lparts2);
+            }
+        }
+    });
+// Method to Add Cup to Configurable KMT
+    $("#small_yellow_kit #add_widget").on('click', function(){
+        $.each(widgets, function(i, widget){
+            gridster.add_widget.apply(gridster, widget);
+        });
+        setTimeout(function() {
+            resetboxno();
+        }, 500);
+    });
+
+});

@@ -1,0 +1,5 @@
+$('#populate_cup_detail').html('<%= escape_javascript(render(:partial => '/kitting/kits/update_non_config')) %>');
+$("#populate_cup_detail").load_compartment();
+$(".popup").click(function() {
+    $(this).add_part_popup();
+});

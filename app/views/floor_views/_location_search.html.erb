@@ -1,0 +1,95 @@
+<div class="table-responsive">
+    <table class="location_table">
+      <tr>
+        <th><%= t('Bin_Location',:scope => "floor_views._location_search")%>:</th>
+        <td>
+          <span class="ft_blue"><strong><%= @bin_center_part_response["binCenter"]%></strong></span>
+        </td>
+        <td>
+          <span style="font-size: x-small;font-weight: bold">
+            <%= link_to image_tag("excel_icon_download.png", :height => "29", :width => "29", :border => 0, :alt => "View/Download as Excel Spreadsheet"),location_excel_floor_views_path(params[:location],params[:page],:format => 'xls')  %>
+          </span>
+        </td>
+      </tr>
+    </table>
+</div>
+<div class="sep_large"><%= image_seperator %></div>
+<div id="restock">
+  <small><%= t('We_are_currently_displaying_from',:scope => "floor_views._location_search")%> <%= params[:page].to_i * 100 - 99 %> <%= t('to',:scope => "floor_views._location_search")%>
+    <% if params[:page].to_i * 100 > @bin_center_part_response["totalRecords"].to_i %>
+        <%= @bin_center_part_response["totalRecords"].to_i%>
+    <%else%>
+        <%= params[:page].to_i * 100 %>
+    <%end%>
+    <%= t('out_of',:scope => "floor_views._location_search")%> <%= @bin_center_part_response["totalRecords"].to_i %> <%= t('parts',:scope => "floor_views._location_search")%>  (<i><%= t('page',:scope => "floor_views._location_search")%> <%= params[:page] %> <%= t('of',:scope => "floor_views._location_search")%> <%= @total_page %></i>).
+  </small>
+  <br />
+  <br />
+</div>
+
+<%= hidden_field :cust_no, :value => params[:cust_no] %>
+<%= hidden_field :location, :value => params[:location] %>
+<div class="table_title"><%= t('parts_at_location',:scope => "floor_views._location_search")%>: <%= params[:location] %> </div>
+<div class="table-responsive">
+  <table class="table tablesorter">
+    <thead>
+    <tr>
+      <th><%= t('PART_NUMBER',:scope => "floor_views._location_search")%></th>
+      <th><%= t('Scan_Code',:scope => "floor_views._location_search")%></th>
+      <th><%= t('Line_Station',:scope => "floor_views._location_search")%></th>
+      <th><%= t('amount_quantity',:scope => "floor_views._location_search")%></th>
+      <th><%= t('PACK_QTY',:scope => "floor_views._location_search")%></th>
+      <th><%= t('UM',:scope => "floor_views._location_search")%></th>
+      <th><%= t('bin',:scope => "floor_views._location_search")%></th>
+      <th><%= t('on-hand',:scope => "floor_views._location_search")%></th>
+      <th><%= t('excluded',:scope => "floor_views._location_search")%></th>
+    </tr>
+    </thead>
+    <% @total = @bin_center_part_response["ref"].length %>
+    <% (0..@total-1).each do  |i|%>
+        <tr title="Click on Heading to Sort or Click Row to Display Part Information - Click LINSTATION or BIN to PRINT PART">
+          <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"><%= @bin_center_part_response["ref"][i] %></td>
+          <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"><%= @bin_center_part_response["scancode"][i]%></td>
+          <td onclick="window.open('','_new').location.href='<%= floor_views_print_part_label_path(:part_number => @bin_center_part_response["ref"][i],:bin => @bin_center_part_response["bin"][i], :scancode => @bin_center_part_response["scancode"][i],:location => @bin_center_part_response["whsdesc"][i])%>'"><strong><%= @bin_center_part_response["whsdesc"][i]%></strong></td>
+          <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"><%= @bin_center_part_response["amcQty"][i]%></td>
+          <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"><%= @bin_center_part_response["packQty"][i]%></td>
+          <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"><%= @bin_center_part_response["um"][i]%></td>
+          <td onclick="window.open('','_new').location.href='<%= floor_views_print_part_label_path(:part_number => @bin_center_part_response["ref"][i],:bin => @bin_center_part_response["bin"][i], :scancode => @bin_center_part_response["scancode"][i],:location => @bin_center_part_response["whsdesc"][i])%>'"><strong><%= @bin_center_part_response["bin"][i]%></strong></td>
+          <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"><%= @bin_center_part_response["qtyOnHand"][i]%></td>
+          <%if @bin_center_part_response["partExclusionList"][i] == "EXCLUDE"%>
+              <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'">Exclude</td>
+          <%else%>
+              <td onclick="location.href='<%= search_part_number_floor_views_path(:part_number => @bin_center_part_response["ref"][i])%>'"></td>
+          <%end%>
+        </tr>
+    <%end%>
+  </table>
+
+</div>
+<div class="pager">
+  <% if @total_records >= 1 %>
+      <%if (params[:page].to_i > 1) %>
+          <% @prev_page = params[:page].to_i - 1 %>
+          <%= link_to  image_tag("prev.png",:alt => "previous",title: "Previous"),
+                       location_page_path(@prev_page,params[:location]), class: "prev" %>
+      <%else%>
+          <%= image_tag("prev.png",alt: "previous",title: "Previous", class: "disabled") %>
+      <%end%>
+
+      <% (1..@total_page).each do |i| %>
+          <%if i != params[:page].to_i %>
+              <%= link_to "#{i}",  location_page_path(i,params[:location]),class: "page" %>
+          <%else%>
+              <span class="current"><%= i %></span>
+          <%end%>
+      <%end%>
+
+      <% if (params[:page].to_i < @total_page) %>
+          <% @next_page = params[:page].to_i + 1 %>
+          <%= link_to image_tag("next.png",alt: "next",title: "Next"),
+                      location_page_path(@next_page,params[:location]), class: "next" %>
+      <%else%>
+          <%= image_tag("next.png",:alt => "next",title: "Next", class: "disabled") %>
+      <%end%>
+  <%end%>
+</div>

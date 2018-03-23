@@ -1,0 +1,37 @@
+<h2 class="body_header">Locations</h2>
+<%= image_seperator %>
+
+<div class="text-right">
+  <% if session[:user_level] %>
+      <% if session[:user_level] > "3" %>
+          <%= link_to 'New Location', new_location_path %>
+      <%end%>
+  <%end%>
+</div>
+<br>
+
+<table class="table tablesorter">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th class="filter-false" colspan="2">Action</th>
+  </tr>
+  </thead>
+  <%unless @locations.blank? %>
+      <% @locations.each do |location| %>
+          <tr>
+            <td><%= location.name %></td>
+            <td colspan="2" class="align-text"><%= link_to 'View', location %>
+              <% if session[:user_level] %>
+                  <% if session[:user_level] > "5" %>
+                      <%if location.name != "SOS Queue" && location.name != "Ship/Invoice" && location.name != "Send to Stock" && location.name != "Empty Queue" && location.name != "NEW KIT QUEUE" && location.name != "Change Kit Queue" && location.name != "Picking Queue"  %>
+                          |   <%= link_to 'Edit', edit_location_path(location) %>
+                      <%end%>
+                  <%end%>
+              <%end%>
+            </td>
+          </tr>
+      <% end %>
+  <% end %>
+</table>
+<br />

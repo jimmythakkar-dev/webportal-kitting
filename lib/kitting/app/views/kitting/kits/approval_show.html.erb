@@ -1,0 +1,207 @@
+<h2 class="body_header">Kit Design Page</h2>
+<%= image_seperator %>
+
+<% if @cups.blank? %>
+    <div>
+      <p class="alert alert-warning" role="alert"> There Exists no Such Kit. You must have pressed the back button after undoing the created kit, which is not present.
+      </p>
+      <p>
+        <%= link_to 'Click here to go to Kit List', kits_path %>
+      </p>
+    </div>
+<% else %>
+    <%= render 'layouts/message_display' %>
+    <%= form_tag({:action => 'new'}) do %>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <div class="col-sm-2"><%= 'Kit Number'%></div>
+              <div class="col-sm-10">
+                <%= text_field_tag :kit_number, params[:kit_number], :class => "form-control", :value => params[:kit_number], :disabled =>true %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= 'Kit Media Type'%></div>
+              <div class="col-sm-4">
+                <%= text_field_tag :kit_media_type, params[:kit_media_type], :class => "form-control",
+                                   :value => params[:kit_media_type], :disabled =>true %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= 'Bin Center'%></div>
+              <div class="col-sm-4">
+                <%= text_field_tag :bincenter, params[:bincenter], :class => "form-control",
+                                   :value => params[:bincenter], :disabled =>true %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= 'Kit Description'%></div>
+              <div class="col-sm-10">
+                <%= text_area_tag :description, @kit.try(:description), :value => @kit.try(:description),  :rows => 1, :cols => '60%', :maxlength => 255 %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= 'Kit Note'%></div>
+              <div class="col-sm-10">
+                <%= text_area_tag :notes, @kit.try(:notes),
+                                  :value => @kit.try(:notes), :rows => 2, :cols => '60%', :maxlength => 255  %>
+              </div>
+            </div>
+          </div>
+          <%= hidden_field_tag 'compartments', params[:compartments] %>
+          <%= hidden_field_tag 'kit_number', params[:kit_number] %>
+          <%= hidden_field_tag 'compartment_layout', params[:compartment_layout] %>
+        </div>
+    <% end %>
+
+    <% unless @cups.blank? %>
+        <% if @original_kit.kit_media_type.kit_type != "binder" %>
+            <%= form_tag({controller: 'cup_parts', action: 'create'}, { :multipart => true }) do %>
+                <div id="part_select_modal" class="modal hide fade" tabindex="-1"
+                     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <h2 class="body_text_subhead">Cup information</h2>
+                  <%= image_seperator %>
+                  <div class="row ref">
+                  </div>
+
+                  <h2 class="body_text_subhead">Part number information</h2>
+                  <%= image_seperator %>
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <%= 'Part Number'%><span class="alert_msg">*</span>
+                        </div>
+                        <div class="col-sm-4">
+                          <%= text_field_tag :part_number, nil , :class => "form-control", :required => true, :autocomplete => :off %>
+                          <%= hidden_field_tag :part_list,"" %>
+                        </div>
+                        <div class="col-sm-1">
+                          <small id="cust_pn_message" style="color:green; display:none;"></small>
+                          <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading" %>
+                        </div>
+                        <div class="col-sm-4">
+                          <small class='alert'>For Water-Level insert "WL" </small>
+                        </div>
+                        <span class="alert_text"></span>
+
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-2">
+                          <%= 'Part Name'%>
+                        </div>
+                        <div class="col-sm-4">
+                          <%= text_field_tag :part_name, nil , :class => "form-control", :disabled => true %>
+                        </div>
+                        <div class="col-sm-2">
+                          <%= 'Quantity'%><span class="alert_msg">*</span>
+                        </div>
+                        <div class="col-sm-2">
+                          <%= text_field_tag :demand_quantity, nil , :class => "input-xs", :required => true %>
+                          <%#= select_tag "demand_quantity", options_for_select((1..1000).to_a.unshift('Water-Level')), :class => "input-medium" %>
+                        </div>
+                      </div>
+                      <div class="row  part-number-file-browser">
+                        <div class="col-sm-4">
+                          <%= label_tag :image_name, nil, :class => "control-label" %>
+                          <%= file_field_tag :image_name, :class => "controls inline" %>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-2">
+                          <%= label_tag 'Note', nil, :class => "control-label" %>
+                        </div>
+                        <div class="col-sm-4">
+                          <%= text_area_tag :description, nil, :cols => '50%', :rows => 2, :class => "controls inline", :maxlength => 255 %>
+                        </div>
+                      </div>
+                      <div class="row  part-image">
+                        <div class="col-sm-4">
+                          <%= image_tag nil, id: 'part_image' %>
+                        </div>
+                      </div>
+                      <%= hidden_field_tag :cup_id %>
+                      <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+                      <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                        <button id="add_cup_part" class="btn btn-primary">Add</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+
+            <!-- Modal -->
+            <%= form_tag update_quantity_cup_parts_path do  %>
+                <div id="part_edit_modal" class="modal hide fade" tabindex="-1"
+                     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-header">
+                    <h2 class="body_header">Part Number Select Page</h2>
+                    <%= image_seperator %>
+                  </div>
+                  <div class="modal-body">
+                    <table id="table">
+                      <thead>
+                      <th>Part Number</th>
+                      <th>Demand Quantity</th>
+                      <th>Action</th>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+                  <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+                  <div class="modal-footer">
+                    <%= link_to 'Close', :back , class: 'btn' %>
+                    <%= submit_tag 'Save changes', class: 'btn btn-primary' %>
+                  </div>
+                </div>
+            <% end %>
+            <% @cups = get_cups_layout @cups, params[:compartment_layout] %>
+            <%= image_seperator %>
+
+            <% index = 0%>
+            <% @cups.each_with_index do |row, row_index| %>
+                <div class="cup_table">
+                  <table class="thumbnails cups">
+                    <tr>
+                      <% row.each_with_index do |value, col_index| %>
+                          <td>
+                            <div class="thumbnail">
+                              <div class="caption">
+                                <% @cup_to_display = Kitting::Cup.find_all_by_kit_id_and_commit_id(@original_kit.id,value.id) %>
+                                <% if @cup_to_display.present? %>
+                                    <% dup_val = @cup_to_display.first %>
+                                    <h5><div class="cup_number_label"><%= index + 1 %></div><%= dup_val.ref1 ? "#{dup_val.ref1}" : "&nbsp;".html_safe %><br/> <%= dup_val.ref2 ? "#{dup_val.ref2}" : "&nbsp;".html_safe %><br/> <%= dup_val.ref3 ? "#{dup_val.ref3}" : "&nbsp;".html_safe %> </h5>
+                                <% else %>
+                                    <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                                <% end %>
+                                <ul id="cup_parts<%= index + 1 %>" data-id="<%= value.id %>">
+                                  <%= raw get_drafted_cup_parts(value).join('') %>
+                                </ul>
+                                <p id="add_button<%= index + 1 %>"></p>
+                              </div>
+                            </div>
+                          </td>
+                          <% index += 1 %>
+                      <% end %>
+                    </tr>
+                  </table>
+                </div>
+            <% end %>
+            <br />
+            <%#= link_to 'Kit Approval',kits_approval_kits_path, class: 'btn', id: 'approval_button' %>
+            <%= form_tag update_cardex_kits_path do %>
+                <%= hidden_field_tag 'kit_number', params[:kit_number] %>
+                <%= hidden_field_tag 'kit_action', params[:kit_action] %>
+                <%= hidden_field_tag 'kit_notes', @kit.try(:notes) %>
+                <%= hidden_field_tag 'kit_description', @kit.try(:description) %>
+                <%= submit_tag params[:kit_action]=="M" ? "Update Kit" : "Finish", class: 'btn', id: 'send_data_btn' %>
+                <%= button_to "Back" , "#"%>
+            <% end %>
+        <% elsif @cups[0].kit.kit_media_type.kit_type == "binder" %>
+            <%= render "detail_design_binder" %>
+        <% end %>
+    <% end %>
+
+<% end %>

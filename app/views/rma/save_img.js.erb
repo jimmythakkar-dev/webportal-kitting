@@ -1,0 +1,2 @@
+$("#list" + <%= @src_path[:ids].first %>).html("<img class='thumb img-responsive' src='<%= @src_path[:attachmentpath].first %>' title='img' />");
+$("#remove_pic" + <%= @src_path[:ids].first %>).html("<button type='button' class='btn glyphicon glyphicon-remove' onclick='remove_pic(<%= @src_path[:ids].first %>)'></button>");

@@ -1,0 +1,61 @@
+<h2 class="body_header"><%= t('add_part_to_loc',:scope => "bin_line_station.new_part_to_location")%></h2>
+<%= image_seperator %>
+<p><%= t('_desc_new_part_to_loc',:scope => "bin_line_station.new_part_to_location")%></p>
+<%= image_seperator %>
+<div class="alert alert-success">
+  <div class="row">
+    <div class="col-sm-12">
+      <%= flash[:alert] %>
+    </div>
+  </div>
+</div>
+<h5><%= t('line_station_action_request',:scope => "bin_line_station.update_line_station") %></h5>
+<p><b><%= @full_name %>(Cust. # <%= session[:customer_number] %>) </b> <%= t('has_requested_to',:scope => "bin_line_station.update_line_station") %> <font color=red><b> <%= t('add_scan_code',:scope => "bin_line_station.update_line_station") %> </b></font> to: <b><%= params[:location] %></b></p><br />
+<div class="table-responsive">
+  <table border="0" cellspacing="4">
+    <tr style="text-align: left">
+      <td class="align_left"><%= t('Submitted_On',:scope => "panstock_requests.send_panstock_changes") %></td>
+      <td class="align_left"><strong><%= Time.now.strftime("%-m/%-d/%y") %></strong></td>
+    </tr>
+    <tr>
+      <td class="align_left"> <%= t('Originator',:scope => "panstock_requests.action_history") %> </td>
+      <td class="align_left"><strong><%= @username %></strong></td>
+    </tr>
+  </table>
+</div>
+<br />
+
+<table border="0" cellspacing="4">
+  <tr>
+    <td colspan="2" class="align_left"><b><%= "#{t('bin_detail',:scope => "bin_line_station.new_part_to_location")}:" %></b> </td>
+  </tr>
+  <tr>
+    <td class="align_left"><%= t('loc_line_stn',:scope => "bin_line_station.update_line_station") %> </td>
+    <td class="align_left"><strong><%= params[:location] %></strong></td>
+  </tr>
+  <tr>
+    <td class="align_left"><%= "#{t('part_num',:scope => "rma")}:" %></td>
+    <td class="align_left"><strong><%= params[:part_number] %></strong></td>
+  </tr>
+  <tr>
+    <td class="align_left"><%= t('amc_qty',:scope => "bin_line_station.new_part_to_location") %></td>
+    <td class="align_left"><strong><%= params[:amc_qty]%></strong></td>
+  </tr>
+  <tr>
+    <td class="align_left"><%= t('pack_qty',:scope => "bin_line_station.new_part_to_location") %></td>
+    <td class="align_left"><strong><%= params[:pack_qty] %></strong></td>
+  </tr>
+  <tr>
+    <td class="align_left"><%= t('Bin',:scope => "panstock_requests.send_panstock_changes") %></td>
+    <td class="align_left"><strong><%= params[:bin] %></strong></td>
+  </tr>
+  <tr>
+    <td class="align_left"><%= t('reference',:scope => "bin_line_station.new_part_to_location") %> </td>
+    <td class="align_left"><strong><%= params[:reference] %></strong></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <%= button_tag t('bin_search',:scope => "bin_line_station.update_line_station") ,:type => 'button',:class => "btn btn-primary subBtn", :onclick => "location.href = '#{bin_line_station_index_path()}'" %>
+    </td>
+  </tr>
+</table>

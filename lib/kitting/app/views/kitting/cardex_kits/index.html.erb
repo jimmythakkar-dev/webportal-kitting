@@ -1,0 +1,9 @@
+<h5 class="body_header">Cardex Print Template</h5>
+<%= image_seperator %>
+<p>Please enter Kit Number to view the details for that Kit. <br></p>
+<%= image_seperator %>
+<% unless @kitting_response %>
+    <%= render 'search' %>
+<% end %>
+<%= render 'search_result' %>
+<div class="main-div"></div>

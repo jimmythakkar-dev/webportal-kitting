@@ -1,0 +1,61 @@
+<h2 class="body_header"><%= @custom_kit_report.present? ? t('custom_kits.delivery_reports.reports').upcase : t('custom_kits.search_status.status').upcase %></h2>
+<span class="err_msg"><%= render :partial => "layouts/message_display" %></span>
+<%= image_seperator %>
+<div>
+  <%= form_tag (@custom_kit_report.present? ? delivery_report_custom_kits_path : search_status_custom_kits_path), :method => "POST", :id => "custom_kit_search_form", :class => "form-horizontal" do %>
+      <fieldset>
+        <% if @custom_kit_report.present? %>
+            <div class="row">
+              <div class="col-sm-4">
+                <label><%= I18n.t("request_id",:scope => "custom_kits.delivery_reports")%></label>
+              </div>
+              <div class="col-sm-4">
+                <label><%= I18n.t("date_range",:scope => "agusta.agusta_inquiry")%></label>
+              </div>
+              <div class="col-sm-4">&nbsp; </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4">
+                <%= text_field_tag :request_id, h(params[:request_id]), :class => "form-control" %>
+              </div>
+              <div class="col-sm-4">
+                <%= select_tag :date_range, options_for_select(Order.date_range, :selected => params[:date_range].present? ? params[:date_range] :  "2" ), class: "form-control" %>
+              </div>
+              <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary" id="agusta_submit_search" ><%= I18n.t("search",:scope => "agusta.agusta_inquiry")%></button>
+                <button id= "agusta_search_record" class="btn btn-primary" style="display:none;" disabled="disabled"><%= I18n.t("searching_records",:scope => "agusta.agusta_inquiry")%></button>
+              </div>
+            </div>
+        <% else %>
+            <div class="row">
+              <div class="col-sm-4">
+                <label><%= I18n.t("aircraft_detail",:scope => "custom_kits.search_status")%></label>
+                <%= select_tag :search_by_aircraft_detail, options_for_select(@aircraft_details.unshift("Select Aircraft"), :selected => params[:search_by_aircraft_detail] ),:onchange => "customKitPN($(this).prop(\"selectedIndex\"),$(this).val());", class: "form-control" %>
+              </div>
+              <div class="col-sm-4" id ="agusta_search_value" >
+                <label><%= I18n.t("kit_pn",:scope => "custom_kits.search_status")%></label>
+                <%= select_tag :search_status_kit_pn, options_for_select([["Select Code",0],[params[:search_status_kit_pn],params[:search_status_kit_pn]]], :selected => params[:search_status_kit_pn] ), class: "form-control",:disabled => params[:search_status_kit_pn].present? ? false : true %>
+                <%#= text_field_tag :search_val, h(params[:search_val]), :class => "input-block-level" %>
+              </div>
+              <div class="col-sm-4">
+                <label><%= I18n.t("date_range",:scope => "agusta.agusta_inquiry")%></label>
+                <%= select_tag :date_range, options_for_select(@date_range, :selected => params[:date_range].present? ? params[:date_range] :  "2" ), class: "form-control" %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4">
+                <label><%= I18n.t("shift",:scope => "custom_kits.search_status")%></label>
+                <%= select_tag :shift, options_for_select([["T1","T1"],["T2","T2"],["T3","T3"]].unshift(["Select Shift",""]), :selected => params[:shift]), class: "form-control" %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 text-right">
+                <button type="submit" class="btn btn-primary" id="agusta_submit_search" ><%= I18n.t("search",:scope => "agusta.agusta_inquiry")%></button>
+                <button id= "agusta_search_record" class="btn btn-primary" style="display:none;" disabled="disabled"><%= I18n.t("searching_records",:scope => "agusta.agusta_inquiry")%></button>
+              </div>
+            </div>
+        <% end %>
+      </fieldset>
+  <% end %>
+</div>
+<%= image_seperator %>

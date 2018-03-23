@@ -1,0 +1,14 @@
+<% if params[:new_kit_flag].present?%>
+$("#kitComponentsDetailsID").html("<%= escape_javascript(render 'kit_components_details', {response: @kit_parts_details, new_kit_flag: true}) %>");
+<% else%>
+    <%if @kit_parts_details["errCode"].present? || @kit_parts_details["errMsg"].present? %>
+    $("#kitComponentsDetailsID").html("<%= escape_javascript(render 'layouts/message_display',{flash:{:error=>"#{@kit_parts_details["errMsg"]}"}}) %>");
+    <% else %>
+    <% if params[:additional_part].present? %>
+    $(".order_request_div .extra_order_div").remove();
+    $(".order_request_div").append("<%= escape_javascript(render 'kit_components_details', {response: @kit_parts_details}) %>");
+    <% else %>
+    $("#kitComponentsDetailsID").html("<%= escape_javascript(render 'kit_components_details', {response: @kit_parts_details}) %>");
+    <% end %>
+    <%end%>
+<% end %>

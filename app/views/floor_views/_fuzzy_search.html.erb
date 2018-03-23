@@ -1,0 +1,18 @@
+<div class="table-responsive">
+    <table class="fuzzy_table">
+    <tr>
+        <th class="floor_center_align"><%= t('part_numbers',:scope => "floor_views._fuzzy_search")%> <%= t('with',:scope => "floor_views._fuzzy_search")%> <%= params[:part_number]%></th>
+    </tr>
+    <tr>
+    <%(0..@part_list_len-1).each do |i| %>
+        <td><%= link_to @search_part_list[i], search_part_number_floor_views_path(:part_number => @search_part_list[i]) %> </td>
+        <% if i%5 == 0%>
+    </tr>
+        <%end%>
+    <%end %>
+
+    </table><br />
+    <br />
+    <%= t('please_select_to_see_part_details',:scope => "floor_views._fuzzy_search")%>
+</div>
+

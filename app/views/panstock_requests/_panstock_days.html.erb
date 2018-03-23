@@ -1,0 +1,74 @@
+<div id="history">
+  <div style="width:620px;" class="row">
+    <div class="col-sm-4" title="View/Download as Excel Spreadsheet">
+      <% if @pan_stock_entry_response["errCode"] != "1" %>
+          <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"),  panstock_history_excel_panstock_requests_path(params[:days],:format => 'xls') %>
+      <%else%>
+          &nbsp;
+      <%end%>
+    </div>
+    <div class="col-sm-1">
+      <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading", :style =>"visibility:hidden" %>
+    </div>
+    <div class="col-sm-3 text-right"><%= t('Date_Range',:scope=> "panstock_requests.bulk_history").upcase %></div>
+    <div class="col-sm-3 text-left">
+      <%= select_tag(:days, options_for_select(@days_format, :selected => params[:days]), :'data-remote' => 'true', :'data-url' => url_for(:controller => 'panstock_requests', :action => 'panstock_days'),:class => 'col-sm-10 form-control') %></div>
+  </div>
+  <% if @pan_stock_entry_response["errCode"] != "1" %>
+      <div class="table-responsive">
+        <table class="table tablesorter" >
+          <thead>
+          <tr>
+            <th><%= t('Status',:scope=> "panstock_requests.action_history").upcase %></th>
+            <th><%= t('type',:scope => ".panstock_requests.panstock_history")%></th>
+            <th><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></th>
+            <th><%= t('Line_Station',:scope => "panstock_requests.action_history").upcase  %></th>
+            <th><%= t('Date',:scope => "panstock_requests._edit_panstock")%></th>
+            <th><%= t('time',:scope => "panstock_requests.panstock_history") %></th>
+            <th><%= t('qty',:scope => "panstock_requests.panstock_history") %></th>
+            <th><%= t('Originator',:scope=> "panstock_requests.pan_err") %></th>
+          </tr>
+          </thead>
+          <%(0..@len-1).each do |i|%>
+              <tr onclick="location.href='<%= action_history_panstock_requests_path(:act => "I", :CFGRIDKEY => "#{@pan_stock_entry_response['idlist'][i].join(',')}") %>'">
+                <%= hidden_field_tag  'CFGRIDKEY', @pan_stock_entry_response['idlist'][i]%>
+                <% if @pan_stock_entry_response["approvalStatusList"][i] == "None" %>
+                    <td ></td>
+                <%else%>
+                    <td style="text-transform:inherit;"><%= @pan_stock_entry_response["approvalStatusList"][i]%></td>
+                <%end%>
+                <td style="text-transform:inherit;"><%= @pan_stock_entry_response["actionCodeList"][i]%></td>
+                <td ><%= @pan_stock_entry_response["originalPNList"][i]  %></td>
+                <%if !@pan_stock_entry_response["lineStationList"][i].nil? %>
+                    <td ><%= @pan_stock_entry_response["lineStationList"][i].join(',')%></td>
+                <%end%>
+                <td >
+                  <%if !@pan_stock_entry_response["actionDateList"][i].nil?%>
+                      <%= Date.strptime(@pan_stock_entry_response["actionDateList"][i],"%m/%d/%Y").strftime("%Y-%m-%d") %>
+                  <%end%>
+                </td>
+                <% @t_stamp = @pan_stock_entry_response["actionTimeList"][i]%>
+                <td >
+                  <% if !@t_stamp.nil?%>
+                      <%= Time.strptime(@t_stamp,'%I:%M%P').strftime("%H:%M:%S") %>
+                  <%end%>
+                </td>
+                <td class="text-right" style="text-align: right;"><%= @pan_stock_entry_response["qtyList"][i]%></td>
+                <td style="text-transform:inherit"><%= @pan_stock_entry_response["originatorList"][i]%></td>
+              </tr>
+          <%end%>
+        </table>
+      </div>
+  <%else%>
+      <%if params[:days] == "0" || params[:days] == ""%>
+          <% @errmsg = "Today"%>
+      <%elsif params[:days] == "365"%>
+          <%@errmsg = "This Year"%>
+      <%elsif params[:days] == "1000"%>
+          <%@errmsg = "All Records"%>
+      <%else%>
+          <%@errmsg = "#{params[:days]}" + 'days' %>
+      <%end%>
+      <p class="alert alert-danger"><%= t('no_record',:scope => "panstock_requests.bulk_history")%> <%= "#{@errmsg}"%> </p>
+  <%end%>
+</div>

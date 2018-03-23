@@ -1,0 +1,167 @@
+/******************  Displaying Update Notes  ********************/
+
+.tbl_pop_down {
+  border: 0;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.tr_content {
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.status {
+  cursor: pointer;
+}
+
+.td_content {
+  border: 1px solid #777;
+  padding: 0px;
+}
+
+.td_pop_down {
+  border-left: 1px solid #C1DAD7;
+}
+
+.div_pop_down {
+  padding: 5px 0 5px 0;
+}
+
+.tr_pop_down {
+  background: #eee;
+  padding: 5px 5px 5px 18px;
+  border: 1px solid #bbb;
+}
+
+.tr_pop_down_header {
+  font-size: 11px;
+  font-weight: bold;
+  background-color: #777;
+}
+
+.th_pop_down_header {
+  border-left: 1px solid #C1DAD7;
+}
+
+.tr_pop_down_content {
+  font-size: 11px;
+}
+
+.td_pop_down_content_date {
+  border-left: 1px solid #C1DAD7;
+  vertical-align: top;
+}
+
+.td_pop_down_content_status {
+  width: 60%;
+  vertical-align: top;
+  text-align: center;
+}
+
+.td_pop_down_content_note {
+  text-transform: none;
+  vertical-align: top;
+}
+
+.span_status {
+  color: #006699;
+}
+
+.span_line_resp {
+  font-weight: bold;
+}
+
+.div_text_history {
+  color: #006699;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.link_add {
+  text-decoration: underline;
+}
+
+.tbl_res {
+  border: 1px solid #777;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.tbl_critical_edit {
+  border: 1px solid #777;
+}
+
+.tbl_item_notes {
+  width: 100%;
+}
+
+.tr_item_notes {
+  border: 1px solid #000;
+  font-size: 10px;
+  line-height: 11px;
+  color: black;
+}
+
+.tr_header_item_notes {
+//  color: white;
+  background-color: grey;
+  line-height: 5px;
+}
+
+.tr_item_colors {
+  font-size: 10px;
+}
+
+#div_update_link {
+  text-align: right;
+}
+
+.tr_initial_status {
+  background-color: LIGHTGREY;
+}
+
+.td_initial_status {
+  text-align: left;
+}
+
+.td_item_colors {
+  text-align: right;
+  border: 1px solid black;
+}
+
+.td_item_color_codes {
+  border: 1px solid black;
+}
+
+#span_float_left {
+  float: left;
+}
+
+.tr_update_status {
+  background-color: LIGHTGREY;
+}
+
+.td_item_colors_border {
+  border: 1px solid #777;
+}
+
+.span_status_red {
+  color: red;
+}
+
+.tr_content_font {
+  font-size: 10px;
+}
+
+.th_content {
+  line-height: 12px;
+  color: #fff;
+  background-color: grey;
+}
+
+.td_update_item_note {
+  border: 1px solid #777;
+  font-size: 11px;
+  text-align: left;
+}

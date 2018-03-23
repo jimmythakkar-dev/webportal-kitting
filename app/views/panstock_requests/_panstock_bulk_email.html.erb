@@ -1,0 +1,51 @@
+<h3>PANSTOCK ACTION REQUEST</h3>
+<table>
+	<tr>
+		<td>Submitted On:</td>
+		<td class="left_align"><strong><%= Date.today%></strong></td>
+	</tr>
+	<tr>
+		<td> Originator: </td>
+		<td class="left_align"><strong><%= @panstockEntry['originator']%></strong></td>
+	</tr>
+</table>
+<br/>
+<table>
+	<tr>
+		<td>Approved By:</td>
+		<td class="left_align"><strong><%= params[:ApprovedBy]%></strong></td>
+	</tr>
+	<tr>
+		<td>Approval Status: </td>
+		<td class="left_align"><strong><%= @MYOrder_ApprovalStatus %></strong></td>
+	</tr>
+	<tr>
+		<td>Status Reason:</td>
+		<td class="left_align"><strong><%=  params[:StatusReasonIn]%></strong></td>
+	</tr>
+</table>
+
+<table class="email_table" >
+	<tr >
+		<th><b>ACTION CODE</b></th>
+		<th><b>PART<br/>NUMBER</b></th>
+		<th><b>LOCATION</b></th>
+		<th><b>BIN QTY</b></th>
+		<th><b>UM</b></th>
+		<th><b>BIN</b></th>
+		<th><b>REASON / COMMENTS</b></th>
+	</tr>
+	<!--- 12-20-2011 - using OriginalPN instead of PartNo which is the prime --->
+		<!---  <cfset myparts = listappend(myparts," --->
+		<tr>
+			<td ><%= @panstockEntry["actionCode"].join(",") %></td>
+			<td ><%= @panstockEntry["originalPN"] %></td>
+			<td ><%= @panstockEntry["lineStation"] %></td>
+			<td ><%= @panstockEntry["orderQty"].join(",") %></td>
+			<td ><%= @panstockEntry["um"].join(",") %></td>
+			<td ><%= @panstockEntry["binCenter"] %></td>
+			<td ><%= @panstockEntry["reason"] %></td>
+		</tr>
+		<!--- "," ")> --->
+	<!--- <cfset myparts = listappend(myparts," --->
+</table>

@@ -1,0 +1,16 @@
+<% if @change_data.blank? %>
+  $.msgBox({
+    title:"Version History",
+    content: "Service Temporarily Unavailable, Please contact your Administrator",
+    type: "info"
+});
+<% elsif @change_data.first["errMsg"].present? %>
+$.msgBox({
+    title:"Version History",
+    content: "<%= @change_data.first["errMsg"] %>",
+    type: "info"
+});
+<% else %>
+  $("#change-data-modal").modal('show');
+  $(".modal-change-data-body").html("<%= escape_javascript(render "change_data", :local => {:change_data => @change_data})%>");
+<% end %>

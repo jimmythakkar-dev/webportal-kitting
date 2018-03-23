@@ -1,0 +1,198 @@
+<%= render 'search' %>
+<% unless @partNums_response["errMsg"].blank? %>
+    <div class="text-danger"><%= flash[:alert] %></div>
+    <% if SUPERSEDENCE_SEARCH_USER_ARR.include? current_user%>
+        <%= render 'engineering_check/supersedence_search' %>
+    <% end %>
+<% else %>
+    <div class="text-danger"><%= flash[:alert] %></div>
+    <div class="text-danger"><%= flash[:notice]  %></div>
+    <!-------------------------- END OF TEST ERROR MESSAGE AND CONTINUE IF "OK" ------------------------>
+    <% if @binParts_response %>
+        <% if @partNums_response["errMsg"] && !@partNums_response["errMsg"].blank? && @partNums_response["errMsg"] == "No parts found" %>
+            <strong><%= @partNums_response["errMsg"] %></strong>
+            <% if SUPERSEDENCE_SEARCH_USER_ARR.include? current_user %>
+                <%= render 'engineering_check/supersedence_search' %>
+            <% end %>
+        <% else %>
+            <% unless @binParts_response["errMsg"].blank? %>
+                <% if session["user_level"] > "2" %>
+                    <% if @binParts_response["errMsg"].include? ("LTC Error") %>
+                        <div class="text-danger">
+                          <%= "Part not on Long Term Contract (LTC). Please contact your KLX representative." %>
+                        </div>
+                    <% elsif @binParts_response["errMsg"].include? ("PL Error") %>
+                        <div class="text-danger">
+                          <%= "Part not on Customer Contract.  Please contact your KLX representative." %>
+                        </div>
+                    <% else %>
+                        <% temp_msg =  @binParts_response["errMsg"].gsub("|","")%>
+                        <% temp_msg = @binParts_response["errMsg"].gsub("order", (link_to 'Order',panstock_requests_path(:tpn => @part_no.upcase,:ac => "Expedite"))).html_safe %>
+                        <div class="text-danger"><%= temp_msg %></div>
+                    <% end %>
+                <% end %>
+            <% end %>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Part Number Entered:' %></div>
+                  <div class="col-sm-8 body_text_subhead"> <%= @part_no.upcase %></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Description:' %></div>
+                  <div class="col-sm-8"><%= @partNums_response["partName"] %></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Customer Ref Number:' %></div>
+                  <div class="col-sm-8"><%= @whse_cust_part_no.upcase %></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Contract Part Number:' %></div>
+                  <div class="col-sm-8"><%= @my_inv_pn.try(:upcase) %></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Updated Date:' %></div>
+                  <div class="col-sm-8"><%= label_tag @binParts_response["updatedDt"] %></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Updated By:' %></div>
+                  <div class="col-sm-8"><%= label_tag @binParts_response["updatedBy"] %></div>
+                </div>
+
+                <%= image_seperator %>
+                <%= render 'engineering_check/get_lead_times' %>
+                <%= image_seperator %>
+
+                <div class="row">
+                  <div class="col-sm-4"><%= 'Ship-To Address:'%></div>
+                  <div class="col-sm-8"><%= @binParts_response["shipTo"].html_safe %></div>
+                </div>
+              </div>
+            </div>
+
+            <%= image_seperator %>
+            <% @my_whse_total = 0 %>
+            <%= render 'engineering_check/whse_on_hand'  %>
+            <% if SUPERSEDENCE_SEARCH_USER_ARR.include? current_user%>
+                <%= render 'engineering_check/supersedence_search' %>
+            <% end %>
+            <div class="clear"></div>
+            <!------------------------  DISPLAY FLOOR VIEW SEARCH - BIN MAP FOR PART NUMBER ----------------->
+            <% if @qc_lab_response["errMsg"].blank? %>
+                <div class="table_title">
+                  <strong>
+                    QC Laboratory - PART NO: <%= @part_no.upcase %>
+                  </strong>
+                </div>
+                <div class="table-responsive">
+                  <table style="width: 1400px; white-space: nowrap" class="table tablesorter">
+                    <thead>
+                    <th class="header">Part Number</th>
+                    <th class="header">Control Number</th>
+                    <th class="header">Manufacturer Lot Number</th>
+                    <th class="header">Manufacturer Name</th>
+                    <th class="header">Test Group</th>
+                    <th class="header">Qty</th>
+                    <th class="header">Start Date</th>
+                    <th class="header">XRf Date</th><!-- NEW Field -->
+                    <th class="header">AT BOEING</th><!--Before it is Date Returned-->
+                    <th class="header">QA REVIEW</th>
+                    <th class="header">Complete Date</th>
+                    <th class="header">Test Result</th>
+                    <th class="header">Status</th>
+                    <th class="header">Location</th>
+                    </thead>
+                    <tbody>
+                    <% total_qc_quantity = 0 %>
+                    <% @qc_lab_response["partNo"].each_with_index do |part_no,index| %>
+
+                        <tr>
+                          <td><%= link_to @qc_lab_response["partNo"][index], qc_laboratory_fuzzy_search_path(@qc_lab_response["partNo"][index], search_type: 'PartNo')%></td>
+                          <td><%= @qc_lab_response["controlNo"][index] %></td>
+                          <td><%= @qc_lab_response["mfrLotNo"][index] %></td>
+                          <td><%= @qc_lab_response["mfrName"][index] %></td>
+                          <td><%= @qc_lab_response["testGroup"][index] %></td>
+                          <td><%= @qc_lab_response["qty"][index] %></td>
+                          <td><%= @qc_lab_response["startDate"][index] %></td>
+                          <td><%= @qc_lab_response["xrfDate"][index] %></td>
+                          <td><%= @qc_lab_response["atBoeingLabDate"][index] %></td>
+                          <td><%= @qc_lab_response["qaReviewDate"][index] %></td>
+                          <td><%= @qc_lab_response["returnDate"][index] %></td>
+                          <td><%= @qc_lab_response["testResult"][index] %></td>
+                          <td><%= @qc_lab_response["currentStatus"][index] %></td>
+                          <td><%= @qc_lab_response["currentLocation"][index] %></td>
+
+                          <% total_qc_quantity += @qc_lab_response["qty"][index].to_i %>
+                        </tr>
+                    <% end %>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="table_title text-right"><strong>
+                  Total: <%= total_qc_quantity %>
+                </strong>
+                </div>
+            <% else %>
+                <% if session[:user_level] > "2" %>
+                    <div class="alert alert-danger">
+                      <% if @qc_lab_response["errMsg"].match("not on bin map") %>
+                          <%= @qc_lab_response["errMsg"].gsub(
+                                      "#{params["txtPartNo"]} not on bin map; Please use panstock to order.",
+                                      "#{params["txtPartNo"]} not on bin map; Please use panstock to "+
+                                              (link_to 'Order',panstock_requests_path(:tpn => @part_no.upcase,:ac => "Expedite"))).html_safe %>
+                      <% else %>
+                          <%= @qc_lab_response["errMsg"].gsub("|","") %>
+                      <% end %>
+                    </div>
+                <% else %>
+                    <div class="alert alert-danger"><%= @qc_lab_response["errMsg"] %></div>
+                <% end %>
+            <% end %>
+            <div class="clear"></div>
+            <% if @binParts_response && !@binParts_response["bin"].empty? %>
+                <div class="table_title">
+                  <strong>
+                    BIN MAP FOR PART NUMBER: <%= @part_no.upcase %>
+                  </strong>
+                </div>
+                <div class="table-responsive">
+                  <table style="width: 1400px; white-space: nowrap" class="table">
+                    <thead>
+                    <th class="header">LOCATION</th>
+                    <th class="header">Scan Code</th>
+                    <th class="header">BIN QTY</th>
+                    <th class="header">PACK QTY</th>
+                    <th class="header">UM</th>
+                    <th class="header">ORDER DATE</th>
+                    <th class="header">ORDER QTY</th>
+                    </thead>
+                    <tbody>
+                    <% total_qc_quantity = 0 %>
+                    <% @binParts_response["bin"].first.split(",").each_with_index do |bin,index| %>
+                        <tr>
+                          <td><%= link_to @binParts_response["whsdesc"].first.split(",")[index], qc_laboratory_get_bin_center_parts_path(bin) %></td>
+                          <td><%= @binParts_response["scancode"].first.split(",")[index] %></td>
+                          <td><%= @binParts_response["amcQty"].first.split(",")[index] %></td>
+                          <td><%= @binParts_response["packQty"].first.split(",")[index].html_safe %></td>
+                          <td><%= @binParts_response["um"].first.split(",")[index] %></td>
+                          <td><%= @binParts_response["orderDt"].first %></td>
+                          <td><%= @binParts_response["orderQty"].first %></td>
+                          <% total_qc_quantity += @binParts_response["amcQty"].first.split(",")[index].to_i %>
+                        </tr>
+                    <% end %>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="table_title text-right"><strong>
+                  Total: <%= total_qc_quantity %>
+                </strong>
+                </div>
+            <% end %>
+            <% if session[:user_type] == "E" %>
+                <!-- here we neet to include WhsOnHandTable page with customer_number, partNo paramete -->
+                <!-- CF_WhsOnHandTable customer_number=#customer_number# PartNo=#PartNo# -->
+                <!--BUT There should not be any file like WhsOnHandTable-->
+            <% end %>
+        <% end %>
+    <% end %>
+<% end %>

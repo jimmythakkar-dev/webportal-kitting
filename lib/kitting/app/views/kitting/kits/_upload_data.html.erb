@@ -1,0 +1,26 @@
+<thead>
+<th>File Name</th>
+<th>File Status</th>
+<th>Uploaded By</th>
+<th>Uploaded On </th>
+<th class="filter-false"> Response File </th>
+<th class="filter-false"> ACTION </th>
+</thead>
+<% @kit_uploads.each_with_index do |kit,index| %>
+    <tr style="<%= kit.status == "FAILED" ? 'color:red;' : "" %>">
+      <td title='<%= kit.file_path.split("/").last %>'><%= truncate(kit.file_path.split("/").last,:length => 25, :omission => '...') %></td>
+      <% if kit.operation_type == "RFID UPLOAD" %>
+          <td><%= kit.status %></td>
+      <% else %>
+          <td class="upload_status "><%= kit.status %></td>
+      <% end %>
+      <td><%= kit.customer.user_name %></td>
+      <td><%= kit.created_at.strftime("%m/%d/%Y %H:%M:%S") %></td>
+      <% if kit.operation_type == "RFID UPLOAD" %>
+          <td><%= link_to image_tag(excel_icon(kit.status), :height => "40", :width => "40", :class=> "img-responsive",:border => 0, :alt => "View/Download as Excel Spreadsheet"), csv_export_kits_path(:id => kit.id) %></td>
+      <% else %>
+          <td><%= link_to image_tag(excel_icon(kit.status), :height => "40", :width => "40", :class=> "img-responsive",:onClick => "upload_status('#{kit.status}');",:border => 0, :alt => "View/Download as Excel Spreadsheet"), (kit.status == "COMPLETED" or kit.status == "FAILED") ? csv_export_kits_path(:id => kit.id) : "#" %></td>
+      <% end %>
+      <td><%= button_to 'Delete File',  delete_upload_record_kits_path(:id => kit.id, :type => kit.operation_type),:class=>"btn btn-danger",data: { confirm: "This File is #{kit.status}. Are you sure you want to delete the file ?" } %></td>
+    </tr>
+<% end %>

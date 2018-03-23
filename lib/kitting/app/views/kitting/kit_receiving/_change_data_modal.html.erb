@@ -1,0 +1,20 @@
+<%= form_tag kit_filling_print_change_data_path, :target=> "_blank", :method => 'post' , :class => "form-horizontal" do %>
+    <div id="change-data-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="body_header">Change Data</h2>
+          </div>
+          <div class="modal-body">
+            <div class="modal-change-data-body">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" aria-hidden="true" data-dismiss="modal">Close</button>
+            <%= submit_tag  "Print", class: 'btn btn-primary'%>
+            <%= submit_tag  "Print Internal Label", class: 'btn btn-primary'%>
+          </div>
+        </div>
+      </div>
+    </div>
+<%end%>

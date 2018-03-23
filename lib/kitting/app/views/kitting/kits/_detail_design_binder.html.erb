@@ -1,0 +1,171 @@
+<%= form_tag update_quantity_cup_parts_path do  %>
+    <div id="part_edit_modal_binder" class="modal fade" tabindex="-1"
+         role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>Cup <span id="edit_cup_number_info" style='padding: 0px 6px; background-color: #336699; color: #ffffff;'></span> information</h5>
+          </div>
+          <div class="modal-body">
+            <table id="table">
+              <thead>
+              <th>Part Number</th>
+              <th>Demand Quantity</th>
+              <th>Action</th>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+          <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+          <%= hidden_field_tag 'mmt_kit_id', params[:mmt_kit_id] || @original_kit.id  %>
+          <%= hidden_field_tag 'cup_number', params[:cup_number]%>
+          <div class="modal-footer">
+            <button class="btn btn-default close-popup" data-dismiss="modal" aria-hidden="true">Close</button>
+            <% if session[:user_level] %>
+                <% if session[:user_level] >= "3" %>
+                    <%= submit_tag 'Save changes', id: 'binder_save_changes',class: 'btn btn-primary' %>
+                <%end%>
+            <%end%>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>
+
+<table class="table table-bordered" id="binder_table">
+  <thead>
+  <p class="body_text_subhead">Kit Parts</p>
+  <th style="width: 7% !important">SLV</th>
+  <th style="width: 4% !important">Non-Contract Part</th>
+  <th>Part Details</th>
+  <th style="width: 15% !important">Action</th>
+  </thead>
+  <tbody id="parts_body">
+  <% @row_count = 0 %>
+
+  <% @cups.sort!.each_with_index do |cup,cup_index|  %>
+      <% unless @cups[cup_index].parts.blank?  %>
+          <% cup_part_ids = get_drafted_binder_cup_parts cup %>
+          <% cup_part_ids.each_with_index do |cpid,index| %>
+              <% unless Kitting::CupPart.find(cpid).status == false %>
+                  <% @row_count = @row_count + 1 %>
+                  <tr>
+                    <td>
+                      <%= text_field_tag "kit_tray[]", @row_count, :class =>'kit_tray form-control',:disabled => true %>
+                      <%= hidden_field_tag 'cup_id[]', @cups[cup_index].id %>
+                      <%= hidden_field_tag 'number_of_rows', params[:compartments].to_i-10 %>
+                      <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+                      <%= hidden_field_tag 'part_number', Kitting::CupPart.find(cpid).part.part_number %>
+                      <%= hidden_field_tag 'quantity', Kitting::CupPart.find(cpid).demand_quantity %>
+                      <%= hidden_field_tag 'mmt_kit_id', params[:mmt_kit_id]  %>
+                    </td>
+                    <td><%= check_box_tag "edit_non_contract_part_check_#{@row_count}",nil,!Kitting::CupPart.find(cpid).in_contract,:class => 'non_contract_binder',disabled: true %> </td>
+                    <% part_no = Kitting::CupPart.find(cpid).part.part_number %>
+                    <% dem_qty = Kitting::CupPart.find(cpid).demand_quantity %>
+                    <% part_name = Kitting::CupPart.find(cpid).part.name %>
+                    <% part_uom = Kitting::CupPart.find(cpid).uom %>
+                    <td><%= binder_part_input(@row_count,"edit",{:part_no => part_no, :qty => dem_qty, :name => part_name, :uom => part_uom}) %></td>
+
+                    <td>
+                      <%=  link_to "Edit Part", "#", class: 'btn btn-default popup-edit' %>
+                    </td>
+                  </tr>
+              <% end %>
+          <% end %>
+      <% end %>
+  <% end %>
+  <% count = @row_count %>
+  <% from_value = @row_count %>
+  <% if params[:compartments].to_i >= 10 %>
+      <% n = 9 %>
+      <% for i in from_value..n %>
+          <% count = count + 1 %>
+          <%= form_tag({controller: 'cup_parts', action: 'create'}, {:id => "cup_part_data"}) do %>
+              <tr>
+                <td>
+                  <%= text_field_tag "kit_tray_#{count}", count, :class =>'kit_tray form-control',:disabled => true  %>
+                  <%= hidden_field_tag 'number_of_rows', params[:compartments].to_i-10 %>
+                  <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+                  <%= hidden_field_tag 'mmt_kit_id', params[:mmt_kit_id]  %>
+                </td>
+                <td><%= check_box_tag "non_contract_part_check_#{count}",nil,nil,:class => 'non_contract_binder' %> </td>
+                <td><%= binder_part_input(count,"add") %> </td>
+                <div class="row">
+                  <div class="col-lg-offset-4 col-lg-8">
+                    <small id="cust_pn_message" style="color:green; display:none;"></small>
+                  </div>
+                </div>
+                <td><img class="delete_row" src="/assets/delete.gif"/>
+                  <%#= submit_tag "Add Part", :id=> "binder_add_part_#{count}", :class => 'btn btn-small popup-binder' %>&nbsp;
+                </td>
+              </tr>
+          <% end %>
+      <% end %>
+  <% else %>
+      <% n = (params[:compartments].to_i-1) %>
+      <% n = 9 %>
+      <% for i in from_value..n %>
+          <% count = count + 1 %>
+          <tr>
+            <td>
+              <%= text_field_tag "kit_tray_#{count}", count, :class =>'kit_tray form-control',:disabled => true  %>
+              <%= hidden_field_tag 'number_of_rows', params[:compartments] %>
+              <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+              <%= hidden_field_tag 'mmt_kit_id', params[:mmt_kit_id]  %>
+            </td>
+            <td><%= check_box_tag "non_contract_part_check_#{count}",nil,nil,:class => 'non_contract_binder' %> </td>
+            <td><%= binder_part_input(count,"add") %>
+                <div class="row">
+                  <div class="col-lg-offset-4 col-lg-8">
+                    <small id="cust_pn_message" style="color:green; display:none;"></small>
+                  </div>
+                </div>
+            </td>
+            <td><img class="delete_row" src="/assets/delete.gif"/>
+              <%#= link_to "Add Part", "#", class: 'btn btn-small popup-binder',cup_id: @cups[i].id %>&nbsp;
+            </td>
+          </tr>
+      <%end%>
+  <%end%>
+  </tbody>
+</table>
+
+<div class="row">
+  <div class="col-sm-3">
+    <% if session[:user_level] %>
+        <% if session[:user_level] >= "3" %>
+            <%= link_to 'Add Additional Parts', nil, class: 'btn btn-success add_rows_to_table' %>
+        <%end%>
+    <%end%>
+  </div>
+
+  <%= form_tag update_cardex_kits_path do %>
+      <%= hidden_field_tag 'kit_number', params[:kit_number] %>
+      <%= hidden_field_tag 'kit_action', params[:kit_action] %>
+      <%= hidden_field_tag 'kit_notes', @kit.try(:notes) %>
+      <%= hidden_field_tag 'kit_description', @kit.try(:description) %>
+      <%= hidden_field_tag 'part_bin_center'%>
+      <%= hidden_field_tag 'kit_bin_center'%>
+      <% if session[:user_level] %>
+          <% if session[:user_level] >= "3" %>
+              <div class="row">
+                <div class="col-sm-2">
+                  <%= submit_tag "Finish", class: 'btn btn-default binder_finish_kit', id: 'binder_button_cardex' %>
+                </div>
+                <div class="col-sm-2">
+                  <%= link_to "Back" , params[:approve].present? ? kits_approval_kits_path() : kits_path,class: 'btn btn-default'%>
+                </div>
+                <div class="col-sm-2">
+                  <%= link_to 'Save Kit', '#' , class: 'btn btn-default', id: 'multi_binder_save' %>
+                </div>
+                <%if params[:approve].present? %>
+                    <div class="col-sm-2">
+                      <%= link_to 'Approve', approve_kits_kits_path(:kit_number=> " ", :approved => " " ), class: 'btn btn-primary', :id => "approve_btn",:confirm => "Are you sure to approve #{params[:kit_number]}?" if can?(:>,"4") %>
+                    </div>
+                <% end %>
+              </div>
+          <%end%>
+      <%end%>
+  <% end %>
+</div>

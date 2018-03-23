@@ -1,0 +1,25 @@
+<p class="body_header"><%= t("title",:scope => "order_refill.index") %></p>
+<%= image_seperator %>
+<p><%= t("_desc",:scope => "order_refill.index").html_safe %></p>
+<%= image_seperator %>
+<!-- Beginning of order refill search from -->
+<%= form_tag search_order_refill_index_path, :method => 'get', class: "form-inline" do %>
+    <div class="form-group col-xs-12 col-sm-6 col-sm-12">
+        <%= select_tag :search_by_refill, options_for_select(@search_by_values, :selected => params[:search_by_refill]),class: "form-control"  %>
+        <%= text_field_tag :search_for_refill, params[:search_for_refill].try(:strip).try(:upcase), class: "form-control" %>
+        <%= submit_tag t("search",:scope => "open_orders.index"), class: "btn btn-primary" %> &nbsp;
+        <%=  label_tag t("invoice_range",:scope => "open_orders.index").html_safe,nil, class: 'control-label' %>
+        <%= select_tag :start_date_refill, options_for_select(@days_format, :selected => params[:start_date_refill] || "60"),class: "form-control" %>
+    </div>
+<% end %>
+<!-- End of open order search from -->
+<%= image_seperator %>
+<br/>
+<!-- Displaying flash messages -->
+<p class="alert_msg"><%= flash[:alert] %></p>
+<!-- Checking whether rbo response is present, if success then render results page-->
+<% if @response_send_refill_order || @response_refill_order%>
+    <%= render 'refill_order' %>
+<% elsif @response_part_nums %>
+    <%= render 'fuzzy_search' %>
+<%end%>

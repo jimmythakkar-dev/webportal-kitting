@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KLX Aerospace</title>
+  <%= favicon_link_tag 'favicon.ico' %>
+  <%= stylesheet_link_tag  "application", :media => "all" %>
+  <!--[if lt IE 9]>
+  <script src="/ie/html5shiv.js"></script>
+  <script src="/ie/respond.js"></script>
+  <![endif]-->
+  <%= csrf_meta_tags %>
+</head>
+
+<body>
+<div class="container" style="width: 1170px; ">
+  <div class="row">
+    <%= yield %>
+  </div>
+</div>
+<div class="spin_overlay disp-block" >
+  <div class="spinner disp-block" > </div>
+</div>
+<%= javascript_include_tag "jquery" %>
+<%= javascript_include_tag "jquery_ujs" %>
+<%= javascript_include_tag "jquery.gridster" %>
+<%= javascript_include_tag "jquery.coords" %>
+<%= javascript_include_tag "jquery.collision" %>
+<%= javascript_include_tag "jquery.draggable" %>
+<%= javascript_include_tag "utils" %>
+<%= javascript_include_tag "cardex_kits" %>
+<script>
+  //    Bootstrap Fix
+  if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+    var msViewportStyle = document.createElement('style');
+    msViewportStyle.appendChild(
+            document.createTextNode(
+                    '@-ms-viewport{width:auto!important}'
+            )
+    )
+    document.querySelector('head').appendChild(msViewportStyle)
+  }
+</script>
+</body>
+</html>

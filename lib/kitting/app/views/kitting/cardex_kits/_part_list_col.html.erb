@@ -1,0 +1,21 @@
+<header class="page-header">
+  <%=  image_tag "KLX_logo.jpg", class: "img-responsive" %>
+</header>
+<% if @kitting_response%>
+    <div class="row">
+      <div class="col-sm-12 page-title text-primary">
+        Kit Number : <%= @cardex_kit.kit_number %>
+      </div>
+    </div>
+    <% if @kitting_response["kitCompPartNo"] %>
+        <div class="part_tooltip"></div>
+        <ul>
+          <% @parts = @unused_parts.nil? ? @kitting_response["kitCompPartNo"] : @unused_parts%>
+          <% @parts.each_with_index do |part,i| %>
+              <li val="<%= part %>"><%= part +" ("+ @kitting_response["kcpnQty"][@kitting_response["kitCompPartNo"].index(part)] + ")" %></li>
+          <% end %>
+        </ul>
+        <% else %>
+        <ul></ul>
+    <% end %>
+<% end %>

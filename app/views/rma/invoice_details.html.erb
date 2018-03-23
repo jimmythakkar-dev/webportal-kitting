@@ -1,0 +1,225 @@
+<% if flash[:error] %>
+    <p class="error"><%= render :partial => "layouts/message_display" %></p>
+<% else %>
+    <h2 class="body_header text-left"><%= t 'rma.invoice' %> #: <%= @invoice_detail["invoiceNo"] %></h2>
+    <%= image_seperator %>
+    <table class="table">
+      <thead class="rma_title">
+      <th width="50%" class="filter-false"><%= t 'rma.invoice' %> <%= t 'rma.bill_to' %></th>
+      <th width="50%" class="filter-false"><%= t 'rma.invoice' %> <%= t 'rma.ship_to' %></th>
+      </thead>
+      <tr>
+        <td class="vertical_align">
+          <% @invoice_detail["billtoLines"][0].split(",").each do |billed_address| %>
+              <% if billed_address.include?("'") %>
+                  <div><%= billed_address.gsub("'",",") %></div>
+              <% else %>
+                  <div><%= billed_address %></div>
+              <%end%>
+          <% end %>
+        </td>
+        <td class="vertical_align">
+          <% @invoice_detail["shiptoLines"][0].split(",").each do |shipped_address| %>
+              <% if shipped_address.include?("'") %>
+                  <div><%= shipped_address.gsub("'",",") %></div>
+              <% else %>
+                  <div><%= shipped_address %></div>
+              <%end%>
+          <% end %>
+        </td>
+      </tr>
+    </table>
+    <%= image_seperator %>
+    <table class="table">
+      <thead class="rma_title">
+      <th width="50%" class="filter-false"><%= t 'rma.request_contact' %></th>
+      <th width="50%" class="filter-false"><%= t 'rma.request_info' %></th>
+      </thead>
+    </table>
+    <% if params["disable_fields"] == "1" %>
+        <% disable = true %>
+    <% else %>
+        <% disable = false %>
+    <% end %>
+    <%= form_tag("/rma/submit", :method => 'post', :multipart => true, :id => "create_rma_form",:class =>"form-horizontal") do %>
+        <%= hidden_field_tag 'invoice_num', params[:invoice_num] %>
+        <%= hidden_field_tag 'year', @year %>
+        <%= render :partial => 'upload_image' %>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <div class="col-sm-2"><%= t 'rma.name' %></div>
+              <% if params["disable_fields"] == "1" %>
+                  <div class="col-sm-4"><b><%= text_field_tag :name, @rma_details["rmaCustContact"], :class => "form-control", :disabled => true %></b></div>
+              <% else %>
+                  <div class="col-sm-4"><b><%= text_field_tag :name, params[:name], :class => "form-control", :required => true %></b></div>
+              <% end %>
+              <div class="col-sm-2"><%= t 'rma.reason_code' %></div>
+              <% if params["disable_fields"] == "1" %>
+                  <div class="col-sm-4">
+                    <select name="reason_code" id="reason_code" class="selectpicker form-control" disabled>
+                      <% Rma::REASON_CODES.each do |key, val| %>
+                          <option <% if @rma_details["rmaReasonCode"].first == "#{key}" %>selected<% end %> value="<%= key %>"><%= t "rma.#{val}" %></option>
+                      <% end %>
+                    </select>
+                  </div>
+              <% else %>
+                  <div class="col-sm-4">
+                    <select name="reason_code" id="reason_code" class="selectpicker form-control" required="required">
+                      <% Rma::REASON_CODES.each do |key, val| %>
+                          <option value="<%= key %>"><%= t "rma.#{val}" %></option>
+                      <% end %>
+                    </select>
+                  </div>
+              <% end %>
+            </div>
+            <div class="clear"></div>
+            <div class="row">
+              <div class="col-sm-2"><%= t 'rma.email' %></div>
+              <% if params["disable_fields"] == "1" %>
+                  <div class="col-sm-4"><%= text_field_tag :email, @rma_details["rmaCustEmail"], :class => "form-control", :type => "email", :disabled => true %></div>
+              <% else %>
+                  <div class="col-sm-4"><%= text_field_tag :email, params[:email], :class => "form-control", :type => "email" %></div>
+              <% end %>
+              <div class="col-sm-2"><%= t 'rma.reason_desc' %></div>
+              <% if params["disable_fields"] == "1" %>
+                  <div class="col-sm-4"><%= text_area_tag :reason, @rma_details["rmaReasonDesc"].first, :disabled => true,:class=> "form-control" %></div>
+              <% else %>
+                  <div class="col-sm-4"><%= text_area_tag :reason, params[:reason], :required => true,:class =>"form-control" %></div>
+              <% end %>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= t 'rma.fax' %></div>
+              <% if params["disable_fields"] == "1" %>
+                  <div class="col-sm-4"><%= text_field_tag :fax, @rma_details["rmaCustFax"], :class => "form-control" , :disabled => true %></div>
+              <% else %>
+                  <div class="col-sm-4"><%= text_field_tag :fax, params[:fax], :class => "form-control" %></div>
+              <% end %>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= t 'rma.replace_part' %></div>
+              <% if params["disable_fields"] == "1" %>
+                  <% if @rma_details["replacementPnReq"] == "Y" %>
+                      <div class="col-sm-4"><%= check_box_tag 'replace_part', 'Y',  {:checked => "checked"} , :disabled => true %></div>
+                  <% else %>
+                      <div class="col-sm-4"><%= check_box_tag 'replace_part', 'Y',  nil , :disabled => true %></div>
+                  <% end %>
+              <% else %>
+                  <div class="col-sm-4"><%= check_box_tag 'replace_part', 'Y' %></div>
+              <% end %>
+              <div class="col-sm-6">
+                <% if params["disable_fields"] == "1" %>
+                    <button type="button" class="btn btn-info glyphicon glyphicon-picture" disabled onclick="$('#upload_img').modal();"><%= t 'rma.upload_img' %></button>
+                <% else %>
+                    <button type="button" class="btn btn-info glyphicon glyphicon-picture" onclick="$('#upload_img').modal();"><%= t 'rma.upload_img' %></button>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="table-responsive">
+          <table class="table table-condensed table-striped">
+            <thead>
+            <th width="20%" class="filter-false" style="text-align: center !important;"><%= t 'rma.po' %>#</th>
+            <th width="20%" class="filter-false" style="text-align: center !important;"><%= t 'rma.invoice_date_small' %></th>
+            <th width="20%" class="filter-false" style="text-align: center !important;"><%= t 'rma.ship_via' %></th>
+            <th width="20%" class="filter-false" style="text-align: center !important;"><%= t 'rma.terms' %></th>
+            <th width="20%" class="filter-false" style="text-align: center !important;"><%= t 'rma.fob' %></th>
+            </thead>
+            <tr>
+              <td style="text-align: center !important;"><%= @invoice_detail["poLines"][0] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["poLines"][1] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["poLines"][2] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["poLines"][3] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["poLines"][4] %></td>
+            </tr>
+          </table>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-condensed table-striped">
+            <thead>
+            <th width="25%" class="filter-false" style="text-align: center !important;"><%= t 'rma.so' %>#</th>
+            <th width="25%" class="filter-false" style="text-align: center !important;"><%= t 'rma.ship_date' %></th>
+            <th width="25%" class="filter-false" style="text-align: center !important;"><%= t 'rma.entry_date' %></th>
+            <th width="25%" class="filter-false" style="text-align: center !important;"><%= t 'rma.salesperson' %></th>
+            </thead>
+            <tr>
+              <td style="text-align: center !important;"><%= @invoice_detail["miscLines"][0] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["miscLines"][1] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["miscLines"][2] %></td>
+              <td style="text-align: center !important;"><%= @invoice_detail["miscLines"][3] %></td>
+            </tr>
+          </table>
+        </div>
+        <%= image_seperator %>
+        <p class="err_msg"></p>
+        <div class="table-responsive">
+          <table class="table">
+            <thead class="rma_title">
+            <th width="10%" class="filter-false"><%= t 'rma.item' %>#</th>
+            <th width="5%" class="filter-false"><%= t 'rma.quantity' %></th>
+            <th width="30%" class="filter-false"><%= t 'rma.part_num' %></th>
+            <th width="10%" class="filter-false"><%= t 'rma.price' %></th>
+            <th width="5%" class="filter-false"><%= t 'rma.um' %></th>
+            <th width="15%" class="filter-false"><%= t 'rma.back_order' %></th>
+            <th width="10%" class="filter-false"><%= t 'rma.shipped' %></th>
+            <th width="10%" class="filter-false"><%= t 'rma.extension' %></th>
+            <th width="5%" class="filter-false"><%= t 'rma.return_qty' %></th>
+            </thead>
+
+            <% part_nos = [] %>
+            <% index_of_qty_rbo = 0 %>
+            <% hpp_flag = false %>
+            <% @invoice_detail["pnLines"].each_with_index do |pn_values,index_of_pn_values| %>
+                <% pn_values.split(',').each_with_index do |pn_value,index_of_pn_value| %>
+                    <td class="td_invoice_content"
+                        <% if index_of_pn_values % 7 == 2 %>
+                        align="left"
+                        <% else %>
+                        align="right"
+                        <% end %> >
+                      <% if hpp_flag == true  %>
+                          <% if index_of_pn_values % 7 == 2 && pn_value.include?("MFR") %>
+                          <% else %>
+                              <%= pn_value %>
+                          <% end %>
+                      <% else %>
+                          <%= pn_value %>
+                      <% end %>
+                    </td>
+                    <% if index_of_pn_value == 1 && !@invoice_detail["pnLines"][index_of_pn_values + 1].blank?
+                         part_nos << @invoice_detail["pnLines"][index_of_pn_values + 2]
+                       end %>
+                    <% unless index_of_pn_value == 1 %>
+                        <% if index_of_pn_values % 7 == 0 && index_of_pn_values > 0 %>
+                            <% unless @invoice_detail["pnLines"][index_of_pn_values - 6].blank? %>
+                                <% hpp_flag = check_hpp_part_number @invoice_detail["pnLines"][index_of_pn_values - 5] %>
+                                <% index_of_qty_rbo =  index_of_qty_rbo + 1%>
+                                <td class="td_invoice_content">
+                                  <% if params["disable_fields"] == "1" %>
+                                      <input class="qty" name="<%=  "qty"+index_of_pn_values.to_s %>" id="<%=  "qty"+index_of_pn_values.to_s %>" type="number" value="<%= @rma_details["rmaRetQtys"][index_of_qty_rbo - 1]%>"   style="width:30px" disabled  />
+                                  <% else %>
+                                      <input class="qty" name="<%=  "qty"+index_of_pn_values.to_s %>" id="<%=  "qty"+index_of_pn_values.to_s %>" min="0" type="number" max="<%= @invoice_detail["pnLines"][index_of_pn_values - 6] %>" style="width:30px"  />
+                                  <% end %>
+                                </td>
+                            <% else %>
+                                <td class="td_invoice_content"></td>
+                            <% end %>
+                            </tr>
+                            <tr>
+                        <% end %>
+                    <% end %>
+                <%end%>
+            <% end %>
+          </table>
+        </div>
+        <%= hidden_field_tag 'part_nos', part_nos.to_json %>
+        <% submit_text = t 'rma.submit_request' %>
+        <% if disable %>
+            <span class="col-sm-12 text-center"><INPUT TYPE="BUTTON" VALUE= "<%= t('back',:scope => "bin_line_station.update_line_station") %>" ONCLICK="javascript: history.go(-1)" class ="btn btn-danger"></span>
+        <% else %>
+            <span class="col-sm-12 text-center"><%= submit_tag submit_text, class: "btn btn-primary" %></span>
+        <% end %>
+    <% end %>
+<% end %>

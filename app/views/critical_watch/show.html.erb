@@ -1,0 +1,352 @@
+<p class="body_header"><%= t("critical_watch_list",:scope => "critical_watch.index") %></p>
+<%= image_seperator %>
+<table class="tbl_res">
+  <tr>
+    <td colspan="3">
+      <div class="row">
+        <div class="col-sm-8">
+          <span class="ft_blue">
+            <% if params[:history_id] == "0" %>
+              <strong><%= t("case_details",:scope => "critical_watch.show") %></strong>
+              <em><%= t("part_num",:scope => "rma")%>:</em>
+            <% else %>
+              <strong><%= t("history_case",:scope => "critical_watch.show") %></strong>
+              <em><%= t("for_part",:scope => "critical_watch.edit") %>:</em>
+            <% end %>
+              <strong>
+                <% if @sel_id %>
+                  <%= @sel_id.split("!")[3]%>
+                <% else %>
+                  <%= params[:id].split("!")[3]%>
+                <% end %>
+              </strong>
+            </span>
+          </div>
+          <div id="div_update_link"class="col-sm-4">
+            <%= link_to "#{t('back_to_summary',:scope => 'critical_watch.edit')}", critical_watch_index_path, :class => "link_add" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8">
+            <span class="ft_blue">
+              <strong>
+                <%= @response_critical_watch_detail[0]["lineResp"] %> -
+                <em><%= @response_critical_watch_detail[0]["status"] %></em>
+              </strong>
+            </span>
+          </div>
+          <div id="div_update_link"class="col-sm-4">
+            <%= link_to "#{t('case_history',:scope => 'critical_watch.edit')}",
+                        view_history_critical_watch_path(params[:id]), :class => "link_add" %>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+      <table class="table tbl_item_notes">
+        <tr class="tr_header_item_notes">
+          <td><%= t("DATE",:scope => "critical_watch.edit") %>:</td>
+          <td><%= t("by",:scope => "critical_watch.edit") %></td>
+          <td><%= t("update",:scope => "critical_watch.edit") %></td>
+        </tr>
+        <% @response_critical_watch_detail[0]["updateItemStatus"].length.downto(1) do |index_of_item_status| %>
+        <tr class="tr_item_notes"
+            <% if @response_critical_watch_detail[0]["updateItemStatus"][index_of_item_status-1] == "NewAdd" %>
+            style="background-color:lightyellow"
+            <% elsif @response_critical_watch_detail[0]["updateItemStatus"][index_of_item_status-1] == "Impact" %>
+            style="background-color:pink"
+            <% elsif @response_critical_watch_detail[0]["updateItemStatus"][index_of_item_status-1] == "Delivered" %>
+            style="background-color:lightgreen"
+            <% elsif @response_critical_watch_detail[0]["updateItemStatus"][index_of_item_status-1] == "Updated" %>
+            style="background-color:lightblue"
+            <% elsif @response_critical_watch_detail[0]["updateItemStatus"][index_of_item_status-1] == "Closed" %>
+            style="background-color:lightgrey"
+            <% else %>
+            style="background-color:white"
+            <% end %>
+        >
+          <td>
+            <%= @response_critical_watch_detail[0]["updateItemDate"][index_of_item_status-1] %>
+          </td>
+          <td>
+            <%= @response_critical_watch_detail[0]["updateItemBy"][index_of_item_status-1] %>
+          </td>
+          <td>
+            <%= @response_critical_watch_detail[0]["updateItemNote"][index_of_item_status-1].html_safe %>
+          </td>
+        </tr>
+        <% end %>
+        <tr>
+          <td colspan="3"><%= image_seperator %></td>
+        </tr>
+        <tr class="tr_item_colors">
+          <td><%= t("color_codes",:scope => "critical_watch.new") %>:</td>
+          <td>
+            <%= t("impact",:scope => "critical_watch.new") %>:
+            <span style="background-color:#FF9F9F;color:pink;"> &nbsp; &nbsp;
+            </span> &nbsp; &nbsp;
+            - <%= t("delivered",:scope => "critical_watch.new") %>
+            <span style="background-color:lightgreen;color:lightgreen;"> &nbsp; &nbsp;
+            </span> &nbsp;
+            - <%= t("updated",:scope => "critical_watch.new") %>
+            <span style="background-color:lightblue;color:lightblue;"> &nbsp; &nbsp;
+            </span> &nbsp;
+            - <%= t("new_add",:scope => "critical_watch.new") %>
+            <span style="background-color:lightyellow;color:lightyellow;"> &nbsp; &nbsp;
+            </span>
+            - <%= t("closed",:scope => "critical_watch.new") %>
+            <span style="background-color:lightgrey;color:lightgrey;"> &nbsp &nbsp
+            </span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+  <div class="row">
+    <div class="col-sm-8">
+      <span class="ft_blue">
+        <strong><em><%= @response_critical_watch_detail[0]["status"] %></em>
+        </strong> -
+        <strong><%= @response_critical_watch_detail[0]["lineResp"] %>
+        </strong><br/>
+        <%= t('Part',:scope => 'critical_watch.show') %>:
+        <strong><%= @response_critical_watch_detail[0]["partNo"].join(",") %>
+        </strong>
+      </span>
+    </div>
+    <div id="div_update_link"class="col-sm-4">
+    <% if params[:history_id] == "0" %>
+      <%= link_to "#{t('update_details',:scope => 'critical_watch.show')}", edit_critical_watch_path(params[:id]), :class => "link_add" %>
+    <% end %>
+    </div>
+  </div>
+
+<div class="row">
+  <div class="col-sm-12">
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t('status',:scope => 'critical_watch.new')}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["status"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t('line_responsible',:scope => 'critical_watch.new')}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["lineResp"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("contact",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["contactInfo"] %>
+    </div>
+  </div>
+
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag 'Building:' %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["building"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("location",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["location"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("program",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["program"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("aircraft",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["aircraftSection"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("Line_Station",:scope => "floor_views._location_search")}" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["lineStation"] %></strong>
+    </div>
+  </div>
+
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("part_num",:scope => "rma")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["partNo"].join(',') %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("part_name",:scope => "critical_watch.edit")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["partName"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("supplier_name",:scope => "critical_watch.index")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["supplier"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("manufacturer",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["manufacturer"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("sub_coverage",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["subCoverage"] %>
+    </div>
+  </div>
+
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("need_date",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["needDate"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("promise_dock",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["promiseDate"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("slipped",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["daysSlipped"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("customer_date",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["impactDate"] %></strong>
+    </div>
+  </div>
+
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "1st P.O." "#{t('quantity',:scope => 'agusta')}" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["firstPOQty"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("quantity_due",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["qtyDueIn"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("minimum_need",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["minNeedQty"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("release_qty",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["releaseQty"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("lines_affected",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["linesAffected"] %>
+    </div>
+  </div>
+
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "GAP #{t('quantity',:scope => 'agusta')}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["gapPOQty"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "GAP #{t('date',:scope => 'rma')}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["gapPODate"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "GAP PO #{t('number',:scope => 'critical_watch.new')}:" %></div>
+    <div class="col-sm-8">
+      <strong><%= @response_critical_watch_detail[0]["gapPONum"] %></strong>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "GAP #{t('tracking_number',:scope => 'critical_watch.new')}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["gapPOTrackNum"] %>
+    </div>
+  </div>
+
+  <%= image_seperator %>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("root_cause",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["rootCause"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("corrective_action",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["correctiveAction"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("comments",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["comments"] %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4"><%= label_tag "#{t("old_comments",:scope => "critical_watch.new")}:" %></div>
+    <div class="col-sm-8">
+      <%= @response_critical_watch_detail[0]["oldComments"] %>
+    </div>
+  </div>
+  </div>
+</div>

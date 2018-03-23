@@ -1,0 +1,23 @@
+<% if @total_records >= 1 %>
+    <%if (params[:page].to_i > 1) %>
+        <% @prev_page = params[:page].to_i - 1 %>
+        <%= link_to  image_tag("prev.png",:alt => "previous",title: "Previous"),
+                     engineering_check_path(params[:id],page: @prev_page), class: "prev" %>
+    <%else%>
+        <%= image_tag("prev.png",alt: "previous",title: "Previous", class: "disabled") %>
+    <%end%>
+    <% (1..@total_page).each do |i| %>
+        <%if i != params[:page].to_i %>
+            <%= link_to "#{i}",  engineering_check_path(params[:id],page: i ),class: "page"%>
+        <%else%>
+            <span class="current"><%= i %></span>
+        <%end%>
+    <%end%>
+    <% if (params[:page].to_i < @total_page) %>
+        <% @next_page = params[:page].to_i + 1 %>
+        <%= link_to image_tag("next.png",alt: "next",title: "Next"),
+                    engineering_check_path(params[:id], page: @next_page), class: "next"%>
+    <%else%>
+        <%= image_tag("next.png",:alt => "next",title: "Next", class: "disabled") %>
+    <%end%>
+<%end%>

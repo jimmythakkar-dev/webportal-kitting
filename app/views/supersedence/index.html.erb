@@ -1,0 +1,16 @@
+<p class="body_header"><%= t('Supersedence_Search',:scope => "floor_views._superinc")%></p>
+<%= image_seperator %>
+<p><%= t("_desc",:scope => "supersedence.index").html_safe %> </p>
+<%= image_seperator %>
+<%= form_tag search_supersedence_index_path,:method => 'post', class: "form-inline"  do %>
+    <div class="form-group">
+      <%= "#{t('part_num',:scope => "rma")}:"%>
+      <%= text_field_tag :txt_part_number, params[:txt_part_number].try(:strip).try(:upcase), required: true,:class => "form-control" %>
+      <%= submit_tag t('Search',:scope => "floor_views.index"), class: 'btn btn-primary' %>
+    </div>
+<% end %>
+<%= image_seperator %>
+<% if @response_supersedence %>
+    <%= render 'supersedence' %>
+<%end%>
+

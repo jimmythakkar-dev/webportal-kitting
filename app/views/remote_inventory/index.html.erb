@@ -1,0 +1,44 @@
+<p class="body_header"><%= t("title",:scope => "remote_inv.index") %></p>
+<%= image_seperator %>
+<p><%= t("_desc",:scope => "remote_inv.index") %></p>
+<% if @error_open_orders %>
+    <div class="row">
+      <div class="col-sm-12">
+        <span class="alert_msg"><%= @error_open_orders.html_safe %></span>
+      </div>
+    </div>
+<% end %>
+<% if @error_orders %>
+    <div class="row">
+      <div class="col-sm-12">
+        <span class="alert_msg"><%= @error_orders.html_safe %></span>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>
+<%= form_tag search_remote_inventory_index_path, class: 'form-horizontal',role: "form" do %>
+    <% if @response_cust_inv %>
+          <% if @response_cust_inv["binAccounts"].split(",").length > 1 %>
+              <label><%= t("ship_to",:scope => "remote_inv.index") %>:</label>
+              <%= select_tag(:ship_to, options_for_select(@response_cust_inv["shipTo"].split(';').enum_for(:each_with_index).collect { |value,index| [value, @response_cust_inv["binAccounts"].split(",")[index]]}), class: "form-control") %>
+          <% else %>
+              <%= hidden_field_tag :ship_to, @response_cust_inv["binAccounts"] %>
+          <% end %>
+    <% else %>
+        <%= hidden_field_tag :ship_to, current_user %>
+        <div class="row">
+          <div class="col-sm-5">
+            <span class="alert_msg"><%= @error %></span>
+          </div>
+        </div>
+    <% end %>
+    <%= label_tag :part_number_inv, "#{t('part_num',:scope => "rma")}:" %>
+    <%= text_field_tag :part_number_inv,nil,:class=>"form-control" %>
+    <br/>
+    <p>
+      <%=  submit_tag "#{t('search',:scope => "rma")}", :name => "search", :id => "search_remote_inventory", class: 'btn btn-default' %>&nbsp;&nbsp;&nbsp;&nbsp;
+      <%=  submit_tag "#{t('open_orders',:scope => "reports.index")}", :name => "open_orders", class: 'btn btn-default' %>
+    </p>
+<% end %>
+
+<%= image_seperator %>

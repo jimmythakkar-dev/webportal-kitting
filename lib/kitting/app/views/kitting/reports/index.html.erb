@@ -1,0 +1,88 @@
+<h2 class="body_header">Reports</h2>
+<%= image_seperator %>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+    <th>Index</th>
+    <th>Report Name</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Reports</th>
+    </thead>
+    <tbody>
+    <tr>
+      <td>1</td>
+      <td>Kit-Filling Tracking History</td>
+      <td><%= text_field_tag :begin_date, params[:begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :end_date, params[:end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("csv_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"), kit_filling_tracking_history_path(:begin_date => "", :end_date => ""), id: "tracking_report" %></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>SOS Kits Shipped</td>
+      <td><%= text_field_tag :sos_begin_date, params[:sos_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :sos_end_date, params[:sos_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"), sos_pn_sortage_path(:sos_begin_date => "", :sos_end_date => ""), id: "sos_report" %></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Order Fulfillment Tracking Report</td>
+      <td><%= text_field_tag :begin_date2, params[:begin_date2], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :end_date2, params[:end_date2], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"), order_fulfillment_tracking_path(:begin_date2 => "", :end_date2 => ""), id: "filling_report" %></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Turn Count Report</td>
+      <td><%= text_field_tag :begin_date3, params[:begin_date3], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :end_date3, params[:end_date3], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("csv_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"), turn_count_path(:begin_date3 => "", :end_date3 => ""), id: "turn_report" %></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Newly Designed Kits Report</td>
+      <td><%= text_field_tag :newly_designed_kits_begin_date, params[:newly_designed_kits_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :newly_designed_kits_end_date, params[:newly_designed_kits_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"), turn_count_path(:newly_designed_kits_begin_date => "", :newly_designed_kits_end_date => ""), id: "newly_designed_kits_report" %></td>
+    </tr>
+    <tr>
+      <%= form_tag view_charts_path, :method=>"get"  do  %>
+          <td>6</td>
+          <td>Kit Fill Metrics Report</td>
+          <td><%= text_field_tag :kit_fill_metrics_begin_date, params[:kit_fill_metrics_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+          <td><%= text_field_tag :kit_fill_metrics_end_date, params[:kit_fill_metrics_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+          <td><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :alt => "View/Download as Excel Spreadsheet"), kit_fill_metrics_path(:kit_fill_metrics_begin_date => "", :kit_fill_metrics_end_date => ""), id: "kit_fill_metrics_report" %></td>
+          <td><%= image_submit_tag ("chart_icon_download.png"), id: "charts_image" %></td>
+      <% end %>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>SOS Kits In Process Report</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0,:class => "img-responsive", :alt => "View/Download as Excel Spreadsheet"), sos_kits_in_process_path(), id: "sos_kits_in_process_report" %></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Kit Status Report</td>
+      <td><%= text_field_tag :kit_status_begin_date, params[:kit_status_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :kit_status_end_date, params[:kit_status_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0,:class => "img-responsive", :alt => "View/Download as Excel Spreadsheet"), kit_work_order_status_path(:kit_status_begin_date => "", :kit_status_end_date => ""), id: "kit_work_order_status_report" %></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Returned Parts Details Report</td>
+      <td><%= text_field_tag :returned_parts_begin_date, params[:returned_parts_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :returned_parts_end_date, params[:returned_parts_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0,:class => "img-responsive", :alt => "View/Download as Excel Spreadsheet"), returned_parts_details_path(:returned_parts_begin_date => "", :returned_parts_end_date => ""), id: "returned_parts_details_report" %></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Delivery Report</td>
+      <td><%= text_field_tag :delivery_begin_date, params[:delivery_begin_date], :class => "form-control start_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td><%= text_field_tag :delivery_end_date, params[:delivery_end_date], :class => "form-control end_datepick",:required => true, :placeholder =>"mm/dd/yyyy" %></td>
+      <td colspan="2" style="text-align: center"><%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0,:class => "img-responsive", :alt => "View/Download as Excel Spreadsheet"), delivery_path(:returned_parts_begin_date => "", :returned_parts_end_date => ""), id: "delivery_report" %></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

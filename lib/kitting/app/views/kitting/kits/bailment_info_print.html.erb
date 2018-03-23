@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="KLX Aerospace, Inc. is the leading provider of interior products and solutions for the commercial, business jet, and military aircraft markets, and a leading distributor of aerospace hardware."/>
+<meta name="keywords" content="Aerospace, commercial aircraft, business jet, executive aircraft, aircraft interiors,seating, seating environments, super first class, business class, main cabin, premium class, premium economy, galley inserts, aircraft galley, oven products, beverage makers, water boilers, espresso, in-air catering, refrigeration, galley air-chillers, oxygen products, military oxygen, aircraft structures, integration services, wash lighting, mood lighting, aerospace hardware"/>
+<title>KLX Aerospace</title>
+ <%= favicon_link_tag 'favicon.ico' %>
+<%= stylesheet_link_tag  "kits", :media => "all" %>
+<%= stylesheet_link_tag  "print", :media => "all" %>
+</head>
+
+<body>
+  <h2 style="text-align:center;">Updated Kits Pull Sheet </h2>
+<table style="width:100%" class="tbl_pick_ticket_main">
+  <tr>
+    <td colspan="8">
+      <%= "The following kits have BOM updates which have been approved and need to be incorporated.  Please pull from Bailment Inventory and Update Configuration." unless @bailment_info["errMsg"].present? %>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="8">
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <%if @bailment_info["errMsg"].present? %>
+        <tr>
+          <td style="color:red;background-color:#f2dede;border-color:#eed3d7;height:50px;text-align:center;font-size: 25px"><%= @bailment_info["errMsg"]%>
+          </td>
+        </tr>
+        <% else %>
+        <tr>
+          <th>KIT PART NUMBER</th>
+          <th>BOXID</th>
+          <th>QTY</th>
+          <th>LOCATION</th>
+        </tr>
+        <% @bailment_info["boxId"].each_index do |bailment_index| %>
+          <tr>
+            <td><%= @bailment_info["partNo"] %></td>
+            <td><%= @bailment_info["boxId"][bailment_index] %></td>
+            <td><%= @bailment_info["boxQty"][bailment_index] %></td>
+            <td><%= @bailment_info["binLocation"][bailment_index] %></td>
+          </tr>
+        <% end %>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

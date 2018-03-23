@@ -1,0 +1,43 @@
+<h2 class="body_header">Delete Copy</h2>
+<%= image_seperator %>
+<%= render 'layouts/message_display' %>
+<%= form_tag kit_copy_delete_path, :method=>"get", class: 'form-horizontal' do  %>
+    <div class="form-group">
+      <%= label_tag :kit_copy_number, 'Copy Number:', class: "col-sm-3 control-label" %>
+      <div class="col-sm-4">
+        <%= text_field_tag :kit_copy_number, params[:kit_copy_number],:class=> "form-control" ,:required => true%>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <%= submit_tag 'Search', class: "btn btn-primary" %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>
+<% if params[:kit_copy_number].present? %>
+    <% if @kit_copies.blank? %>
+        <div class="alert alert-danger"><%= "Copy number not found."%></div>
+    <% else %>
+        <p><%= page_entries_info @kit_copies %></p>
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead>
+            <th>Kit Copy Number </th>
+            <th>Kit Bin Center</th>
+            <th>Queue </th>
+            <th>Action</th>
+            </thead>
+            <% @kit_copies.each_with_index do |kit_copy,index| %>
+                <tr>
+                  <td><%= link_to kit_copy.kit_version_number, kit_copy_path(kit_copy.id)%></td>
+                  <td><%= kit_copy.try(:kit).try(:bincenter) %></td>
+                  <td><%= kit_copy.try(:location).try(:name) %></td>
+                  <td><%= link_to 'Delete', kit_copy, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+        <%= will_paginate @kit_copies %>
+    <% end %>
+<% end %>

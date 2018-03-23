@@ -1,0 +1,32 @@
+<h2 class="body_header">Kit Media-Type</h2>
+<%= image_seperator %>
+<div class="text-right">
+  <%= link_to 'New Kit Media-Type', new_kit_media_type_path %>
+</div>
+<br/>
+<div class="table-responsive">
+  <table class="table tablesorter">
+    <thead>
+    <th>Kit Name</th>
+    <th>No. of Compartments</th>
+    <th>Type</th>
+    <th class="filter-false"></th>
+    </thead>
+    <%if !@kit_media_types.nil?%>
+        <% @kit_media_types.each do |kit_media_type| %>
+            <tr>
+              <td><%= kit_media_type.name %></td>
+              <td>
+                <%if kit_media_type.kit_type == "binder" %>
+                    --
+                <%else%>
+                    <%= kit_media_type.compartment %>
+                <%end%>
+              </td>
+              <td><%= kit_media_type.kit_type %></td>
+              <td><%= link_to 'View', kit_media_type %></td>
+            </tr>
+        <% end %>
+    <%end%>
+  </table>
+</div>

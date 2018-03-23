@@ -1,0 +1,301 @@
+<h2 class="body_header"style="line-height: 12px;"><%= t('Floor_View_Search',:scope => "floor_views.index")%></h2>
+<%= image_seperator %>
+<%= t('_desc_index',:scope => "floor_views.index").html_safe%>
+<%= image_seperator %>
+<%if @locations.nil? %>
+    <div class="alert alert-danger"><%= flash[:notice]%></div>
+    <%flash[:notice] = nil%>
+<%else%>
+    <div class="pull-right">
+      <%= link_to t('View_Floor_View_History',:scope => "floor_views.index"), floor_view_history_path, :method => 'get', :class => "link_add"  %>
+    </div>
+    <div style="clear: both"></div>
+    <div>
+      <%if @locations["errCode"] == "" %>
+          <%= form_tag search_part_number_floor_views_path, :method => 'get', class: "form-inline"  do %>
+              <div>
+                <%= t('Part_Number_Information',:scope => "floor_views.index")%>
+              </div>
+              <div class="form-group">
+                <%= text_field_tag :part_number, params[:part_number].try(:strip).try(:upcase),class: "form-control"%>
+                <%= submit_tag t('Search',:scope => "floor_views.index"), :id=> "part_submit", :class=>"btn btn-primary" %>
+              </div>
+          <%end%>
+          <em><%= t('OR',:scope => "floor_views.index")%>:</em>
+          <%= form_tag search_from_location_floor_views_path, :method => 'get', class: "form-inline" do %>
+              <div>
+                <%= t('Select_Location_to_View_its_Parts',:scope => "floor_views.index")%>:
+              </div>
+              <div class="form-group">
+                <% if !params[:location] %>
+                    <div class="input">
+                      <%= select_tag(:location, options_for_select(@locations['binCenterList']), {:prompt => t('Select_Location',:scope => "floor_views.index"),class: "form-control"}) %>
+                      <%= submit_tag t('View_Location_Parts',:scope => "floor_views.index"), :id => "location_submit", :class=>"btn btn-primary"  %>
+                    </div>
+                <%else%>
+                    <div class="input">
+                      <%= select_tag(:location, options_for_select(@locations['binCenterList'],params[:location]), {:prompt => t('Select_Location',:scope => "floor_views.index"),class: "form-control"}) %>
+                      <%= submit_tag t('View_Location_Parts',:scope => "floor_views.index"), :id => "location_submit", :class=>"btn btn-primary" %>
+                    </div>
+                <%end%>
+              </div>
+          <%end%>
+          <% if flash[:error].present? %>
+              <%= render 'layouts/message_display' %>
+          <% end %>
+      <%else%>
+          <div class="alert alert-danger"><%= flash[:err]%></div>
+      <%end%>
+    </div>
+<%end%>
+<!-- print the error message if enter part number not found -->
+<%if @response && @response['errMsg'] != "" %>
+    <div class="alert alert-danger">
+      <% if @response['errMsg'].include?("not")%>
+          <%if @response['errMsg'].include?("|") %>
+              <%= @response['errMsg'].gsub(/|/, "")%>
+          <%else%>
+              <%= @response['errMsg']%>
+          <%end%>
+      <%elsif @response['errMsg'].include?("not on bin map")%>
+          <%= @response['errMsg'].gsub(/#{params[:part_number].upcase} not on bin map; Please use panstock to order./, "#{params[:part_number]} not on bin map.")%>
+      <%elsif @response['errMsg'].include?("|")%>
+          <%= @response['errMsg'].gsub(/|/, "")%>
+      <%else%>
+          <%= @response['errMsg']%>
+      <%end%>
+    </div>
+<%end%>
+<!--condition for not showing data when there is error for part number not found -->
+
+
+<% if flash[:notice] == "true" %>
+    <div class="alert alert-danger"><%=  "Please use checkbox to order" %></div>
+<% end %>
+<!-- partial for suspender search -->
+<%if !@search_part_list.nil? && @search_part_list.length > 1 %>
+    <!-- partial for fuzzy search -->
+    <div id="fuzzysearch"><%= render :partial => 'fuzzy_search' %></div>
+
+<%elsif !@response.nil? && @response["errCode"] != "500" %>
+    <!-- partial for suspender search -->
+    <%if @response && (@response['errMsg'] == "" || @response['errMsg'].include?("Excluded part no.")  || @response['errMsg'].include?("Not a 4PL part"))%>
+        <%if session["user_level"] > "2"%>
+            <%if @bin_part_response['errMsg'] != ""%>
+                <div class="alert alert-danger">
+                  <%if @bin_part_response['errMsg'].include?("not on bin map")%>
+                      <%= @bin_part_response['errMsg'].gsub(/#{params[:part_number].upcase} not on bin map; Please use panstock to order./, "#{params[:part_number]} not on bin map;Please use panstock to "+(link_to 'Order',panstock_requests_path(:tpn => params[:part_number].upcase,:ac => "Expedite"))).html_safe%>
+                  <%elsif @bin_part_response['errMsg'].include?("|")%>
+                      <%= @bin_part_response['errMsg'].gsub(/|/, "")%>
+                  <%else%>
+                      <%= @bin_part_response['errMsg']%>
+                  <%end%>
+                </div>
+            <%end%>
+        <%end%>
+        <div id="psearch"><%= render :partial => 'floor_view_search' %></div>
+        <%if session[:customer_number] == "025400" || session[:customer_number] == "025352" %>
+            <%if @suspender_search_response %>
+                <%if !@suspender_search_response.nil? && @suspender_search_response["errCode"] == "" %>
+                    <%= render :partial => "superinc", :suspender_search_response => @suspender_search_response %>
+                <%else%>
+                    <div class="text-danger"><strong><%= @suspender_search_response["errMsg"]%></strong></div>
+                <%end%>
+            <%end%>
+        <%end%>
+
+        <!-- showing bin map for part number table -->
+        <%if !@response.nil? && @bin_part_response['errMsg'] == "" %>
+            <%= form_tag  floor_views_send_orders_path, :id => 'form_submit_order', :method => 'post' do %>
+                <%= hidden_field_tag 'myaction', '5'%>
+                <%= hidden_field_tag 'iAction', 'N'%>
+                <%= hidden_field_tag 'ActionCode', 'Expedite'%>
+                <%= hidden_field_tag 'partno', "#{params[:part_number].upcase}"%>
+                <div class="clear"></div>
+                <!--<div class="row">-->
+                <div class="table_title">
+                  <strong><%= t('BIN_MAP_FOR_PART_NUMBER',:scope => "floor_views.index")%>:
+                    <%if !params[:part_number].blank?%>
+                        <%= params[:part_number].upcase%>
+                    <%else%>
+                        NO PN FOUND
+                    <%end%>
+                  </strong>
+                </div>
+                <!--</div>-->
+                <!--<div class="row">-->
+                <div class="table-responsive">
+                  <table class="table tablesorter">
+                    <thead>
+                    <tr>
+                      <th><%= t('EXPEDITE',:scope => "floor_views.index")%> <span class="alert_msg">*</span></th>
+                      <th><%= t('LOCATION',:scope => "floor_views.index")%></th>
+                      <th><%= t('Scan_Code',:scope => "floor_views.index")%></th>
+                      <th><%= "BIN"%></th>
+                      <th><%= t('BIN_QTY',:scope => "floor_views.index")%></th>
+                      <th><%= t('PACK_QTY',:scope => "floor_views.index")%></th>
+                      <th><%= t('UM',:scope => "floor_views.index")%></th>
+                      <th><%= t('ORDER_DATE',:scope => "floor_views.index")%></th>
+                      <th><%= t('ORDER_QTY',:scope => "floor_views.index")%></th>
+                    </tr>
+                    </thead>
+
+                    <% whs_id_arr     = EngineeringCheck.get_convert_to_array(@bin_part_response["whsid"]) %>
+                    <% ref_arr        = EngineeringCheck.get_convert_to_array(@bin_part_response["ref"]) %>
+                    <% whs_desc_arr   = EngineeringCheck.get_convert_to_array(@bin_part_response["whsdesc"]) %>
+                    <% scan_code_arr  = EngineeringCheck.get_convert_to_array(@bin_part_response["scancode"]) %>
+                    <% bin_arr        = EngineeringCheck.get_convert_to_array(@bin_part_response["bin"]) %>
+                    <% amc_qty_arr    = EngineeringCheck.get_convert_to_array(@bin_part_response["amcQty"]) %>
+                    <% pack_qty_arr   = EngineeringCheck.get_convert_to_array(@bin_part_response["packQty"]) %>
+                    <% um_arr         = EngineeringCheck.get_convert_to_array(@bin_part_response["um"]) %>
+                    <% order_date     = BinLineStation.set_order_date @bin_part_response %>
+                    <% order_quantity = BinLineStation.set_order_quantity @bin_part_response %>
+
+                    <% whs_id_arr.each_index do |index| %>
+                        <% ref_whse_id = ref_arr[index]%>
+                        <% if ref_whse_id == @whse_cust_part_no %>
+                            <% ref_whse_id.gsub('&nbsp','0') %>
+                            <tr>
+                              <td style="text-align: center;">
+                                <%= check_box_tag 'expedit[]', "#{params[:part_number].upcase}!#{@bin_part_response["amcQty"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@bin_part_response["packQty"].join(",").split(",")[index].gsub('&nbsp;','-')}!#{@bin_part_response["um"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@bin_part_response["whsdesc"].join(",").split(",")[index].split("/").last.strip}!#{@bin_part_response["scancode"].join(",").split(",")[index].gsub('&nbsp;','0')}!#{@bin_part_response["whsdesc"].join(",").split(",")[index]}!Expedite!#{@bin_part_response["bin"].join(",").split(",")[index].gsub('&nbsp;','0')};" %>
+                              </td>
+                              <td><%= link_to whs_desc_arr[index],search_from_location_floor_views_path(:location => @bin_part_response["whsdesc"].join(",").split(",")[index].split("/").last.lstrip) %></td>
+                              <td><%= scan_code_arr[index].gsub('&nbsp','0') %></td>  <!-- Setting the value in Scancode 0 in place of  &nbsp -->
+                              <td><%= link_to bin_arr[index].gsub('&nbsp;','0'), floor_views_print_part_label_path(:part_number => params[:part_number].upcase,:bin => bin_arr[index].gsub('&nbsp;','0'), :scancode => scan_code_arr[index].gsub('&nbsp','0'),:location => whs_desc_arr[index]), :title => "Click on BIN to PRINT PART LABEL", :target => "_blank" %></td>
+                              <td><%= amc_qty_arr[index].gsub('&nbsp','0') %></td>  <!-- Setting the value in AmcQty 0 in place of  &nbsp -->
+                              <td><%= pack_qty_arr[index].gsub('&nbsp;','-') %></td>  <!-- Setting the value in AmcQty - in place of  &nbsp -->
+                              <td><%= um_arr[index].gsub('&nbsp','0') %></td>
+                              <td><%= order_date[index] %></td>
+                              <td><%= order_quantity[index] %></td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                    <% total_amc_qty = amc_qty_arr.inject(0){ |sum, index| sum.to_i + index.to_i }%>
+                  </table>
+                </div>
+                <!--</div>-->
+                <!--<div class="row">-->
+                <div class="col-sm-12 table_title text-right">
+                  <strong><%= t('Total',:scope => "floor_views.index")%>:<%= @bin_part_response["amcQty"].join(",").split(",").inject(0){|sum,item| sum + item.to_i} %></strong>
+                </div>
+                <!--</div>-->
+                <br/>
+                <% if @response['errMsg'] == "" %>
+                    <div class="row">
+                      <br />
+                      <% if session[:user_level] > "1" %>
+                          <div class="col-sm-9 text-right">
+                            <%= submit_tag t('submit_order',:scope => "floor_views.index"), :id => "order_submit", :class => 'btn btn-primary'%>
+                          </div>
+                          <div class="col-sm-3 text-right">
+                            <%= submit_tag t('print_order',:scope => "floor_views.index"), :id => "print_order", :class => 'btn btn-primary' %>
+                          </div>
+                      <% else %>
+                          <div class="col-sm-12 text-right">
+                            <%= submit_tag t('print_order',:scope => "floor_views.index"), :id => "print_order", :class => 'btn btn-primary' %>
+                          </div>
+                      <% end %>
+                    </div>
+                    <br/>
+                <%end%>
+                <div class="row">
+                  <div class="col-sm-12 text-left">
+                    <em class="alert_msg">* <%= t('req_field',:scope => "floor_views.update_floor_view")%></em>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <%= image_seperator %>
+                  </div>
+                </div>
+            <%end%>
+        <%else%>
+            <div class="alert alert-danger">
+              <%if @bin_part_response['errMsg'].include?("not on bin map")%>
+                  <%= @bin_part_response['errMsg'].gsub(/#{params[:part_number].upcase} not on bin map; Please use panstock to order./, "#{params[:part_number]} not on bin map;Please use panstock to Order")%>
+              <%elsif @bin_part_response['errMsg'].include?("|")%>
+                  <%= @bin_part_response['errMsg'].gsub(/|/, "")%>
+              <%else%>
+                  <%= @bin_part_response['errMsg']%>
+              <%end%>
+            </div>
+        <%end%>
+
+        <% if !@vld_response.nil? %>
+            <% if @vld_response["errMsg"] != "" %>
+                <div class="alert_msg">
+                  <%= flash[:notice]%>
+                </div>
+            <%end%>
+        <%end%>
+    <%else%>
+        <%if session[:customer_number] == "025400" || session[:customer_number] == "025352" %>
+            <%if @suspender_search_response %>
+                <%if !@suspender_search_response.nil? && @suspender_search_response["errCode"] == "" %>
+                    <%= render :partial => "superinc", :suspender_search_response => @suspender_search_response %>
+                <%else%>
+                    <div class=text-dangerr"><strong><%= @suspender_search_response["errMsg"]%></strong></div>
+                <%end%>
+            <%end%>
+        <%end%>
+
+    <%end%>
+<%else%>
+    <!-- partial for location search -->
+    <br/>
+    <% if !@bin_center_part_response.nil? && !@bin_center_part_response.blank? %>
+        <% if @bin_center_part_response["errMsg"] == "" && !@bin_center_part_response["bcpartList"].nil? %>
+            <%if @bin_center_part_response["totalRecords"].to_i > 0%>
+                <div class="sep_large"><%= image_seperator %></div>
+                <div id="lsearch"><%= render :partial => 'location_search' %></div>
+            <%else%>
+                No records found
+            <%end%>
+        <%end%>
+    <%end%>
+<%end%>
+<!--code for mail body-->
+<%if !@linestation_email_response.nil? %>
+    <p class="alert alert-success text-center"><%= flash[:notice]%></p>
+    <h5><%= t('FLOOR_VIEW_ACTION_REQUEST',:scope => "floor_views._email_data")%></h5>
+    <div class="table-responsive">
+      <table border='0' cellspacing='4'>
+        <tr>
+          <td><%= t('Submitted_On',:scope => "floor_views._email_data")%>:</td>
+          <td ><strong><%= Time.now.strftime("%-m/%d/%y")%></strong></td>
+        </tr>
+        <tr>
+          <td><%= t('Originator',:scope => "floor_views._email_data")%>:</td>
+          <td ><strong><%= session[:user_name]%></strong></td>
+        </tr>
+      </table>
+    </div>
+    <div class="table-responsive">
+      <table class="table header_color">
+        <thead>
+        <th><strong><%= t('ACTION_CODE',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('PART_NUMBER',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('LOCATION',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('BIN_QTY',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('PACK_QTY',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('UM',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('SCANCODE',:scope => "floor_views._email_data")%></strong></th>
+        <th><strong><%= t('reason_comments',:scope => "floor_views._email_data")%></strong></th>
+        </thead>
+        <% (0..@expedit[8].length-1).each_with_index do |i|%>
+            <tr >
+              <td><%= @expedit[7][i]%></td>
+              <td><%= @expedit[0][i]%></td>
+              <td><%= @expedit[6][i]%></td>
+              <td><%= @expedit[1][i]%></td>
+              <td><%= @expedit[2][i]%></td>
+              <td><%= @expedit[3][i]%></td>
+              <td><%= @expedit[5][i]%></td>
+              <td><%= @reasonForActionIn%></td>
+            </tr>
+        <%end%>
+      </table>
+    </div>
+    <br/>
+    <%= button_to t('View_History_List',:scope => "floor_views.index"), floor_view_history_path, :method => 'get', :class => 'btn btn-primary' %>
+<%end%>

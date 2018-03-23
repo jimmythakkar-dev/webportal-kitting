@@ -1,0 +1,206 @@
+<h2 class="body_header">Part Customization</h2>
+<%= image_seperator %>
+<span class="import_cup_count"><%= link_to "Import Part Cup Count",upload_parts_path %></span>
+<br>
+<%= form_tag parts_path, :method => "get", class: 'form-horizontal' do %>
+    <div class="form-group">
+      <%=  label_tag :part_number, "Part Number:" ,class: "col-sm-2 control-label" %>
+      <div class="col-sm-4">
+        <%=  text_field_tag :part_number, params[:part_number].try(:strip), :id => "search_num", class: 'form-control', required: true  %>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <%=  submit_tag 'Search', name: :search, class: "btn btn-primary" %>
+      </div>
+    </div>
+<% end %>
+<%if flash[:message] %>
+    <div class="alert alert-success"><%= flash[:message]%></div>
+<%end%>
+<%= image_seperator %>
+<%if @part_nums.nil? %>
+    <%if flash[:notice] %>
+        <div class="alert alert-info" role="alert"><%= flash[:notice]%></div>
+    <%end%>
+<%end%>
+<%if !@part_nums.nil? %>
+    <% if @part_nums['errMsg'] != "" %>
+        <div class="alert alert-danger"><%=  @part_nums['errMsg']%></div>
+    <%else%>
+        <div id="restock">
+          <% if @len/100 > 0 %>
+              <small>We are currently displaying from <%= params[:page].to_i * 100 - 99 %> to <% if params[:page].to_i * 100 > @len %>
+                    <%= @len %>
+                <% else %>
+                    <%= params[:page].to_i * 100 %>
+                <% end %>
+                <% if @len % 100 > 0 %>
+                    <% @last_page = @len / 100 + 1 %>
+                <% else %>
+                    <% @last_page = @len / 100 %>
+                <% end %>
+                out of <%= @len %> parts  (<i>page <%= params[:page] %> of <%= @last_page %></i>).
+              </small>
+          <% end %>
+          <br />
+        </div>
+        <div style="height:550px;overflow:auto;">
+          <table class="table tablesorter">
+            <thead>
+            <th class="filter-false"></th>
+            <th>Part Number</th>
+            <th>Description</th>
+            <th>Large Cup Count</th>
+            <th>Medium Cup Count</th>
+            <th>Small Cup Count</th>
+            <th>Cup Count Action</th>
+            <th>Image Action</th>
+            </thead>
+            <%if @part_nums['searchPartList'] != [""]%>
+                <!--for fuzzy search-->
+                <% @result.each do |index| %>
+                    <tr>
+                      <%@part = Kitting::Part.where('part_number' => index)%>
+                      <%if @part.present?%>
+                          <%if @web_portal_kit["errMsg"] == "" %>
+                              <%if @web_portal_kit["kitNo"] == @part_number%>
+                                  <td></td>
+                              <%end%>
+                          <%else%>
+                              <%if @part.first.image_name%>
+                                  <%if !@part.first.image_name_url.nil?%>
+                                      <td><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s).gsub("http://","https://") : image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s),:alt => "Image Not Available" %></td>
+                                  <%else%>
+                                      <td><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s).gsub("http://","https://") : image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s),:alt => "Image Not Available" %></td>
+                                  <%end%>
+                              <%else%>
+                                  <td style="height:50px;width:50px;"></td>
+                              <%end%>
+                          <%end%>
+                      <%else%>
+                          <td style="height:50px;width:50px;"></td>
+                      <%end%>
+                      <td><%= index %></td>
+                      <%if @part.present? %>
+                          <%if @part.first.name%>
+                              <%if !@part.first.name.nil?%>
+                                  <td><%= @part.first.name %></td>
+                              <%else%>
+                                  <td></td>
+                              <%end%>
+                          <%else%>
+                              <td></td>
+                          <%end%>
+                      <%else%>
+                          <td><%= @part_nums['partName'] %></td>
+                      <%end%>
+                      <!-- Check for a Existing Record if Not Create Record from RBO Data -->
+                      <% if @part.first.present? %>
+                          <td><%= @part.first.large_cup_count.present? ? @part.first.large_cup_count : "NA" %></td>
+                          <td><%= @part.first.medium_cup_count.present? ? @part.first.medium_cup_count : "NA" %></td>
+                          <td><%= @part.first.small_cup_count.present? ? @part.first.small_cup_count : "NA" %></td>
+                          <td><%= link_to "Edit Cup Count", edit_part_path(:id => @part.first.id,:edit_cup_count => true) %></td>
+                      <% else %>
+                          <td><%= "NA" %></td>
+                          <td><%= "NA" %></td>
+                          <td><%= "NA" %></td>
+                          <td><%= link_to "Add Cup Count", new_part_path(:xid => index,:edit_cup_count => true) %></td>
+                      <% end %>
+                      <td>
+                        <% if session[:user_level] %>
+                            <% if session[:user_level] > "3" %>
+                                <%if @part.present? %>
+                                    <%if @part.first.image_name %>
+                                        <%if @part.first.image_name_url.nil?%>
+                                            <%= link_to "upload/add image", edit_part_path(@part.first.id) %>
+                                        <%else%>
+                                            <%= link_to "Edit Image", edit_part_path(@part.first.id) %>
+                                        <%end%>
+                                    <%else%>
+                                        <%= link_to "Add Image", new_part_path(:xid => index) %>
+                                    <%end%>
+                                <%else%>
+                                    <%= link_to "Add Image", new_part_path(:xid => index) %>
+                                <%end%>
+                            <%end%>
+                        <%end%>
+                      </td>
+                    </tr>
+                <% end %>
+            <%else%>
+                <!--not for fuzzy search-->
+                <tr>
+                  <%@part = Kitting::Part.where('part_number' => @part_nums['partNo'])%>
+                  <%if @part.present?%>
+                      <%if @web_portal_kit["errMsg"] == "" %>
+                          <%if @web_portal_kit["kitNo"] == @part_number%>
+                              <td></td>
+                          <%end%>
+                      <%else%>
+                          <%if @part.first.image_name%>
+                              <%if !@part.first.image_name_url.nil?%>
+                                  <td><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s).gsub("http://","https://") : image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s),:alt => "Image Not Available" %></td>
+                              <%else%>
+                                  <td><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s).gsub("http://","https://") : image_parts_url(:image =>@part.first.image_name_url(:thumb).to_s),:alt => "Image Not Available" %></td>
+                              <%end%>
+                          <%else%>
+                              <td></td>
+                          <%end%>
+                      <%end%>
+                  <%else%>
+                      <td></td>
+                  <%end%>
+                  <td><%= @part_nums['partNo'].join(",") %></td>
+                  <%if @part_nums['partName']%>
+                      <td><%= @part_nums['partName'] %></td>
+                  <%end%>
+                  <!-- Check for a Existing Record if Not Create Record from RBO Data -->
+                  <% if @part.first.present? %>
+                      <td><%= @part.first.large_cup_count.present? ? @part.first.large_cup_count : "NA" %></td>
+                      <td><%= @part.first.medium_cup_count.present? ? @part.first.medium_cup_count : "NA" %></td>
+                      <td><%= @part.first.small_cup_count.present? ? @part.first.small_cup_count : "NA" %></td>
+                      <td><%= link_to "Edit Cup Count", edit_part_path(:id => @part.first.id,:edit_cup_count => true) %></td>
+                  <% else %>
+                      <td><%= "NA" %></td>
+                      <td><%= "NA" %></td>
+                      <td><%= "NA" %></td>
+                      <td><%= link_to "Add Cup Count", new_part_path(:xid => @part_nums['partNo'],:edit_cup_count => true) %></td>
+                  <% end %>
+                  <td>
+                    <% if session[:user_level] %>
+                        <% if session[:user_level] > "3" %>
+                            <%if @web_portal_kit["errMsg"] == "" %>
+                                <%if @web_portal_kit["kitNo"] == @part_number%>
+                                    <%= link_to "Show Kit", get_kit_with_path(@web_portal_kit["kitNo"]) %>
+                                <%end%>
+                            <%else%>
+                                <%if !@part.empty? %>
+                                    <%if @part.first.image_name %>
+                                        <%if @part.first.image_name_url.nil?%>
+                                            <%= link_to "upload/add image", edit_part_path(@part.first.id) %>
+                                        <%else%>
+                                            <%= link_to "Edit Image", edit_part_path(@part.first.id) %>
+                                        <%end%>
+                                    <%else%>
+                                        <%= link_to "Add Image", new_part_path(:xid=>@part_nums['partNo']) %>
+                                    <%end%>
+                                <%else%>
+                                    <%= link_to "Add Image", new_part_path(:xid=>@part_nums['partNo']) %>
+                                <%end%>
+                            <%end%>
+                        <%end%>
+                    <%end%>
+                  </td>
+                </tr>
+            <% end %>
+          </table>
+          <br/>
+        </div>
+    <%end%>
+    <%if (@part_nums && @part_nums["errCode"] == "")%>
+        <%= will_paginate @result %>
+    <%end%>
+<%else%>
+
+<%end%>

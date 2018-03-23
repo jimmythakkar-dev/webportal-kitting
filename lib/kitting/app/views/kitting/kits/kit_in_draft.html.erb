@@ -1,0 +1,49 @@
+<h2 class="body_header">Kit in Draft</h2>
+<%= image_seperator %>
+<%= render 'layouts/message_display' %>
+
+    <% unless @kits.nil? %>
+        <p><small><em> <%= page_entries_info(@kits) %></em></small></p>
+    <table class="table tablesorter">
+      <thead>
+      <th>KIT NUMBER</th>
+      <th>LOCATION</th>
+      <th>DESCRIPTION</th>
+      <th>ACTION</th>
+      </thead>
+      <% @kits.each_with_index do |kit,index| %>
+          <tr>
+            <% if  kit.commit_id == nil and kit.status == 2 %>
+                <td><%= link_to kit.kit_number, kits_detail_design_path(kit_number: kit.kit_number,
+                                                                        kit_media_type: kit.kit_media_type.name,compartments: kit.kit_media_type.compartment,
+                                                                        compartment_layout: kit.kit_media_type.compartment_layout, kit_id: kit.id, bincenter: kit.bincenter,kit_action: "D") %></td>
+            <% else %>
+                <% kit_rec= Kitting::Kit.where(:id => kit.commit_id).first %>
+                <% if kit_rec.present? %>
+                    <td><%= link_to kit_rec.kit_number, kits_detail_design_path(kit_number: kit_rec.kit_number,
+                                                                                kit_media_type: kit_rec.kit_media_type.name,compartments: kit_rec.kit_media_type.compartment,
+                                                                                compartment_layout: kit_rec.kit_media_type.compartment_layout, kit_id: kit_rec.id, bincenter: kit_rec.bincenter,kit_action: "D") %></td>
+                <% else %>
+
+                <% end %>
+            <% end %>
+            <!--<td><%#= link_to kit.kit_number, kit, kit_number: kit.kit_number %></td>-->
+            <td><%= kit.bincenter %></td>
+            <td><%= kit.try(:description) %></td>
+            <!--<td><%#= link_to 'Delete', kit, method: :delete, data: { confirm: 'Are you sure?' } %></td>-->
+            <% if  kit.commit_id == nil and kit.status == 2 %>
+                <td><%= link_to 'Reset Kit', kit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+            <% else %>
+                <% kit= Kitting::Kit.where(:id => kit.commit_id).first %>
+                <% if kit.present? %>
+                    <td><%= link_to 'Reset Kit', kit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+                <% else %>
+
+                <% end %>
+            <% end %>
+          </tr>
+      <% end %>
+    </table>
+    <%= will_paginate @kits  %>
+<% end %>
+<%= image_seperator %>

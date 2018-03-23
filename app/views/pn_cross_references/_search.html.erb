@@ -1,0 +1,25 @@
+<% if @pn_cross_references.present? && @pn_cross_references["errMsg"].blank? %>
+    <div class="table-responsive">
+      <table class="table tablesorter">
+        <thead>
+        <tr>
+          <th><%= t('nsn',:scope => "pn_cross_reference.search")%></th>
+          <th><%= t('part_number',:scope => "pn_cross_reference.search")%></th>
+          <th><%= t('cage',:scope => "pn_cross_reference.search")%></th>
+          <th><%= t('manuf_name',:scope => "pn_cross_reference.search")%></th>
+          <th><%= t('assist',:scope => "pn_cross_reference.search")%></th>
+        </tr>
+        </thead>
+        <% @xPartNo.each_with_index do |part_number, index| %>
+            <tr>
+              <td align="center"><%= @xNSN[index] %></td>
+              <td align="center"><%= link_to part_number, controller: "pn_cross_references", action: "search_pn",pn_part_number: part_number %></td>
+              <td align="center"><%= @xCage[index]%></td>
+              <td align="center"><%= @xCageName[index] == "-" ? (link_to "Look Up #{@xCage[index]}","http://www.logisticsinformationservice.dla.mil/BINCS/details.aspx?CAGE=#{@xCage[index]}", :target => "_blank" ) : @xCageName[index] %></td>
+              <% assist = PnCrossReference.assist part_number %>
+              <td align="center"><%= link_to assist,"http://quicksearch.dla.mil/quicksearch_query.cfm?doc_id=#{assist}", :target => "_blank" %></td>
+            </tr>
+        <% end %>
+      </table>
+    </div>
+<% end %>

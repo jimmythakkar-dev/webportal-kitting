@@ -1,0 +1,48 @@
+<!-- COMMENTING OUT CODE BY USING IF FALSE CONDITION -->
+<% if false %>
+    <div id="kit_table">
+      <%if flash[:notice] %>
+          <div class="alert alert-success"><%= flash[:notice] %></div>
+      <%end%>
+
+      <% unless @kits.nil? %>
+          <div class="row">
+            <div class="text-right">
+              Move to Queue<%= collection_select(:location, :id, Kitting::Location.all, :id, :name, {:prompt => "Select Queue To Move"}) %>
+              <p style="float: right">Filter Queue <%= collection_select(:filter_location, :id, Kitting::Location.all, :id, :name, {:prompt => "Select Queue To Filter", :selected => params[:location]}) %></p>
+            </div>
+          </div>
+
+          <small><em> <%= page_entries_info(@kits ,html: false) %></em></small>
+
+          <table class="table tablesorter">
+            <thead>
+            <th class="filter-false">Action</th>
+            <th>Kit Number </th>
+            <th>Kit media Type </th>
+            <th class="filter-false">Queue</th>
+            <th> </th>f
+
+            </thead>
+            <% @kits.each do |kit| %>
+                <tr>
+                  <td><%= check_box_tag 'location[]',kit.id  %></td>
+                  <td><%= link_to kit.kit_number, kit_path(kit.id) %></td>
+                  <td><%= kit.kit_media_type.name if kit.kit_media_type %></td>
+                  <td id="part_queue"><%= link_to kit.location.name, "#", title: "Click to Change" if kit.location  %></td>
+                  <td>
+                    <% if session[:user_level] %>
+                        <% if session[:user_level] > "3" %>
+                            <%= link_to 'Pick Ticket', pick_ticket_kit_path(kit.id) %> /
+                            <%= link_to 'Fill Kit', create_filling_show_kit_filling_path(kit.id), title: 'Click To Fill The Kit'  %> /
+                            <%= link_to 'Delete', kit, method: :delete, data: { confirm: 'Are you sure?' } %>
+                        <%end%>
+                    <%end%>
+                  </td>
+                </tr>
+            <% end %>
+          </table>
+          <%= will_paginate @Kits %>
+      <%end%>
+    </div>
+<% end %>

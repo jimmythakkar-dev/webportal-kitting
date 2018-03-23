@@ -1,0 +1,76 @@
+hide_spinner();
+$("#duplicateOrder").val("");
+var browser_status = 0;
+if (/MSIE (\d+\.\d+);/.test(navigator.userAgent))
+{
+    var ieversion=new Number(RegExp.$1);
+    if (ieversion <=7 )
+    {
+        browser_status = 1;
+    }
+}
+<% if @success.present? %>
+     <% if defined?(@new_kit_error) %>
+        <% @success = (@new_kit_error + "<br/>" + @success rescue @success).html_safe %>
+     <% elsif defined?(@new_kit_success) %>
+        <% @success = (@new_kit_success + "<br/>" + @success rescue @success).html_safe %>
+     <% end %>
+if(browser_status == 0) {
+    agustaResetFM();
+    $.msgBox({
+        title: I18n.t('order_created'),
+        content: '<%= @success %>'
+    });
+}
+else {
+    agustaResetFM();
+    alert("<%= @success.html_safe %>".replace(/<br\/>/g,"\n"));
+}
+<% else %>
+    <% if @response_order_submit && @response_order_submit["errCode"] == "11" %>
+        if(browser_status == 0) {
+            $.msgBox({
+                type: "confirm",
+                title: I18n.t('duplicate_order'),
+                content: "<%= @error.html_safe %>" + I18n.t('process_duplicate_order'),
+                buttons : [
+                    {type: "yes", value: "Yes"},
+                    {type: "no", value: "No"},
+                ],
+                success: function(result){
+                    if (result == "Yes"){
+                        show_spinner();
+                        $("#duplicateOrder").val("1");
+                        $("#ordersubmit_form").submit();
+                    }
+                    else {
+                        agustaResetFM();
+                    }
+                }
+            });
+        }
+        else {
+            result = confirm("<%= @error.html_safe %>".replace(/<br\/>/g,"\n") + I18n.t('process_duplicate_order'));
+            if (result == true){
+                show_spinner();
+                $("#duplicateOrder").val("1");
+                $("#ordersubmit_form").submit();
+            }
+            else {
+                agustaResetFM();
+            }
+        }
+    <% else %>
+        if(browser_status == 0) {
+            $.msgBox({
+                title: I18n.t('error_occured'),
+                content: "<%= @error.html_safe %>"
+            });
+            agustaResetFM();
+        }
+        else {
+            alert("<%= @error %>".replace(/<br\/>/g,"\n"));
+            agustaResetFM();
+        }
+    <% end %>
+<% end %>

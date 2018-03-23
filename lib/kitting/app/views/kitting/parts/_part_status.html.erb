@@ -1,0 +1,20 @@
+<thead>
+<th>Old Part Number </th>
+<th>Replaced Part Number</th>
+<th>Status</th>
+<th>Uploaded By</th>
+<th>Uploaded On </th>
+<th class="filter-false"> Response File </th>
+<th class="filter-false"> ACTION </th>
+</thead>
+<% @part_list.each_with_index do |part,index| %>
+    <tr style="<%= part.status == "FAILED" ? 'color:red;' : "" %>">
+      <td><%= part.old_part_number.upcase %></td>
+      <td><%= part.new_part_number.upcase %></td>
+      <td class="part_stat"><%= part.status %></td>
+      <td><%= part.customer.user_name %></td>
+      <td><%= part.created_at.strftime("%m/%d/%Y %H:%M:%S") %></td>
+      <td><%= link_to image_tag(excel_icon(part.status), :height => "40", :width => "40",:class=> "img-responsive", :onClick => "upload_status('#{part.status}');",:border => 0, :alt => "View/Download as Excel Spreadsheet"), (part.status == "COMPLETED" or part.status == "FAILED") ? csv_export_kits_path(:id => part.id,:part_processing => true) : "#" %></td>
+      <td><%= button_to 'Delete File',  delete_upload_record_kits_path(:id => part.id),:class=>"btn btn-danger",data: { confirm: "This File is #{part.status}. Are you sure you want to delete the file ?" } %></td>
+    </tr>
+<% end %>

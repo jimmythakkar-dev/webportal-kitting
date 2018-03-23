@@ -1,0 +1,47 @@
+<h2 class="body_header f_left"><%= t('Panstock_Action_Request',:scope=> "panstock_requests.action_history")%> </h2>
+<%= image_seperator %>
+<p> <%= t('_desc_bulk_hist',:scope => "panstock_requests.bulk_history").html_safe %></p>
+<%= image_seperator %>
+<%if params[:approval107] && params[:approval107].length > 0 %>
+    <% unless @panstock_entry.blank?  %>
+        <% @panstock_entry.each_index do |i|  %>
+            <%= t('ACTION',:scope => "panstock_requests._edit_panstock" )%> :<b><%= params[:StatusReasonIn] %></b>
+            <div class="table-responsive">
+              <table class="table header_color">
+                <thead>
+                <th><b><%= t('ACTION_CODE',:scope => "panstock_requests.send_panstock_changes") %></b></th>
+                <th><b><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></b></th>
+                <th><b><%= t('LOCATION',:scope => "panstock_requests.bulk_form_process") %></b></th>
+                <th><b><%= t('BIN_QTY',:scope => "panstock_requests.bulk_form_process") %></b></th>
+                <th><b><%= t('UM',:scope => "panstock_requests.send_panstock_changes")%></b></th>
+                <th><b><%= t('Bin',:scope => "panstock_requests.send_panstock_changes") %></b></th>
+                <th><b><%= t('r/c',:scope => "panstock_requests.send_panstock_changes")%></b></th>
+                </thead>
+                <tr>
+                  <td><%= @panstock_entry[i]["actionCode"].join(",") %></td>
+                  <td><%= @panstock_entry[i]["originalPN"] %></td>
+                  <td><%= @panstock_entry[i]["lineStation"] %></td>
+                  <td><%= @panstock_entry[i]["orderQty"].join(",") %></td>
+                  <td><%= @panstock_entry[i]["um"].join(",") %></td>
+                  <td><%= @panstock_entry[i]["binCenter"] %></td>
+                  <td><%= @panstock_entry[i]["reason"].join(",") %></td>
+                </tr>
+              </table>
+            </div>
+        <%end%>
+    <% end %>
+    <br/>
+<%else%>
+    <table class="table">
+      <tr class="alert alert-danger">
+        <th> <%= t('nothing_selected',:scope => "panstock_requests.bulk_form_process").html_safe %> <%= link_to t('go_back',:scope => "panstock_requests.bulk_form_process"), bulk_history_panstock_requests_path(:days => params[:days]) %> <%= t('check_solution',:scope => "panstock_requests.bulk_form_process") %> </th>
+      </tr>
+    </table>
+    <%if @checkweborder_response && @checkweborder_response["errCode"] != "" %>
+        <table class="table">
+          <tr class="alert alert-danger">
+            <%= @checkweborder_response["errMsg"] %>
+          </tr>
+        </table>
+    <%end%>
+<%end%>

@@ -1,0 +1,54 @@
+<h2 class="body_header">Kit Media Type Detail</h2>
+<%= image_seperator %>
+
+<%if notice%>
+    <p class="alert alert-success"><%= notice %></p>
+<%end%>
+
+<div class="row">
+  <div class="col-sm-3"><label>Name:</label> </div>
+  <div class="col-sm-9 body_text_subhead"><%= @kit_media_type.name %></div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3"><label>Number of Compartments:</label> </div>
+  <%if @kit_media_type.kit_type == "binder" %>
+      <div class="col-sm-9">-</div>
+  <%else%>
+      <div class="col-sm-9"><%= @kit_media_type.compartment %></div>
+  <%end%>
+</div>
+
+<div class="row">
+  <div class="col-sm-3"><label>Type: </label></div>
+  <div class="col-sm-9"><%= @kit_media_type.kit_type %></div>
+</div>
+<div class="row">
+  <div class="col-sm-3"><label>Description:</label> </div>
+  <div class="col-sm-9"><%= @kit_media_type.description %></div>
+</div>
+
+<%= image_seperator %>
+<% if @kit_media_type.kit_type != "binder" && @kit_media_type.kit_type != "configurable" %>
+    <div class="row">
+      <div class="col-sm-6">
+        <label>Kit Layout:</label>
+        <table class="table table-bordered ">
+          <thead>
+          <td>Row</td>
+          <td>Number Of Compartments</td>
+          </thead>
+          <% JSON.parse(@kit_media_type.compartment_layout).each do |key, value| %>
+              <tbody>
+              <tr>
+                <td><%= key %></td>
+                <td><%= value %></td>
+              </tr>
+              </tbody>
+          <% end %>
+        </table>
+      </div>
+    </div>
+<% end %>
+<%= link_to 'Back', kit_media_types_path, class: 'btn btn-default' %>
+<%= image_seperator %>

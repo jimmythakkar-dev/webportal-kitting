@@ -1,0 +1,6 @@
+Before loading a kit version from Kit Version Track Table, 
+Follow the steps below:
+1> require "kitting/kit"
+2> require "kitting/cup"
+3> require "kitting/cup_parts"
+4> Marshal.load(dump_objects).

@@ -1,0 +1,174 @@
+<h2 class="body_header f_left"><%= t('floor_view_history',:scope => "floor_views.floor_view_history")%></h2>
+<%= image_seperator %>
+
+<p><%= t('_desc_update_floor_view',:scope => "floor_views.update_floor_view")%>.</p>
+<%= image_seperator %>
+<br/>
+<div class="pull-right">
+  <%= link_to t('View_Floor_View_History',:scope => "floor_views.index"), floor_view_history_path, :method => 'get'%>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-sm-4" style="color: #006699;"><%= t('Part_Number_Requested',:scope => "floor_views.update_floor_view")%></div>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <div class="col-sm-8"> <%= @originalPn%></div>
+      <%end%>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= t('Customer_Ref_Number',:scope => "floor_views.update_floor_view")%> </div>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <div class="col-sm-8"><%= @ref %> </div>
+      <%end%>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= t('Contract_Part_Number',:scope => "floor_views.update_floor_view")%> </div>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <div class="col-sm-8 "><%= @cust_part_no %> </div>
+      <%end%>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= t('Updated_Date',:scope => "floor_views.update_floor_view")%> </div>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <div class="col-sm-8 "><%= @get_binparts_response["updatedDt"]%> </div>
+      <%end%>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"><%= t('Updated_By',:scope => "floor_views.update_floor_view")%> </div>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <div class="col-sm-8 "><%= @get_binparts_response["updatedBy"]%> </div>
+      <%end%>
+    </div>
+    <div class="row">
+      <div class = "col-sm-4"><%= t('Ship-To_Address',:scope => "floor_views.update_floor_view")%> </div>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <div class="col-sm-8 "><%= @get_binparts_response["shipTo"].html_safe%></div>
+      <%end%>
+    </div>
+  </div>
+</div>
+<%= image_seperator %>
+<%= form_tag floor_view_form_process_path do %>
+    <%if @floor_view_entry_response["partNo"] != [""] %>
+        <%= hidden_field_tag "myaction", 5%>
+        <%= hidden_field_tag "iAction", "U"%>
+        <%= hidden_field_tag "ForemanName", "ShopView"%>
+        <%= hidden_field_tag "CustPartNo", @part_no%>
+        <%= hidden_field_tag "SelID", @sellId %>
+    <%end%>
+    <div class="text-danger">
+      <%= flash[:notice]%>
+    </div>
+    <% if session[:user_level] > "3" %>
+        <div class="table-responsive">
+          <table width="620" border="0" cellspacing="2" cellpadding="2">
+            <tr style="background:#D7D7D7">
+              <th align="right" scope="row"><%= t('Approval',:scope => "floor_views.update_floor_view")%><br/><%= t('STATUS',:scope => "floor_views.update_floor_view")%><br /></th>
+              <td>
+                <%if @floor_view_entry_response["approvedBy"] == ""%>
+                    <%= text_field_tag "approvedBy"  %>
+                <%else%>
+                    <%= @floor_view_entry_response["approvedBy"]%>
+                <%end%>
+                <br />
+                <span class="headingSmall"><%= t('Name',:scope => "floor_views.update_floor_view")%> (<%= t('approved_by',:scope => "floor_views.update_floor_view")%>)</span><span class="err_msg">*</span>
+              </td>
+              <td>
+                <%if @floor_view_entry_response["approvedBy"] == ""%>
+                    <%= select_tag "status","<option>Select Status</option><option>Approved</option><option>Open</option><option>Declined</option><option>Closed</option>".html_safe, :class => 'col-sm-12' %>
+                <%else%>
+                    <%= @floor_view_entry_response["approvalStatus"]%>
+                <%end%>
+                <br/><span class="headingSmall"><%= t('STATUS',:scope => "floor_views.update_floor_view")%>:</span><span class="err_msg">*</span>
+              </td>
+              <td>
+                <% if @floor_view_entry_response["approvedBy"] == ""%>
+                    <%= select_tag "statusReason", options_for_select([["",""],["On Order","OO"],
+                                                                       ["Other Location","OL"], ["Multiple Orders","MO"], ["Ops","OP"]]), :class => 'col-sm-12' %>
+                <%else%>
+                    <%if @floor_view_entry_response["statusReason"] == "" %>
+                        <strong>-</strong>
+                    <%else%>
+                        <%= @floor_view_entry_response["statusReason"]%>
+                    <%end%>
+                <%end%>
+                <br /><span class="headingSmall"><%= t('Declined_Reason',:scope => "floor_views.update_floor_view")%>:</span>
+              </td>
+            </tr>
+            <tr><td>&nbsp;</td></tr>
+          </table>
+        </div>
+    <% end %>
+
+    <div class="col-sm-12 table_title">
+      <strong><%= t('BIN_MAP_FOR_PART_NUMBER',:scope => "floor_views.index")%>
+        <%= @originalPn %></strong>
+    </div>
+
+    <table id="table">
+      <thead>
+      <tr>
+        <th><%= t('PART_NUMBER',:scope => "floor_views._location_search")%></th>
+        <th><%= t('Scan_Code',:scope => "floor_views.index")%></th>
+        <th><%= t('LOCATION',:scope => "panstock_requests.bulk_form_process")%></th>
+        <th><%= t('BIN_QTY',:scope => "floor_views.index")%></th>
+        <th><%= t('PACK_QTY',:scope => "floor_views.index")%></th>
+        <th><%= t('UM',:scope => "floor_views.index")%></th>
+      </tr>
+      </thead>
+      <%if @floor_view_entry_response["partNo"] != [""] %>
+          <tr>
+            <td><%= @originalPn %>&nbsp;
+              <%= hidden_field_tag "myCustNo", @cust_no%>
+              <%= hidden_field_tag "ActionCode", "Expedite"%>
+              <%= hidden_field_tag "PartNo", @cust_part_no%>
+              <%= hidden_field_tag "OrderQty", @floor_view_entry_response["orderQty"]%>
+              <%= hidden_field_tag "PackQty", @floor_view_entry_response["packQty"]%>
+              <%= hidden_field_tag "UM", @floor_view_entry_response["um"]%>
+              <% if @floor_view_entry_response["sendTo"] != ""%>
+                  <%= hidden_field_tag "selLocation", @floor_view_entry_response["sendTo"].split("/").last.lstrip%>
+              <%end%>
+              <%= hidden_field_tag "ScanCode", @floor_view_entry_response["scancode"]%>
+              <%= hidden_field_tag "BinCenter", @floor_view_entry_response["binCenter"]%>
+              <%= hidden_field_tag "sendTo", @floor_view_entry_response["sendTo"]%>
+              <%= hidden_field_tag "OriginalPN", @originalPn %>
+            </td>
+            <td><%= @floor_view_entry_response["scancode"].join(",")%></td>
+            <%if @floor_view_entry_response["sendTo"].include? "/"%>
+                <td><%= @floor_view_entry_response["sendTo"].gsub(/ \/ /, "<br>").html_safe%></td>
+            <%else%>
+                <td><%= @floor_view_entry_response["sendTo"]%></td>
+            <%end%>
+            <td><% if @floor_view_entry_response["orderQty"].join(",") == "" %> - <% else %><%= @floor_view_entry_response["orderQty"].join(",")%><% end %></td>
+            <td><% if @floor_view_entry_response["packQty"].join() == "" %> - <% else %> <%= @floor_view_entry_response["packQty"].join()%><% end %> </td>
+            <td><%= @floor_view_entry_response["um"].join()%></td>
+          </tr>
+      <%end%>
+    </table><br/>
+    <%if @floor_view_entry_response["partNo"] != [""]%>
+        <div class="table_title text-right">
+          <strong><%= t('Total',:scope => "floor_views.index")%>:&nbsp; <%= @total%>&nbsp;</strong>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 text-right">
+            <%if session[:user_level] > "3" %>
+                <%if @get_binparts_response["errMsg"] == ""%>
+                    <%if @floor_view_entry_response["approvedBy"] == ""%>
+                        <%= submit_tag t('Submit_Request',:scope => "floor_views.update_floor_view"), :id => "floor_view_update"  %>
+                    <%end%>
+                <%end%>
+            <%end%>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <%  if session[:user_level] > "3" %>
+                <span class="alert_msg"> *<%= t('req_field',:scope => "floor_views.update_floor_view")%></span>
+            <% end %>
+          </div>
+        </div>
+    <%end%>
+<%end%>
+<%= image_seperator %>
+
+

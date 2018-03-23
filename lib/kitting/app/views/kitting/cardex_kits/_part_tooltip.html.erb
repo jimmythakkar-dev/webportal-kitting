@@ -1,0 +1,5 @@
+<% if part %>
+<h6><%= part.part_number %></h6>
+<h6><%= part.name %></h6>
+<%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image => part.image_name.medium.to_s).gsub("http://","https://") : image_parts_url(:image => part.image_name.medium.to_s),class: 'popup-part-thumbnail',:alt => "Image Not Available"  %>
+<% end %>

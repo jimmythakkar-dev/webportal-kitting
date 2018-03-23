@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<%= render 'layouts/application_head' %>
+<style type="text/css">
+
+    .login_form {
+        padding: 12px 20px;
+    }
+    .login_header{
+        font-weight: bold;
+        margin: 35px 0 0 25px;
+    }
+    .form-group{
+        margin-bottom: 4px;
+    }
+    label{
+        font-weight:normal;
+    }
+</style>
+<body>
+<!--[if lt IE 9]>
+<script src="/ie/html5shiv.js"></script>
+<script src="/ie/respond.js"></script>
+<![endif]-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" style="position: relative;top: -19px;color:#D9E1E2">
+      <%= APP_VERSION %>
+      <%= render "layouts/menu" %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 header">
+      <div class="col-sm-3 text-center">
+        <%=  image_tag "KLX_logo.jpg",class: "img-responsive" %>
+      </div>
+      <div class="col-sm-9">
+        <%= render "layouts/sub_menu" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row login-container">
+
+    <!--<div class="row">-->
+    <div class="col-sm-4">
+      <p class="login_header">KLX Customer Portal Log In</p>
+      <%= form_tag  user_sessions_path, :autocomplete => "off", class: "login_form" do %>
+          <div class="form-group">
+            <label for="username" class="control-label">Username</label>
+            <%= text_field_tag :username, params[:username], :required => true, :placeholder=>"Enter Username",:class=> "form-control"%>
+          </div>
+          <div class="form-group">
+            <label for="password" class="control-label">Password</label>
+            <%= password_field_tag :password, nil, :required => true, :class=> "form-control",:placeholder => "Enter Password" %>
+          </div>
+          <div class="form-group text-center">
+            <%= submit_tag "Login" , class: 'btn btn-primary btn-block' %>
+          </div>
+          <small class="text-center">
+            Don't have an online account?
+            <%= link_to 'Click here to apply.',"http://klxaerospace.com/management/resources/accountrequest/accountRequest.cfm",target: '_blank', class: 'nav subnav' %>
+          </small>
+      <% end %>
+      <!--</div>-->
+    </div>
+    <div class="col-sm-8">&nbsp;</div>
+    <div class="col-sm-12">
+      <h5 class="overview_body_text">
+        As the world's leading distributor of aerospace fasteners and consumables for the commercial, business jet, and military markets, KLX Aerospace stocks more than 825,000 part numbers and has over 50 locations worldwide. With industry leading capabilities and enhanced logistics, KLX has the size and scope customers demand with small company attention to detail.</h5>
+      <br>
+    </div>
+  </div>
+  <%= render 'layouts/application_footer' %>
+</div>
+</body>
+</html>

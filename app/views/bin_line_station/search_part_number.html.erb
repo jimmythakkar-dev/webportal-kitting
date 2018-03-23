@@ -1,0 +1,164 @@
+<h3 class="body_header"><%= t('bin_line_station_inv',:scope=>"bin_line_station.search_part_number") %></h3>
+<%= image_seperator %>
+<p class="text_alert">
+  <%= flash[:alert] %>
+</p>
+<%= form_tag bin_line_station_search_part_number_path, class: 'form-inline' do %>
+    <div class="form-group">
+      <%= label_tag :part_number, "#{t('part_num',:scope => "rma")}:" %><br/>
+      <%= text_field_tag :part_number, params[:part_number].try(:strip).try(:upcase) ,:class=> "form-control" %>
+      <%= submit_tag "#{t('search',:scope => "rma")}", name: :search, class: 'btn btn-default' %>
+    </div>
+<% end %>
+<%= image_seperator %>
+<% unless @customer_values["errMsg"].empty? %>
+    <div class="alert alert-danger"><%=  @customer_values["errMsg"] %></div>
+<% end %>
+<!--condition for not showing data if Part number not found. Please contact your KLX representative. error msg is came -->
+<%if @customer_values["errMsg"] == "" || @customer_values["errMsg"].include?("Excluded part no.") || @customer_values['errMsg'].include?("Not a 4PL part")%>
+    <% unless @bin_map["errMsg"].empty? %>
+        <% if @bin_map["errMsg"].include? 'not on bin map; Please use panstock to order.' %>
+            <div class="alert alert-danger"><%=  @bin_map["errMsg"].gsub('not on bin map; Please use panstock to order.','not on bin map.') %></div>
+        <% elsif @bin_map["errMsg"].include? '/' %>
+            <div class="alert alert-danger"><%=  @bin_map["errMsg"].gsub('|','') %></div>
+        <% else %>
+            <div class="alert alert-danger"><%=  @bin_map["errMsg"] %></div>
+        <% end %>
+    <%else%>
+        <% unless (@get_customer_values).kind_of? Hash %>
+            <div class="alert alert-danger"><%=  @get_customer_values %></div>
+        <% end %>
+    <% end %>
+    <div>
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4"><%= t('part_num_entered',:scope=>"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8 body_text_subhead"><%= params[:part_number].upcase %></div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-4"><%= t('cust_ref_entered',:scope=>"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8">
+            <% if (@get_customer_values).kind_of? Hash %>
+                <%= @get_customer_values[:customer_ref_number] %>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-4"><%= t('contract_part_num',:scope=>"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8">
+            <% if (@get_customer_values).kind_of? Hash %>
+                <%= @get_customer_values[:contract_part_number] %>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-4"><%= t('shipping_add',:scope=>"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8"><%= raw @shipping_address["shipTo"] %></div>
+        </div>
+      </div>
+    </div>
+    <%= image_seperator %>
+    <div>
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4"><%= t('effective_date',:scope=>"bin_line_station.search_part_number") %></div>
+          <%if @lead_times %>
+              <%if @lead_times["errCode"] == "" %>
+                  <div class="col-sm-8"><%= @lead_times["begDate"] %></div>
+              <%end%>
+          <%end%>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t('supportability_date',:scope=>"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8">
+            <%if @lead_times %>
+                <% unless @lead_times["actionDate"].empty? %>
+                    <%= @lead_times["actionDate"] %>
+                <% else %>
+                    <%= @lead_times["errMsg"] %>
+                <% end %>
+            <%end%>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t('lead_time',:scope=>"bin_line_station.search_part_number") %></div>
+          <%if @lead_times %>
+              <%if @lead_times["errCode"] == "" %>
+                  <div class="col-sm-8"><%= @lead_times["actionTime"] %></div>
+              <%end%>
+          <%end%>
+        </div>
+      </div>
+    </div>
+    <%= image_seperator %>
+    <%= render :partial => 'floor_views/quantity_on_hand' %>
+    <div class="clear"></div>
+    <% if @bin_map["whsid"].join(",").split(",").length > 0 && @bin_map["errMsg"].empty? %>
+        <div class="table_title">
+          <strong><%= t('bin_map_for_part_no',:scope=>"bin_line_station.search_part_number") %>
+            <% if (@get_customer_values).kind_of? Hash %>
+                <%= part_number_exists_in_bin? @bin_map["ref"], @get_customer_values[:customer_ref_number] %>
+            <% end %>
+          </strong>
+        </div>
+        <div class="table-responsive">
+          <table class="table tablesorter" >
+            <thead>
+            <th><%= t('LOCATION',:scope => "panstock_requests.bulk_form_process") %></th>
+            <th><%= t('scan_code',:scope=>"bin_line_station.search_part_number") %></th>
+            <th><%= t('bin_id',:scope=>"bin_line_station.search_part_number") %></th>
+            <th><%= t('BIN_QTY',:scope => "panstock_requests.bulk_form_process") %></th>
+            <th><%= t('pck_qty',:scope=>"bin_line_station.search_part_number") %></th>
+            <th><%= t('UM',:scope => "panstock_requests.send_panstock_changes")%></th>
+            <th><%= t('order_date',:scope=>"bin_line_station.search_part_number") %></th>
+            <th><%= t('order_qty',:scope=>"bin_line_station.search_part_number") %></th>
+            </thead>
+
+            <% order_date = BinLineStation.set_order_date @bin_map %>
+            <% order_quantity = BinLineStation.set_order_quantity @bin_map %>
+            <% @bin_map["whsid"].join(",").split(",").each_index do |index| %>
+                <tr>
+                  <% ref_whse_id = @bin_map["ref"].join(",").split(",")[index]%>
+
+                  <% if !@get_customer_values.include?("not on Bin Map or Contract") %>
+                      <% if ref_whse_id == @get_customer_values[:customer_ref_number]  %>
+                          <% ref_whse_id.gsub('&nbsp','0') %>
+                          <td><%= link_to @bin_map["whsdesc"].join(",").split(",")[index], bin_line_station_search_by_location_path(:location =>  @bin_map["whsdesc"].join(",").split(",")[index].split("/").last.lstrip), :title => "#{@customer_values["partNo"].first}" +" - Click to View ALL Parts at:" + "#{@bin_map["whsdesc"].join(",").split(",")[index]}" %></td>
+                          <td><%= @bin_map["scancode"].join(",").split(",")[index].gsub('&nbsp','0') %></td>
+                          <td><%= link_to @bin_map["bin"].join(",").split(",")[index].gsub('&nbsp;','0'), bin_line_station_print_part_label_path(:part_number => @customer_values["partNo"].first,:bin => @bin_map["bin"].join(",").split(",")[index].gsub('&nbsp;','0'), :scancode => @bin_map["scancode"].join(",").split(",")[index].gsub('&nbsp','0'),:location =>  @bin_map["whsdesc"].join(",").split(",")[index]), :title => "Click on BIN to PRINT PART LABEL", :target => "_blank"%></td>
+                          <td><%= @bin_map["amcQty"].join(",").split(",")[index].gsub('&nbsp','0') %></td>
+                          <td><%= @bin_map["packQty"].join(",").split(",")[index].gsub('&nbsp;','-') %></td>
+                          <td><%= @bin_map["um"].join(",").split(",")[index].gsub('&nbsp','0') %></td>
+                          <td><%= order_date[index] %></td>
+                          <td><%= order_quantity[index]%></td>
+                      <% end %>
+                  <% end %>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+        <div class="table_title text-right">
+          <%= t('Total',:scope => "floor_views._quantity_on_hand")%>:
+          <%= @bin_map["amcQty"].join(",").split(",").inject(0){|sum,item| sum + item.to_i} %>
+        </div>
+    <% end %>
+    <% unless @bin_map["errMsg"].empty? %>
+        <% if @bin_map["errMsg"].include? 'not on bin map; Please use panstock to order.' %>
+            <div class="alert alert-danger"><%=  @bin_map["errMsg"].gsub('not on bin map; Please use panstock to order.','not on bin map.') %></div>
+        <% elsif @bin_map["errMsg"].include? '/' %>
+            <div class="alert alert-danger"><%=  @bin_map["errMsg"].gsub('|','') %></div>
+        <% else %>
+            <div class="alert alert-danger"><%=  @bin_map["errMsg"] %></div>
+        <% end %>
+    <% else %>
+        <% unless (@get_customer_values).kind_of? Hash %>
+            <div class="alert alert-danger"><%=  @get_customer_values %></div>
+        <% end %>
+    <% end %>
+    <%= image_seperator %>
+<%else%>
+
+<%end%>

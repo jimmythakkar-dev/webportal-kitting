@@ -1,0 +1,34 @@
+<tr class='<%= "extra_order_tr philly_tr_#{@index}" %>'>
+  <td align="left" style="text-align:left">
+    <input type="hidden" value="<%= @part %>" name="order[order_part_details_attributes][<%=@index%>][part_number]" id="philly_pn_<%=@index%>">
+    <input type="hidden" value="<%= @uom %>" name="order[order_part_details_attributes][<%=@index%>][uom]" id="philly_uom_<%=@index%>">
+    <%=@part%>
+  </td>
+  <td>
+    <%= "0" %>
+  </td>
+  <td>
+    <%= @uom %>
+  </td>
+  <td>
+    <input type="text" value="0" size="10" name="order[order_part_details_attributes][<%=@index%>][quantity]" id="philly_quantity_<%=@index%>" class="form-control phillyQuantity">
+  </td>
+  <td>
+    <select name="order[order_part_details_attributes][<%=@index%>][reason_code]" id="philly_motive_<%=@index%>" class="form-control">
+      <option title="Select" selected="selected" value="Select">Select</option>
+      <option value="Requesting a part not called out in BOM">Requesting a part not called out in BOM</option>
+      <option value="Requesting 1-up/1-down from part called out in BOM">Requesting 1-up/1-down from part called out in BOM</option>
+      <option value="Alternative for Job Card or Standard Kit Shortage">Alternative for Job Card or Standard Kit Shortage</option>
+      <option value="Part kitted was damaged/lost">Part kitted was damaged/lost</option>
+      <option value="Kit packed incorrectly">Kit packed incorrectly</option>
+      <option value="Additional qty needed">Additional qty needed</option>
+    </select>
+  </td>
+  <td>
+    <input type="text" size="10" name="order[order_part_details_attributes][<%=@index%>][note]" id="philly_comment_<%=@index%>" class="form-control agustaPart">
+  </td>
+  <td>
+    <span class="btn btn-default delete_part"><span class="glyphicon glyphicon-remove"></span></span>
+    <%#= image_tag("cross.gif", :id => "delete_part") %>
+  </td>
+</tr>

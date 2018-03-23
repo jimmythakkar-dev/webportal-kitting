@@ -1,0 +1,27 @@
+<div class="modal fade" id="upload_img" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h3 class="modal-title" id="myModalLabel"><%= t 'rma.upload_img' %></h3>
+        <div id="progress">
+        </div>
+      </div>
+      <div class="modal-body" id="img_box">
+        <span id="upload_img1">
+          <div id="lbl_div1"><%= t 'rma.label' %>: <input id="label1" type="text" name="label1" /></div><br />
+          <input id="image1" type="file" name="image1" accept="image/*" />
+          <span id="list1"></span>
+          <span id="remove_pic1"></span>
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" onclick="addMorePhotos();"><%= t 'rma.add_more_img' %></button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><%= t 'rma.save_changes' %></button>
+      </div>
+    </div>
+  </div>
+</div>
+<%= javascript_tag do %>
+    label = '<%= j t('rma.label') %>';
+<% end %>

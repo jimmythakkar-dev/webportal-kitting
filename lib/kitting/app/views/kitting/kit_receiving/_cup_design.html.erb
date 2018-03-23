@@ -1,0 +1,5 @@
+<% if @kit_type == 'configurable' %>
+	<%= raw get_config_part_filled_qty(Kitting::Cup.find(params[:cup_identity]), params[:kit_filling_id]).join('') if Kitting::Cup.find(params[:cup_identity]).present? %>
+<% else %>
+	<%= raw get_commited_parts(Kitting::Cup.find(params[:cup_identity]), params[:kit_filling_id]).join('') if Kitting::Cup.find(params[:cup_identity]).present? %>
+<% end %>

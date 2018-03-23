@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>KLX Aerospace</title>
+  <%= favicon_link_tag 'favicon.ico' %>
+</head>
+<style>
+    .page{ font-size:9px; position: relative; width: 100%;  }
+    .page-lg{ font-size:9px; position: relative; width: 100%; }
+    .barcode_text{font-size:7px; }
+    .jc_desc{font-size:8px;}
+    .logo{ position: absolute; right: -18px ; bottom: -5px }
+    .logo-lg{ position: absolute; right: -18px ; bottom: -5px }
+    table {border-spacing: 4px;}
+    .print_new_page{page-break-after: always;}
+    .barcode_text span{position: relative;}
+    .page-break{page-break-after: always;}
+    .label-table td{padding: 3px 0px 3px 5px}
+    table.label-table {border-collapse: collapse; width: 100%;font-size:11px; font-family: "Arial", Gadget, sans-serif;}
+    .label-table th{text-align:left;padding: 3px 0px 3px 5px; border-top: 2px solid #000000}
+    .left {
+        font-size:12px;
+        float: left;
+        width: 60%;
+        text-align: left;
+        display: inline;
+        padding-bottom: 5px;
+    }
+    .right {
+        font-size:12px;
+        float: left;
+        text-align: left;
+        display: inline;
+        padding-bottom: 5px;
+    }
+</style>
+<body>
+
+<% if params["print_label"].present? && params[:commit] == 'Print Outer Labels' %>
+    <% if @kit_work_orders %>
+        <% @kit_work_orders.each_with_index do |kwo, k| %>
+            <% last = @kit_work_orders.size == k + 1 ? true : false %>
+            <% kit_filling_id = Kitting::KitFilling.find_by_kit_work_order_id(kwo.id).id %>
+            <% generate_barcode_for_all_in_one(kwo.work_order.order_number, 1, 17) %>
+            <% generate_barcode_for_all_in_one(kwo.kit.customer_kit_part_number, 1, 17) %>
+            <% generate_barcode_for_all_in_one(kit_filling_id.to_s, 1, 17) %>
+            <div class="<%= last ? 'page' : 'page page-break' %>">
+              <table style="width:100%; <%= k != 0 ? 'margin-top: 5px'.html_safe : 'margin-top: -5px'.html_safe %>">
+                <tr>
+                  <td><strong>Work Order : </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+kwo.work_order.order_number.split("").map(&:ord).join("")+'.png' ) %><br><span><%= kwo.work_order.order_number %></span></td>
+                </tr>
+                <tr>
+                  <td><strong>Job Card No. : </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+kwo.kit.customer_kit_part_number.split("").map(&:ord).join("")+'.png' ) %><br><span><%= kwo.kit.customer_kit_part_number %></span></td>
+                </tr>
+                <tr><td ><strong>Job Card Desc. : </strong></td><td class="jc_desc"><%= kwo.kit.description %></td></tr>
+                <tr><td><strong>Stage : </strong></td><td><%= kwo.work_order.stage %></td></tr>
+                <tr><td><strong>Aircraft : </strong></td><td><%= kwo.work_order.serial_number %> </td></tr>
+                <tr><td><strong>Req. Date : </strong></td><td><%= kwo.due_date.strftime("%m/%d/%Y") %> </td></tr>
+                <tr>
+                  <td><strong>Delivery ID : </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+kit_filling_id.to_s.split("").map(&:ord).join("")+'.png' ) %><br><span><%= kit_filling_id %></span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <%= image_tag( Rails.root.join("app","assets","images","KLX_logo.jpg").to_s , class: 'logo', width: '35%' ) %>
+                  </td>
+                </tr>
+              </table>
+            </div>
+        <% end %>
+    <% end %>
+<% elsif params["print_label"].present? && params[:commit] == 'Print Inner Labels' %>
+    <% if @kit_work_orders %>
+        <% @kit_work_orders.each_with_index do |kwo, index| %>
+            <% last = @kit_work_orders.size == index + 1 ? true : false %>
+            <% generate_barcode_for_all_in_one(kwo["pack_id"]) %>
+            <% generate_barcode_for_all_in_one(kwo["job_card_no"]) %>
+            <% generate_barcode_for_all_in_one(kwo["work_order"]) %>
+            <div class="<%= last ? 'page-lg' : 'page-lg page-break' %>">
+              <table style="<%= index != 0  ? 'margin-top: 5px'.html_safe : ''.html_safe %>">
+                <tr><td><strong>Detail Part : </strong></td><td><%= kwo["detail_part"] %></td></tr>
+                <tr><td><strong>Qty : </strong></td><td><%= kwo["qty"] %></td></tr>
+                <tr><td><strong>Bin Center : </strong></td><td><%= kwo["bin_center"] %></td></tr>
+                <tr><td><strong>Bin Id : </strong></td><td><%= kwo["bin_id"] %></td></tr>
+                <tr>
+                  <td><strong>Work Order : </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+kwo["work_order"].split("").map(&:ord).join("")+'.png' ) %><br><span><%= kwo["work_order"] %></span></td>
+                </tr>
+                <tr>
+                  <td><strong>Job Card No: </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+kwo["job_card_no"].split("").map(&:ord).join("")+'.png' ) %><br><span><%= kwo["job_card_no"] %></span></td>
+                </tr>
+                <tr>
+                  <td><strong>Pack ID : </strong></td>
+                  <td class="barcode_text"><%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+kwo["pack_id"].split("").map(&:ord).join("")+'.png' ) %><br><span><%= kwo["pack_id"] %></span></td>
+                </tr>
+                <tr><td><strong>Aircraft : </strong></td><td><%= kwo["aircraft"] %> </td></tr>
+                <tr>
+                  <td>
+                    <%= image_tag( Rails.root.join("app","assets","images","KLX_logo.jpg").to_s , class: 'logo-lg', width: '35%' ) %>
+                  </td>
+                </tr>
+              </table>
+            </div>
+        <% end %>
+    <% end %>
+<% elsif params[:commit] == 'BOM Label'%>
+    <div class="left"><strong>Job Card No :</strong><%= @kit_work_orders.kit.customer_kit_part_number %></div>
+    <div class="right"><strong>Work Order :</strong><%= @kit_work_orders.work_order.order_number %></div>
+    <table class="label-table">
+      <thead>
+      <th>Detail PN(Cust PN)</th>
+      <th>Qty</th>
+      <th>Comment</th>
+      </thead>
+      <% @kit.cups.where(:commit_status => true,:status => true).order(:cup_number).each_with_index do |cup,cup_index|  %>
+          <% unless cup.parts.blank?  %>
+              <% cup.cup_parts.where(:commit_status => true,:status => true).each_index do |index| %>
+                  <% filling_detail = Kitting::KitFillingDetail.find_by_cup_part_id(cup.cup_parts.first) %>
+                  <tr>
+                    <td><%= cup.parts[0].part_number %> </td>
+                    <td><%= filling_detail.filled_quantity if filling_detail %> </td>
+                    <td><%= get_comment filling_detail if filling_detail %></td>
+                  </tr>
+              <% end %>
+          <% end %>
+      <% end %>
+    </table>
+<% else %>
+    <% part_index = 0 %>
+    <% if params[:pick_style] == 'One Sheet per Kit' %>
+        <% kits_arr = @combine_parts_arr.group_by { |kit| kit[:kit_no] } %>
+        <% kits_arr.values.each_with_index do |kit, index| %>
+            <% if params[:pick_sort_by] == 'Bin Loc' %>
+                <% kit = kit.sort_by { |all_parts| all_parts[:bin_loc] || "" } %>
+            <% elsif params[:pick_sort_by] == 'Part Number'%>
+                <% kit = kit.sort_by { |all_parts| all_parts[:part_number] } %>
+            <% else %>
+                <% kit = kit.sort_by { |all_parts| all_parts[:cup_number] } %>
+            <% end %>
+            <% last_kit = kits_arr.size == index + 1 ? true : false %>
+            <div class="<%= last_kit ? '' : 'print_new_page'%>">
+              <% group_length = kit.size/15 %>
+              <% kit.each_slice(15).each_with_index do |group,group_index| %>
+                  <% last_group = group_length == group_index ? true : false %>
+                  <div class="<%= (last_kit && last_group) ? '' : 'print_new_page'%>">
+                    <h3 style="text-align: center"><%= kits_arr.keys[index] %></h3>
+                    <table style="width:100%" class="tbl_pick_ticket_main">
+                      <tr>
+                        <td colspan="8">
+                          <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+                            <tr>
+                              <td>Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%m/%d/%Y") %></td>
+                              <td>Work Order Number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= group[group_index][:work_order] rescue group[0][:work_order]%></td>
+                            </tr>
+                            <tr>
+                              <td>Time: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%I:%M%p")  %> </td>
+                              <td>Location: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PICKING QUEUE</td>
+                            </tr>
+                            <tr>
+                              <td>Kit Number: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= kits_arr.keys[index] %></td>
+                              <td>Part Bin Center: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= @pick_ticket_print_details["binCenter"] %> </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="8">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td colspan="8">
+                          <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+                            <tr>
+                              <td>Sleeve/Bag</td>
+                              <td>Parts To be Picked</td>
+                              <td>Part Barcode</td>
+                              <td>UOM</td>
+                              <td>Req. Qty</td>
+                              <td>Bin Loc</td>
+                              <td>Picked</td>
+                            </tr>
+                            <% group =  group.reject { |c| c.nil? } %>
+                            <% group.each_with_index do |part_hash,part_num_index| %>
+                                <tr>
+                                  <td style="width:5%"><%= part_hash[:cup_number] %></td>
+                                  <td><%= part_hash[:part_number]%></td>
+                                  <td>
+                                    <% generate_barcode(part_hash[:part_number]) %>
+                                    <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+part_hash[:part_number].split('').map(&:ord).join("") +'.png' ) %>
+                                  </td>
+                                  <td style="width:8%">
+                                    <%= part_hash[:uom] %>
+                                  </td>
+                                  <td style="width:10%"><%=  part_hash[:req_qty] %></td>
+                                  <td><%= part_hash[:bin_loc] rescue "-" %></td>
+                                  <% part_index = part_index + 1 %>
+                                  <td>&nbsp;</td>
+                                </tr>
+                            <% end %>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="8">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </div>
+              <% end %>
+            </div>
+            <br>
+            <br>
+        <% end %>
+    <% else %>
+        <% combine_group_length = @combine_parts_arr.size/15 %>
+        <% @combine_parts_arr.each_slice(15).each_with_index do |group_combine,group_index| %>
+            <% last_group = combine_group_length == group_index ? true : false %>
+            <div class="<%= last_group ? '' : 'print_new_page'%>">
+              <table style="width:100%" class="tbl_pick_ticket_main">
+                <tr>
+                  <td colspan="8">
+                    <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+                      <tr>
+                        <td>Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%m/%d/%Y") %></td>
+                        <td>Work Order Number: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= @combine_parts_arr.group_by { |kit| kit[:work_order] }.keys.join(',') rescue "" %></td>
+                      </tr>
+                      <tr>
+                        <td>Time: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%I:%M%p")  %> </td>
+                        <td>Location: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PICKING QUEUE</td>
+                      </tr>
+                      <tr>
+                        <td>Part Bin Center: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= @pick_ticket_print_details["binCenter"] %> </td>
+                        <td></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+                    <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+                      <tr>
+                        <td>Sleeve/Bag</td>
+                        <td>Parts To be Picked</td>
+                        <td>Kit Number</td>
+                        <td>Part Barcode</td>
+                        <td>UOM</td>
+                        <td>Req. Qty</td>
+                        <td>Bin Loc</td>
+                        <td>Picked</td>
+                      </tr>
+                      <% group_combine.each_with_index do |part_hash,index| %>
+                          <tr>
+                            <td style="width:5%"><%= part_hash[:cup_number] %></td>
+                            <td><%= part_hash[:part_number] %></td>
+                            <td><%= part_hash[:kit_no] %></td>
+                            <td>
+                              <% generate_barcode(part_hash[:part_number]) %>
+                              <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+part_hash[:part_number].split('').map(&:ord).join("") +'.png' ) %>
+                            </td>
+                            <td style="width:4%">
+                              <%= part_hash[:uom] %>
+                            </td>
+                            <td style="width:4%"><%= part_hash[:req_qty] %></td>
+                            <td><%= part_hash[:bin_loc] rescue "-" %></td>
+                            <td>&nbsp;</td>
+                          </tr>
+                      <% end %>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+        <% end %>
+    <% end %>
+<% end %>
+</body>
+</html>

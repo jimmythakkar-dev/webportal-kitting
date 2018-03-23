@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<%= render 'layouts/application_head' %>
+<style type="text/css">
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+    }
+    .col-sm-12.header{
+        padding: 10px 0px;
+    }
+    .overview_body_text
+    {
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        line-height: 20px;
+        font-weight: normal;
+        color: #ffffff;
+        margin-top: 170px;
+    }
+    input[type="text"],input[type="password"]{
+        padding: 1px;
+        width: 180px;
+    }
+    table{
+        margin-left: 5px;
+    }
+    span{
+        margin-left: 10px;
+    }
+</style>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" style="background-color: #333333;">
+      <%= render "layouts/menu" %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 header">
+      <div class="col-sm-2 text-center">
+        <%=  image_tag "KLX_logo.jpg",class: "img-responsive" %>
+      </div>
+      <div class="col-sm-10">
+        <%= render "layouts/sub_menu" %>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid" style="background-image: url('assets/Landing_Page.jpg');">
+    <div class="row">
+      <div class="col-sm-12">
+        <br><br>
+        <span><strong>KLX Customer Portal Log In</strong></span>
+        <%= form_tag  user_sessions_path, :autocomplete => "off", class: "form-horizontal box" do %>
+            <table>
+              <tbody>
+              <tr>
+                <td></td>
+              </tr>
+              <tr>
+                <td align="right" ><span >Username</span>:</td>
+                <td align="right" >
+                  <%= text_field_tag :username, params[:username], :required => true %>
+                </td>
+              </tr>
+              <tr>
+                <td align="right"><span>Password</span>:</td>
+                <td align="right">
+                  <%= password_field_tag :password, nil, :required => true %>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <%=  submit_tag "Login" , class: 'btn' %>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <br>
+        <span>
+        Don't have an online account?
+        <span style="color: #006699">
+          <%= link_to 'Click here to apply.',"http://klxaerospace.com/management/resources/accountrequest/accountRequest.cfm",target: '_blank', class: 'subnav' %>
+        </span> </span>
+
+            <br><br>
+        <% end %>
+      </div>
+    </div>
+    <div class="row overview_body_text">
+      <div class="col-sm-12">
+        <p class="">
+          As the world's leading distributor of aerospace fasteners and consumables for
+          the commercial, business jet, and military markets, KLX Aerospace stocks more
+          than 400,000 part numbers and has over 50 locations worldwide. With industry
+          leading capabilities and enhanced logistics, KLX has the size and scope customers
+          demand with small company attention to detail.</p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <span class="col-sm-12" style="background-color: #ffffff;">&nbsp;</span>
+  </div>
+</div>
+<%= render 'layouts/application_footer' %>
+</body>
+</html>

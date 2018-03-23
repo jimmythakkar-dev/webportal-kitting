@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<%= render 'layouts/application_head' %>
+<body>
+<!--[if lt IE 9]>
+<script src="/ie/html5shiv.js"></script>
+<script src="/ie/respond.js"></script>
+<![endif]-->
+<%= yield %>
+<%= javascript_include_tag "application" %>
+</body>
+</html>

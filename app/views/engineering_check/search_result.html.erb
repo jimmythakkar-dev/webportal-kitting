@@ -1,0 +1,181 @@
+<%= render 'search' %>
+<%if @partNums_response["errMsg"] == ""  || @partNums_response["errMsg"].include?("Excluded part no.") || @partNums_response['errMsg'].include?("Not a 4PL part")%>
+    <% unless @partNums_response["errMsg"].blank? %>
+        <div class="text-danger"><%= flash[:alert] %></div>
+    <% end %>
+    <div class="text-danger"><%= flash[:notice]  %></div>
+    <!-------------------------- END OF TEST ERROR MESSAGE AND CONTINUE IF "OK" ------------------------>
+    <% unless @binParts_response["errMsg"].blank? %>
+        <% if session["user_level"] > "2" %>
+            <% if @binParts_response["errMsg"].include? ("LTC Error") %>
+                <div class="text-danger">
+                  <%= "Part not on Long Term Contract (LTC). Please contact your KLX representative." %>
+                </div>
+            <% elsif @binParts_response["errMsg"].include? ("PL Error") %>
+                <div class="text-danger">
+                  <%= "Part not on Customer Contract.  Please contact your KLX representative." %>
+                </div>
+            <% else %>
+                <% temp_msg =  @binParts_response["errMsg"].gsub("|","")%>
+                <% temp_msg = @binParts_response["errMsg"].gsub("order", (link_to 'Order',panstock_requests_path(:tpn => @part_no.upcase,:ac => "Expedite"))).html_safe %>
+                <div class="text-danger"><%= temp_msg %></div>
+            <% end %>
+        <% end %>
+    <% end %>
+    <!-------------------------- Display Part Information ------------------------>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4"><%= t("part_num_entered", scope:"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8 body_text_subhead"> <%= @part_no.upcase %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t("Description", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-8"><%= @partNums_response["partName"] %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t("cust_ref_entered", scope:"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8"><%= @whse_cust_part_no.upcase %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t("contract_part_num", scope:"bin_line_station.search_part_number") %></div>
+          <div class="col-sm-8"><%= @my_inv_pn.try(:upcase) %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t("Updated_Date", scope:"floor_views._floor_view_search")  %></div>
+          <div class="col-sm-8"><%= label_tag @binParts_response["updatedDt"] %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4"><%= t("Updated_By", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-8"><%= label_tag @binParts_response["updatedBy"] %></div>
+        </div>
+        <%= image_seperator %>
+        <%= render 'get_lead_times' %>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-4"><%= t("Ship-To_Address", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-8"><%= @binParts_response["shipTo"].html_safe %></div>
+        </div>
+      </div>
+    </div>
+    <%= image_seperator %>
+    <% @my_whse_total = 0 %>
+    <%= render 'whse_on_hand'  %>
+    <% if SUPERSEDENCE_SEARCH_USER_ARR.include? current_user%>
+        <%= render 'supersedence_search' %>
+    <% end %>
+    <% if @shipped_orders_history_response %>
+        <% @my_order_array=[] %>
+        <% @my_ship_array=[] %>
+        <% if !@shipped_orders_history_response["errMsg"].blank? &&
+                (@shipped_orders_history_response["errMsg"].include? ("shipped")) &&
+                (@shipped_orders_history_response["errMsg"].include? ("open")) %>
+            <%= render 'plot_date' %>
+        <% else %>
+            <%= render 'plot_date' %>
+            <% order_array_avg = (@my_order_array.sum.to_f / @my_order_array.size.to_f) %>
+            <% ship_array_avg  = (@my_ship_array.sum.to_f / @my_ship_array.size.to_f) %>
+            <% number_with_precision order_array_avg, :precision => 2 %>
+            <% number_with_precision ship_array_avg, :precision => 2 %>
+            <% avg_shipments   =  (((ship_array_avg) * 36) / 13) %>
+            <% if @my_whse_total > 0 && (ship_array_avg > 0 || order_array_avg > 0)%>
+                <%= t("average_shipments_month", scope:"engineering_check.search_result") %> =
+                <strong><%= number_with_precision avg_shipments, :precision => 2 %></strong><br />
+                <% if ship_array_avg > 0 %>
+                    <% based_upon_shipments = (@my_whse_total/avg_shipments) %>
+                    <%= t("empty_based_upon_shipments", scope:"engineering_check.search_result") %> =
+                    <strong>
+                      <%= number_with_precision based_upon_shipments, :precision => 2 %>
+                    </strong> <%= t("months", scope:"open_orders.index") %> <br>
+                <% end %>
+            <% end %>
+        <% end %>
+        <% unless @shipped_orders_history_response["errMsg"].blank? %>
+            <div class="text-danger"><%= @shipped_orders_history_response["errMsg"].gsub('ý','<br/>').html_safe%></div>
+        <% end %>
+        <% if @cust_forecast_response["errMsg"].size > 0 &&
+                (CUST_FORECAST_USER_ARR.include? current_user) %>
+            <div class="text-danger"><%= @cust_forecast_response["errMsg"]%></div>   <br />
+        <% else %>
+            <% if @cust_forecast_response["ForecastNote"] && @cust_forecast_response["ForecastNote"].size > 0 &&
+                    (CUST_FORECAST_USER_ARR.include? current_user) %>
+                <%= t("forecast_note", scope:"engineering_check.search_result") %> <strong><%= @cust_forecast_response["ForecastNote"] %></strong>
+            <% end %>
+        <% end %>
+    <% end %>
+    <!------------------------  DISPLAY FLOOR VIEW SEARCH - BIN MAP FOR PART NUMBER ----------------->
+    <% if @binParts_response["errMsg"].blank? %>
+        <div class="table_title"><strong>
+          <%= t("bin_map_for_part_no", scope:"bin_line_station.search_part_number") %>
+          <% if @binParts_response["ref"].join(",").split(",").include? @whse_cust_part_no %>
+              <%= @whse_cust_part_no %>
+          <% else %>
+              <%= t("no_pn_found", scope:"engineering_check.search_result") %>
+          <% end %>
+        </strong></div>
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead>
+            <th><%= t("LOCATION", scope:"floor_views.index") %></th>
+            <th><%= t("Scan_Code", scope:"floor_views.index") %></th>
+            <th><%= "Bin" %></th>
+            <th><%= t("BIN_QTY", scope:"floor_views.index") %></th>
+            <th><%= t("PACK_QTY", scope:"floor_views.index") %></th>
+            <th><%= t("UM", scope:"floor_views.index") %></th>
+            <th><%= t("ORDER_DATE", scope:"floor_views.index") %></th>
+            <th><%= t("ORDER_QTY", scope:"floor_views.index") %></th>
+            </thead>
+            <% whs_id_arr     = EngineeringCheck.get_convert_to_array(@binParts_response["whsid"]) %>
+            <% ref_arr        = EngineeringCheck.get_convert_to_array(@binParts_response["ref"]) %>
+            <% whs_desc_arr   = EngineeringCheck.get_convert_to_array(@binParts_response["whsdesc"]) %>
+            <% scan_code_arr  = EngineeringCheck.get_convert_to_array(@binParts_response["scancode"]) %>
+            <% bin_arr        = EngineeringCheck.get_convert_to_array(@binParts_response["bin"]) %>
+            <% amc_qty_arr    = EngineeringCheck.get_convert_to_array(@binParts_response["amcQty"]) %>
+            <% pack_qty_arr   = EngineeringCheck.get_convert_to_array(@binParts_response["packQty"]) %>
+            <% um_arr         = EngineeringCheck.get_convert_to_array(@binParts_response["um"]) %>
+            <% order_date     = BinLineStation.set_order_date @binParts_response %>
+            <% order_quantity = BinLineStation.set_order_quantity @binParts_response %>
+            <% whs_id_arr.each_index do |index| %>
+                <% ref_whse_id = ref_arr[index]%>
+                <% if ref_whse_id == @whse_cust_part_no %>
+                    <% ref_whse_id.gsub('&nbsp','0') %>
+                    <tr>
+                      <td><%= link_to whs_desc_arr[index],engineering_check_path(whs_desc_arr[index].split("/").last.lstrip), title: ("#{@part_no.upcase} - #{t("click_to_all", scope:"engineering_check.search_result")} #{whs_desc_arr[index].split("/").last.lstrip}").html_safe %></td>
+                      <td><%= scan_code_arr[index].gsub('&nbsp','0') %></td>
+                      <td><%= link_to bin_arr[index].gsub('&nbsp;','0'), print_label_engineering_check_index_path(:location => whs_desc_arr[index], :scan_code => scan_code_arr[index].gsub('&nbsp;','0'), :bin => bin_arr[index].gsub('&nbsp','0'),:part_number=> @part_no.upcase), :target => '_blank' %></td>
+                      <td><%= amc_qty_arr[index].gsub('&nbsp','0') %></td>
+                      <td><%= pack_qty_arr[index].gsub('&nbsp;','-') %></td>
+                      <td><%= um_arr[index].gsub('&nbsp','0') %></td>
+                      <td><%= order_date[index] %></td>
+                      <td><%= order_quantity[index] %></td>
+                    </tr>
+                <% end %>
+            <% end %>
+            <% total_amc_qty = amc_qty_arr.inject(0){ |sum, index| sum.to_i + index.to_i }%>
+          </table>
+        </div>
+        <div class="table_title text-right"><strong><%= t("Total", scope:"floor_views.index")%>: <%= total_amc_qty.to_s %></strong></div>
+    <% else %>
+        <% if session[:user_level] > "2" %>
+            <div class="text-danger">
+              <% if @binParts_response["errMsg"].match("not on bin map") %>
+                  <%= @binParts_response["errMsg"] =  "#{params["txtPartNo"]} not on bin map; Please use panstock to order." %>
+              <% else %>
+                  <%= @binParts_response["errMsg"].gsub("|","") %>
+              <% end %>
+            </div>
+        <% else %>
+            <div class="text-danger"><%= @binParts_response["errMsg"] %></div>
+        <% end %>
+    <% end %>
+    <% if session[:user_type] == "E" %>
+        <!-- here we neet to include WhsOnHandTable page with customer_number, partNo paramete -->
+        <!-- CF_WhsOnHandTable customer_number=#customer_number# PartNo=#PartNo# -->
+        <!--BUT There should not be any file like WhsOnHandTable-->
+    <% end %>
+<%else%>
+    <div class="text-danger"><%= @partNums_response["errMsg"]%></div>
+    <% if SUPERSEDENCE_SEARCH_USER_ARR.include? current_user%>
+        <%= render 'supersedence_search' %>
+    <% end %>
+<%end%>

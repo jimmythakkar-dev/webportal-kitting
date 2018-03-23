@@ -1,0 +1,49 @@
+<h2 class="body_header">Update Due Date</h2>
+<%= image_seperator %>
+  <%= form_tag(update_due_date_kit_work_order_path, :method => 'get',name: 'due_date_update_form',:class => "form-inline") do %>
+      <%= hidden_field_tag 'k_wo_id', @kit_work_order.id %>
+      <div class="form-group">
+        <%= label_tag 'Kit No', nil %>
+        <%= text_field_tag 'k_kit_no', @kit_work_order.kit.customer_kit_part_number, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= label_tag 'W/O No', nil %>
+        <%= text_field_tag 'k_wo_no', @kit_work_order.work_order.order_number, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= label_tag 'Due Date', nil %>
+        <div id="datepicker" class="input-group">
+          <% due_date_val =   @kit_work_order.due_date.strftime("%m/%d/%Y") rescue ""%>
+          <%= text_field_tag "wo_due_date", due_date_val, {class: 'datepicker form-control'}  %>
+          <label for="wo_due_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class="row">
+        <div class="col-sm-6 text-right">
+          <%= submit_tag 'Update', :class => "btn btn-primary due_date_edit" %>
+        </div>
+      </div>
+  <% end %>
+<%= image_seperator %>
+<p><%= "List of kits having work order number " +@kit_work_order.work_order.order_number  %></p>
+<div class="table-responsive work_order_list">
+  <table class="table tablesorter">
+    <thead>
+    <th>Kit Number </th>
+    <th>W/O Number</th>
+    <th>Queue </th>
+    <th>Due Date</th>
+    </thead>
+    <% @all_work_order.each_with_index do |kwo_no,index| %>
+        <tr>
+          <td title=<%= kwo_no.kit.kit_media_type.name %>><%= kwo_no.kit.customer_kit_part_number%></td>
+          <td><%= kwo_no.work_order.order_number %></td>
+          <td><span class="text-muted"><%= kwo_no.location.name %></span></td>
+          <td><span class="text-muted"><%= link_to kwo_no.due_date.strftime("%m/%d/%Y") , edit_kit_work_order_path(kwo_no)  rescue ""%></span></td>
+        </tr>
+    <% end %>
+  </table>
+</div>
+<%= image_seperator %>

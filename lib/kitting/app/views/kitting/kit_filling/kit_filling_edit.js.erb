@@ -1,0 +1,6 @@
+<% if @kit_filling.present? and @status %>
+<% filled_quantity = params[:filled_qty] || params[:filled_quantity][:qty] %>
+<% else %>
+alert("This Filling is Already being Send to Stock/Shipped !!!");
+window.location = <%= kit_copies_path %>
+<% end %>

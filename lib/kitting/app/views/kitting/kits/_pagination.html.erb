@@ -1,0 +1,25 @@
+<div class="pager">
+  <% if @total_records >= 1 %>
+      <% if (params[:page].to_i > 1) %>
+          <% @prev_page = params[:page].to_i - 1 %>
+          <%= link_to  image_tag("prev.png",:alt => "previous",title: "Previous"),kits_path(page: @prev_page, params: params), class: "prev" %>
+      <% else %>
+          <%= image_tag("prev.png",alt: "previous",title: "Previous", class: "disabled") %>
+      <% end %>
+
+      <% (1..@total_page).each do |i| %>
+          <% if i != params[:page].to_i %>
+              <%= link_to "#{i}",  kits_path(page: i ,params: params),class: "page"%>
+          <% else %>
+              <span class="current"><%= i %></span>
+          <% end %>
+      <%end%>
+
+      <% if (params[:page].to_i < @total_page) %>
+          <% @next_page = params[:page].to_i + 1 %>
+          <%= link_to image_tag("next.png",alt: "next",title: "Next"),kits_path(page: @next_page, params: params), class: "next"%>
+      <% else %>
+          <%= image_tag("next.png",:alt => "next",title: "Next", class: "disabled") %>
+      <% end %>
+  <% end %>
+</div>

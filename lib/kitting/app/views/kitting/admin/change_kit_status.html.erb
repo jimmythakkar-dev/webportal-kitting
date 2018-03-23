@@ -1,0 +1,107 @@
+<h2 class="body_header">Activate/Deactivate Kit<%= 'copy' if params[:kit_id].present? %>  </h2>
+<%= image_seperator %>
+<p>Check the Kit<%= 'copy' if params[:kit_id].present? %>/Kit<%= 'copie' if params[:kit_id].present? %>s and click update to Deactivate it.</p>
+<%= image_seperator %>
+<%= render 'layouts/message_display' %>
+<% unless params[:kit_id] %>
+    <%= form_tag admin_change_kit_status_path, :method=>"get", class: 'form-inline' do  %>
+        <div class="form-group">
+          <%= label_tag :kit_number, 'Kit Number:', class: "col-sm-5 control-label" %>
+          <div class="col-sm-4">
+            <%= text_field_tag :kit_number, params[:kit_number],:class=> "form-control" ,:required => true%>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-9">
+            <%= submit_tag "Search",class: "btn btn-primary" %>
+          </div>
+        </div>
+    <% end %>
+    <%= image_seperator %>
+<% end %>
+<% if params[:kit_number].present? && params[:kit_id].blank? %>
+    <% if @kit_change_status.blank? %>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="alert alert-danger"><%= "Kit number not found."%></div>
+          </div>
+        </div>
+    <% else %>
+        <p><%= page_entries_info @kit_change_status %></p>
+        <%= form_tag admin_submit_kit_status_path do  %>
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead>
+                <th style="width: 10px" class="filter-false">Deactivate</th>
+                <th style="width: 20%">Kit Number </th>
+                <th style="width: 10px">Changed By</th>
+                <th style="width: 60px">Updated At</th>
+                <th style="width: 150px">Reason</th>
+                </thead>
+                <% @kit_change_status.each_with_index do |kit,index| %>
+                    <tr >
+                      <td><%= check_box_tag 'kit[]', kit.id,(kit.status == 6) ? true : false, {:class => "checked_kit_ids"}   %></td>
+                      <td><%= kit.status == 6 ? (kit.kit_number) : (link_to kit.kit_number,admin_change_kit_status_path(kit_id: kit.id, kit_search: params[:kit_number])) %></td>
+                      <td><%= kit.kit_status_details.last.updated_by rescue "" %></td>
+                      <td><%= kit.kit_status_details.last.updated_at.strftime('%m-%d-%Y') rescue ""%></td>
+                      <td><%= kit.kit_status_details.last.reason rescue ""%></td>
+                    </tr>
+                <% end %>
+              </table>
+            </div>
+            <%= will_paginate @kit_change_status %>
+            <p><%= 'Reason(optional)'%></p>
+            <div class="row">
+              <div class="col-sm-12">
+                <%= text_area_tag :reason, nil, :rows => 3,:class => "form-control"  %>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-sm-12">
+                <%= submit_tag 'Update Kit Status', class: 'btn btn-primary', id: 'submit_kit_status' %>
+              </div>
+            </div>
+        <% end %>
+    <% end %>
+    <hr>
+<% elsif params[:kit_id].present? %>
+    <% if @kit_copies.blank? %>
+        <div class="row">
+          <div class="alert alert-danger"><%= "No Copies to Deactivate for this Kit."%></div>
+        </div>
+    <% else %>
+        <%= form_tag admin_submit_kit_status_path do  %>
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead>
+                <th style="width: 10px" class="filter-false">Deactivate</th>
+                <th style="width: 20%">Kit Copy Number </th>
+                <th style="width: 10px">Changed By</th>
+                <th style="width: 60px">Updated At</th>
+                <th style="width: 150px">Reason</th>
+                </thead>
+                <% @kit_copies.each_with_index do |kit_copy,index| %>
+                    <tr >
+                      <td><%= check_box_tag 'kit_copy[]', kit_copy.id,(kit_copy.status == 6) ? true : false, {:class => "checked_kit_copy_ids"}   %></td>
+                      <td><%= kit_copy.kit_version_number%></td>
+                      <td><%= kit_copy.kit_status_details.last.updated_by rescue "" %></td>
+                      <td><%= kit_copy.kit_status_details.last.updated_at.strftime('%m-%d-%Y') rescue ""%></td>
+                      <td><%= kit_copy.kit_status_details.last.reason rescue ""%></td>
+                    </tr>
+                <% end %>
+              </table>
+            </div>
+            <div class="row">
+              <div class="col-sm-12"><label><%= 'Reason(optional)'%></label></div>
+              <div class="col-sm-12">
+                <%= text_area_tag :reason, nil, :rows => 4,class: "form-control" %>
+              </div>
+            </div>
+            <br>
+            <%= submit_tag 'Update Copy Status', class: 'btn btn-primary', id: 'submit_kit_copy_status' %>
+            <%= link_to 'Back',  admin_change_kit_status_path(:kit_number => params[:kit_search]), class: 'btn btn-default' %>
+        <% end %>
+    <% end %>
+    <hr>
+<% end %>

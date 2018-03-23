@@ -1,0 +1,45 @@
+<h2 class="body_header"><%= t('agusta.inquiry').upcase %></h2>
+<span class="err_msg"><%= render :partial => "layouts/message_display" %></span>
+<%= image_seperator %>
+<div>
+  <%= form_tag inquiry_search_agusta_path, :method => 'get', :id => "inquiry_search_form", :class => "form-horizontal" do %>
+      <fieldset>
+        <div class="row">
+          <div class="col-sm-4 col-xs-12">
+            <label class="control-label"><%= I18n.t("search_by",:scope => "agusta.agusta_inquiry")%></label>
+            <%= select_tag :search_by_select_value, options_for_select(@search_code, :selected => params[:search_by_select_value] ), class: "form-control" %>
+          </div>
+          <div class="col-sm-4 col-xs-12" id ="agusta_search_value" >
+            <label class="control-label"><%= I18n.t("search_by_value",:scope => "agusta.agusta_inquiry")%></label>
+            <%= text_field_tag :search_val, h(params[:search_val]), :class => "form-control" %>
+          </div>
+          <div class="col-sm-4 col-xs-12">
+            <label class="control-label"><%= I18n.t("date_range",:scope => "agusta.agusta_inquiry")%></label>
+            <%= select_tag :date_range, options_for_select(@date_range, :selected => params[:date_range].present? ? params[:date_range] :  "2" ), class: "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4 col-xs-12">
+            <label class="control-label"><%= I18n.t("created_by",:scope => "agusta.agusta_inquiry")%></label>
+            <%= select_tag :user_name, options_for_select(@order_uname, :selected => params[:user_name]), class: "form-control" %>
+          </div>
+          <div class="col-sm-4 col-xs-12">
+            <label class="control-label"><%= I18n.t("status",:scope => "agusta.agusta_inquiry")%></label>
+            <%= select_tag :order_status, options_for_select(@order_status, :selected => params[:order_status]), class: "form-control" %>
+          </div>
+          <div class="col-sm-4 col-xs-12">
+            <label class="control-label"><%= I18n.t("select_source",:scope => "agusta.agusta_inquiry")%></label>
+            <%= select_tag :order_source, options_for_select(@order_source,  :selected => params[:order_source] ), class: "form-control" %>
+          </div>
+        </div>
+        <br/>
+        <div class="row">
+          <div class="pull-right">
+            <button type="submit" class="btn btn-primary" id="agusta_submit_search" ><%= I18n.t("search",:scope => "agusta.agusta_inquiry")%></button>
+            <button id="agusta_search_record" class="btn btn-primary" style="display:none;" disabled="disabled"><%= I18n.t("searching_records",:scope => "agusta.agusta_inquiry")%></button>
+          </div>
+        </div>
+      </fieldset>
+  <% end %>
+</div>
+<%= image_seperator %>

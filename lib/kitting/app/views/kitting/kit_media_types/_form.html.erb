@@ -1,0 +1,90 @@
+<h2 class="body_header">Kit Media Type Setup</h2>
+<%= image_seperator %>
+<div class="text-right">
+  <%= link_to 'Kit Media Type List', kit_media_types_path %>
+</div>
+<%= form_for @kit_media_type, :html => { :class => "form-inline"} do |f| %>
+    <% if @kit_media_type.errors.any? %>
+        <div id="error_explanation">
+          <ul>
+            <% @kit_media_type.errors.full_messages.each do |msg| %>
+                <li class="alert_msg"><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+    <div class="clear"></div>
+    <!--<div class="col-sm-12">-->
+    <div class="col-sm-2">
+      <%= f.label :kit_type, :class => "control-label" %>
+    </div>
+    <div class="col-sm-10">
+      <%= f.radio_button :kit_type, "configurable", class: 'kit_media_type' %>
+      <%= f.label :kit_type, "Configurable", :value => "configurable", class: 'checkbox inline' %>
+      <%= f.radio_button :kit_type, "non-configurable", class: 'kit_media_type' ,:checked => true %>
+      <%= f.label :kit_type, "Non-Configurable", :value => "non-configurable", class: 'checkbox inline'%>
+      <% if can?(:>=,"6") %>
+          <%= f.radio_button :kit_type, "multi-media-type", class: 'kit_media_type' %>
+          <%= f.label :kit_type, "Multiple Media Type", :value => "multi-media-type", class: 'checkbox inline'%>
+      <% end %>
+      <%= f.radio_button :kit_type, "binder", class: 'kit_media_type' %>
+      <%= f.label :kit_type, "Binder", :value => "binder", class: 'checkbox inline'%>
+    </div>
+    <!--</div>-->
+    <div class="clear"></div>
+    <div class="col-sm-12">
+      <div class="control-group configurable_kmt">
+        <%= f.label :kit_media_type, :class => "control-label" ,:id => "kmt_name" %>
+        <div class="controls">
+          <%= select_tag "configurable_kmt", options_from_collection_for_select(@conf_kit_media_types, "id", "name"), prompt: "Select KMT",:class=>"form-control" %>
+        </div>
+      </div>
+      <div class="control-group kmt_name">
+        <%= f.label :name, :class => "control-label" ,:id => "kmt_name" %>
+        <div class="controls">
+          <%= f.text_field :name, required: true,:class=>"form-control" %>
+        </div>
+      </div>
+      <div class="control-group compartment_label">
+        <%= f.label :compartment, 'Number of Compartments', :class => "control-label",id: "compartment_label" %>
+        <div class="controls">
+          <%= f.text_field :compartment, required: true,:class => "form-control" %>
+        </div>
+      </div>
+      <div class="control-group kmt_desc_label">
+        <%= f.label :description, :class => "control-label",:id => "kmt_desc_label" %>
+        <div class="controls inline">
+          <%= f.text_area :description, :rows => 2, :class=> "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12">
+      <div class='kit_media_type_rows'>
+        <div class="control-group">
+          <label class="control-label">Enter Number of compartments in Row</label>
+          <div class="clear"></div>
+          <label class="control-label">Number of cups in Row1</label>
+          <div class="controls inline">
+            <input type='text' name='kit_media_type[compartment_layout][1]' class='compartment-layout form-control'/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 kit_media_type_add_row">
+      <% if session[:user_level] %>
+          <% if session[:user_level] > "3" %>
+              <%= link_to "Add Row", '#', class: 'kit-media-type-add-row btn btn-success' %>
+          <%end%>
+      <%end%>
+    </div>
+    <div class="clear"></div>
+    <div class="text-right">
+      <% if session[:user_level] %>
+          <% if session[:user_level] > "3" %>
+              <%= f.submit 'Submit', :class => "btn btn-primary media_type"%>
+          <%end%>
+      <%end%>
+      <%= link_to 'Cancel', kit_media_types_path, class: 'btn btn-default'  %>
+    </div>
+<% end %>
+<%= image_seperator %>

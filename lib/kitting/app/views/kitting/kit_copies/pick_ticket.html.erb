@@ -1,0 +1,76 @@
+<h2 class="body_header">Kit Fill Queue Pick-Ticket Print</h2>
+<%= image_seperator %>
+
+    <div class="row">
+      <label class="col-sm-2">Kit Number:</label>
+      <div class="col-sm-4">
+        <%= text_field_tag :kit_number, @kit_copies.kit_version_number, disabled: "true", class: "form-control" %>
+      </div>
+    </div>
+<br>
+    <div class="row">
+      <label class="col-sm-2">Kit-Media Type:</label>
+      <div class="col-sm-4">
+        <%= text_field_tag :kit_media_type, @kit_copies.kit.kit_media_type.name, disabled: "true", class: "form-control" %>
+      </div>
+    </div>
+<br>
+    <div class="row">
+      <label class="col-sm-2">Part Bin Center:</label>
+      <div class="col-sm-4">
+        <%= text_field_tag :bincenter, @kit_copies.kit.try(:part_bincenter), disabled: "true", class: "form-control" %>
+      </div>
+    </div>
+
+<% unless @alert.blank? %>
+    <div style="visibility: visible; margin-bottom: 0px;" class="alert alert-danger"><%= @alert %><div style="text-align: right;"><%= link_to 'Show Change Data', '#' , :id => 'show_change' %></div></div>
+<% end %>
+
+<%= image_seperator %>
+<% if @cup_parts_found > 0 %>
+    <% if @mmt_kit_copies %>
+        <p class="text-primary"><strong class="text-info"> Kit Media Types</strong> </p>
+
+        <div class="row">
+        <div class="col-md-12">
+          <div class="panel mmty-panel">
+            <div class="panel-heading mmty-heading">
+              <ul class="nav mmty-nav-tab nav-tabs">
+                <% box_number = "" %>
+                <% @mmt_kit_copies.each_with_index do |mmt_kit, index| %>
+                    <li class="<%= @child_kit.first.id == mmt_kit.id  ? 'active' : '' %>">
+                      <%= link_to mmt_kit.kit_media_type.name, pick_ticket_kit_copy_path(mmt_child_kit_id: mmt_kit.id) %>
+                      <% if @child_kit.first.id == mmt_kit.id %>
+                          <% box_number = index +1  %>
+                      <% end %>
+                    </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="row search-panel">
+          <div class="col-sm-6" style=" padding: 10px 25px; color: #ffffff">Box <span><%= box_number %></span> of <%= @mmt_kit_copies.size %></div>
+        </div>
+        <% @child_kit = @child_kit.first %>
+        <%= render :partial => "mmt_kit" %>
+    <% else %>
+        <%= render :partial => "non_mmt_kit" %>
+    <% end %>
+    <%= render :partial => "kit_part_bin_center_select" %>
+    <%= render 'change_data_modal'%>
+<% else %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="alert-danger">
+            <%= "There are no cup parts for #{@kit_copies.kit_version_number}." %>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>
+
+<%= image_seperator %>
+<%= render 'layouts/kitting/kit_config_layout' %>

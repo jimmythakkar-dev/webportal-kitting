@@ -1,0 +1,10 @@
+PART NUMBER,LARGE CUP COUNT,MEDIUM CUP COUNT,SMALL CUP COUNT
+A,30,20,10
+B,82,74,14
+
+# Instructions
+# Part_number/large_cup_count/medium_cup_count & small_cup_count can not have empty values .
+# Part Number is case sensitive .
+# Cup count should be numeric and cannot be decimal value.
+# Large Cup count > Medium Cup Count > Small Cup Count.
+# To write a Comment Use (#).

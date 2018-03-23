@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col-sm-12">
+    <% if @kitting_response%>
+        <% if @kitting_response["errCode"] == "0" %>
+            <%= form_tag(detail_design_cardex_kits_path,method: 'get', :class => "form-horizontal") do %>
+                <div class="form-group">
+                  <%= label_tag 'Search Kit', nil, :class => "control-label col-sm-3" %>
+                  <div class="col-sm-4">
+                    <%= text_field_tag :kit_number, params[:kit_number].try(:strip).try(:upcase) || params[:id].try(:strip).try(:upcase), class: 'kit_number_search_box form-control',:required => true, readonly: true  %>
+                  </div>
+                </div>
+                <% if @cardex_kit %>
+                    <% if @cardex_kit.is_mmt? %>
+                        <p>Kit <strong> <%= @cardex_kit.kit_number %></strong> is already designed before, <%= link_to 'click here',@cardex_kit.sub_kits.empty? ? detail_design_cardex_kits_path(kit_number: @cardex_kit.kit_number,kit_media_type: @cardex_kit.kit_media_type.id ) : detail_design_cardex_kits_path(mmt_id: @cardex_kit.id,kit_media_type: @cardex_kit.sub_kits.sort.first.kit_media_type.id, sub_kit: @cardex_kit.sub_kits.sort.first.id) %> to see </p>
+                    <% else %>
+                        <p>Kit <strong> <%= @cardex_kit.kit_number %></strong> is already designed before, <%= link_to 'click here',detail_design_cardex_kits_path(kit_number: @cardex_kit.kit_number, kit_media_type: @cardex_kit.kit_media_type.id) %> to see </p>
+                    <% end %>
+                <% else %>
+                    <div class="form-group">
+                      <%= label_tag 'Media Type', nil, :class => "control-label col-sm-3" %>
+                      <div class="col-sm-4">
+                        <%= select_tag :kit_media_type, options_from_collection_for_select(@kit_media_types.reject { |kmt| kmt.name == "Small Configurable TB" || kmt.kit_type == "binder"}, 'id','name',params[:media_type_search]),{:prompt => "Select a Media Type",:required => true, class: "form-control"} %>
+                      </div>
+                      <%= submit_tag 'Start Design >', :class => "btn btn-primary", id: "searchCardexKit" %>
+                    </div>
+                <% end %>
+
+            <% end%>
+        <% else %>
+            <%= render 'search' %>
+            <p class="text-danger text-center"> Sorry, <strong><%= @kitting_response["kitPartNo"] %></strong> was not found.</p>
+        <% end  %>
+    <% end  %>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <% unless @cardex_kit %>
+        <%= render 'layouts/message_display' %>
+    <% end %>
+  </div>
+</div>

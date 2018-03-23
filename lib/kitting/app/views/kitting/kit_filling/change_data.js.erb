@@ -1,0 +1,10 @@
+<% if @change_data.first["errCode"].present? %>
+$.msgBox({
+    title:"KIT CHANGE DATA",
+    content: "<%= @change_data.first["errMsg"] %>",
+    type: "info"
+});
+<% else%>
+$("#change-data-modal").modal('show');
+$(".modal-change-data-body").html("<%= escape_javascript(render "change_data", :local => {:change_data => @change_data})%>");
+<% end %>

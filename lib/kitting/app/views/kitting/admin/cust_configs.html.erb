@@ -1,0 +1,118 @@
+<h2 class="body_header">Customer Configurations</h2>
+<%= image_seperator %>
+<%if flash[:notice]%>
+    <div class="alert alert-success">
+      <%= flash[:notice]%>
+    </div>
+<%end%>
+
+<%if session[:acct_switch].length > 1 && session[:acct_switch].first!= "" && session[:acct_switch].first!= " " %>
+    <%= form_tag admin_allow_customer_specific_changes_path do %>
+        <table class="table tablesorter admin-table">
+          <thead>
+          <th>Customer Name</th>
+          <th class="filter-false kitting_type"> Kitting Type</th>
+          <th class="filter-false noncontract_part"> Non-Contract Parts</th>
+          <th class="filter-false multiple_parts"> Multiple Parts</th>
+          <th class="filter-false prevent_kit_copy"> Prevent Kit Copy<br/>to Inventory</th>
+          <th class="filter-false default_kit_bin_center"> Default Kit Bin Center</th>
+          <th class="filter-false default_part_bin_center"> Default Part Bin Center</th>
+          <th class="filter-false default_part_bin_center"> Default Part Bin Center For Crib Parts</th>
+          <th class="filter-false invoicing_required"> Invoicing Required</th>
+          </thead>
+
+          <div class="form_element">
+            <% multiple_part = Array.new %>
+            <% ncp_record = Array.new %>
+            <% prevent_kit_copy = Array.new %>
+            <% session[:account_switcher_array].each do |value|%>
+                <% acc = value.scan(/\d+/).first %>
+                <% name = value.split(value.scan(/\d+/).first).last.gsub(/[[:space:]]/, ' ').strip %>
+                <% customer = get_customer_list(acc) %>
+                <tr>
+                  <td>
+                    <h5><%= acc %>: <small><%= name%></small></h5>
+                  </td>
+                  <td class="kitting_type">
+                    <% if customer.present? %>
+                        <%= select_tag 'kitting_type['+customer.first.cust_no+'][]', options_for_select([ "Select Type","LEAN", "AD HOC" ], customer.first.kitting_type) %>
+                    <% else %>
+                        <%= select_tag 'kitting_type['+acc+'][]',options_for_select([ "Select Type", "LEAN","AD HOC" ], { :prompt => ' Select Type' }) %>
+                    <% end %>
+                  </td>
+                  <td class="noncontract_part">
+                    <% if customer.present? %>
+                        <%= check_box_tag 'non_contract_check[]', acc, customer.first.non_contract_part == true ? true : false %>
+                    <% else %>
+                        <%= check_box_tag 'non_contract_check[]', acc, false %>
+                    <% end %>
+                  </td>
+                  <td class="multiple_parts">
+                    <% if customer.present? %>
+                        <%= check_box_tag 'multiple_part[]', acc , customer.first.multiple_part == true ? true : false %>
+                    <%else%>
+                        <%= check_box_tag 'multiple_part[]', acc, false %>
+                    <%end%>
+                  </td>
+                  <!-- PC-54: START PREVENT KIT COPY TO BAILMENT -->
+                  <td class="prevent_kit_copy">
+                    <% if customer.present? %>
+                        <%= check_box_tag 'prevent_kit_copy[]', acc , customer.first.prevent_kit_copy == true ? true : false %>
+                    <% else %>
+                        <%= check_box_tag 'prevent_kit_copy[]', acc, false %>
+                    <% end %>
+                  </td>
+                  <!-- PC-54: STOP PREVENT KITs COPY TO BAILMENT -->
+                  <!-- API:9 START CONFIGURATION FOR AD HOC KIT-->
+                  <% if Kitting::CustomerConfigurations.find_by_cust_no(acc).try(:kitting_type) == "AD HOC"  %>
+                      <%  binCenters = invoke_webservice method: 'get', class: 'custInv/',action:'binCenters',query_string: {custNo: current_user } %>
+                      <td class="default_kit_bin_center">
+                        <% if customer.present? %>
+                            <%= select_tag('default_kit_bin_center['+customer.first.cust_no+'][]', options_for_select(binCenters["binCenterList"], :selected =>customer.first.default_kit_bin_center), { :prompt => ' Select Bincenter ' }) %>
+                        <% else %>
+                            <%= select_tag('default_kit_bin_center['+acc+'][]', options_for_select(binCenters["binCenterList"]), { :prompt => ' Select Bincenter ' }) %>
+                        <% end %>
+                      </td>
+                      <td class="default_part_bin_center">
+                        <% if customer.present? %>
+                            <%= select_tag('default_part_bin_center['+customer.first.cust_no+'][]', options_for_select(binCenters["binCenterList"], :selected =>customer.first.default_part_bin_center), { :prompt => ' Select Part Bincenter ' }) %>
+                        <% else %>
+                            <%= select_tag('default_part_bin_center['+acc+'][]', options_for_select(binCenters["binCenterList"]), { :prompt => ' Select Part Bincenter ' }) %>
+                        <% end %>
+                      </td>
+                      <td class="default_crib_part_bin_center">
+                        <% if customer.present? %>
+                            <%= select_tag('default_crib_part_bin_center['+customer.first.cust_no+'][]', options_for_select(binCenters["binCenterList"], :selected =>customer.first.default_crib_part_bin_center), { :prompt => 'Select Crib Part Bincenter' }) %>
+                        <% else %>
+                            <%= select_tag('default_crib_part_bin_center['+acc+'][]', options_for_select(binCenters["binCenterList"]), { :prompt => 'Select Crib Part Bincenter' }) %>
+                        <% end %>
+                      </td>
+                      <% else%>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                  <% end %>
+                  <td class="invoicing_required">
+                    <% if customer.present? %>
+                        <%= check_box_tag 'invoicing_required[]', acc, customer.first.invoicing_required == true ? true : false %>
+                    <% else %>
+                        <%= check_box_tag 'invoicing_required[]', acc, false %>
+                    <% end %>
+                  </td>
+                  <!---API:9 STOP CONFIGURATION FOR AD HOC KIT -->
+                </tr>
+            <%end%>
+          </div>
+        </table>
+        <br/>
+        <div class="row">
+          <div class="col-sm-12 text-right">
+            <%= submit_tag 'Save', :class=>"btn btn-primary"  %>
+            <%= link_to "Back", admin_index_path, :class => 'btn btn-default' %>
+          </div>
+        </div>
+        <br/>
+    <%end%>
+<%else%>
+    <p class="alert alert-danger">This customer is not allowed to change customer specific configurations</p>
+<%end%>

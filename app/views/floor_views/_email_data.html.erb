@@ -1,0 +1,37 @@
+<h3><%= t('FLOOR_VIEW_ACTION_REQUEST',:scope => "floor_views._email_data")%></h3>
+<div class="table-responsive">
+  <table >
+    <tr>
+      <td><%= t('Submitted_On',:scope => "floor_views._email_data")%>:</td>
+      <td ><strong><%= Date.today%></strong></td>
+    </tr>
+    <tr>
+      <td><%= t('Originator',:scope => "floor_views._email_data")%>:</td>
+      <td ><strong><%= session[:user_name]%></strong></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <th><strong><%= t('ACTION_CODE',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('PART_NUMBER',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('LOCATION',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('BIN_QTY',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('PACK_QTY',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('UM',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('SCANCODE',:scope => "floor_views._email_data")%></strong></th>
+      <th><strong><%= t('reason_comments',:scope => "floor_views._email_data")%></strong></th>
+    </tr>
+    <% (0..@expedit[8].length-1).each_with_index do |i|%>
+        <tr >
+          <td><%= @expedit[7][i]%></td>
+          <td><%= @expedit[0][i]%></td>
+          <td><%= @expedit[6][i]%></td>
+          <td><%= @expedit[1][i]%></td>
+          <td><%= @expedit[2][i]%></td>
+          <td><%= @expedit[3][i]%></td>
+          <td><%= @expedit[5][i]%></td>
+          <td><%= @reasonForActionIn%></td>
+        </tr>
+    <%end%>
+  </table>
+</div>

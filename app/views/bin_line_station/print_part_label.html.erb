@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Print Label</title>
+  <%= favicon_link_tag 'favicon.ico' %>
+  <style>
+    body,div{
+      margin: 0px; padding: 0px;
+      font-family: 'Arial';
+    }
+    .partnumber{
+      text-align: center;
+      font-weight:bold;
+      font-size: 16px;
+      padding: 10px 0px;
+    }
+    .location{
+      padding-left: 20px;
+      font-size: 12px;
+      padding-bottom: 10px;
+    }
+    .bin{
+      float: left;
+      width: 50%;
+      height: 20px;
+      margin-right: 5px;
+      padding-left: 20px;
+      font-size: 12px;
+    }
+    .scancode{
+      margin-left: 50%;
+      font-size: 12px;
+    }
+
+    .trace{
+      width: 12%;
+      float: left;
+      font-size: 12px;
+      padding-left: 15px;
+    }
+    .time{
+      text-align: center;
+      padding-top: 3px;
+      font-size:8px;
+      font-weight:bold;
+    }
+    .part_barcode,.scan_barcode{
+      text-align: center;
+      padding: 1px 0px;
+    }
+    .underline{
+      float: left;
+      width: 60%;
+      padding-left: 50px;
+      border-bottom: 2px solid #000;
+
+    }
+    .clear_both{
+      clear: both;
+    }
+    .barcode-text{
+      position: relative;
+      bottom: 10px;
+      text-align: center;
+      padding: 0px;
+    }
+    .barcode-text span{
+      font-size: 11px;
+      font-weight: bold;
+      background-color: #fff;
+      padding: 0px 10px;
+
+    }
+    .barcode_size{
+      width: 90%;
+      height: 27px;
+
+    }
+  </style>
+</head>
+<body>
+<% generate_barcode_for_all_in_one(params[:part_number].upcase) %>
+<% generate_barcode_for_all_in_one(params[:scancode].upcase) %>
+
+<div class="partnumber"><%= params[:part_number].upcase%> </div>
+<div class="location"><strong>      <%= "#{t('loc',:scope => "floor_views._location_search")}" %> : <%= params[:location] %></strong></div>
+<div class="bin"><strong>   <%= "#{t('bin',:scope => "floor_views._location_search")}" %> : <%= params[:bin] %></strong></div>
+<div class="scancode"><strong>      <%= "#{t('scan_code',:scope => "floor_views._location_search")}" %> : <%= params[:scancode] %></strong></div>
+<div class="clear_both"></div>
+<br/>
+<div class="trace"><strong>         <%= "#{t('trace',:scope => "floor_views._location_search")}" %> :</strong></div><div class="underline">&nbsp;</div>
+<div class="clear_both"></div>
+
+<div class="time"><strong><%= (Time.now).strftime("%-m/%-d/%y - %-I:%M%p - #{t('by',:scope => "floor_views._location_search")} : ") + session[:user_name] %></strong></div>
+<div class="part_barcode">
+  <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+params[:part_number].split("").map(&:ord).join("")+'.png', class: 'barcode_size') %>
+  <div class="barcode-text"><span><%=params[:part_number].upcase %></span></div>
+</div>
+
+<div class="scan_barcode">
+  <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+params[:scancode].split("").map(&:ord).join("")+'.png', class: 'barcode_size' ) %>
+  <div class="barcode-text"><span><%=params[:scancode].upcase %></span></div>
+</div>
+
+</body>
+</html>

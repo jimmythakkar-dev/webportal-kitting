@@ -1,0 +1,76 @@
+<h2 class="body_header">Edit Kit Description</h2>
+<%= image_seperator %>
+<p>Please enter Kit Number of which you want to edit the description for: </p>
+<%= image_seperator %>
+<%= form_tag edit_kit_description_path, :method=>"get", class: 'form-inline' do  %>
+    <div class="control-group">
+      <%= label_tag 'Search :', nil, :class => "control-label" %>
+      <div class="controls inline">
+        <%= text_field_tag :kit_number_edit, params[:kit_number_edit].try(:strip).try(:upcase),:class=>"form-control"   %>
+      </div>
+    </div>
+    <%= submit_tag 'Search', :class => "btn btn-primary"%>
+<% end %>
+<%= image_seperator %>
+<% #if params[:kit_number_edit].present? %>
+<%= render 'layouts/message_display' %>
+<% unless @kits.blank? %>
+    <p><%= page_entries_info @kits %></p>
+    <table class="table tablesorter">
+      <thead>
+      <th style="width: 180px !important">Kit Number </th>
+      <th>Desctription</th>
+      <th>Edit</th>
+      </thead>
+      <% @kits.each_with_index do |kit, index| %>
+          <tr>
+            <td><%=  kit.kit_number %></td>
+            <td><%= kit.description %></td>
+            <td><a onclick='open_pop_up("<%= kit.kit_number %>", "<%= escape_javascript kit.description %>", "<%= kit.id %>")' id="edit-kit" class="btn btn-default description_edit_popup"><span id="edit-sign" class="glyphicon glyphicon-edit" data-toggle="modal"></span></a> </td>
+          </tr>
+      <% end %>
+    </table>
+    <%= will_paginate @kits %>
+<% end %>
+<%# end %>
+<!-- Modal -->
+<%= form_tag send_kit_description_path, id: "send_description_form" do  %>
+    <%= hidden_field_tag 'kit_id' %>
+    <div id="edit_description_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="body_header">Edit Kit Description </h2>
+
+          </div>
+          <div class="modal-body">
+
+            <div class="row">
+              <label class="col-sm-3 control-label"><%= 'Kit Number'%></label>
+              <div class="col-sm-9">
+                <%= text_field_tag :kit_number, nil, :class =>"form-control", :readonly =>true %>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <label class="col-sm-3 control-label"><%= 'Current Description'%></label>
+              <div class="col-sm-9">
+                <%= text_area_tag :curr_desc, nil, :rows => 2, :readonly => true,:class =>"form-control" %>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <label class="col-sm-3 control-label"><%= 'New Description'%></label>
+              <div class="col-sm-9">
+                <%= text_area_tag :new_desc, nil, :rows => 2, :required => true,:class =>"form-control" %>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default close-popup" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag 'Save changes', class: 'btn btn-primary', id: 'edit_quantity' %>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>

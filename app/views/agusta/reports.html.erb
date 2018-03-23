@@ -1,0 +1,29 @@
+<p class="body_header"><%= t('agusta.reports').upcase %></p>
+<%= image_seperator %>
+<% if @files.blank? %>
+    <p class="alert alert-danger"><%= t("no_reports_found", :scope => "reports.index") %></p>
+<% else %>
+    <div class="table-responsive">
+      <div class="panel">
+        <table class="table tablesorter">
+          <thead>
+          <tr>
+            <th class="filter-false"><%= t("download", :scope => "reports.index") %></th>
+            <th><%= t("report_name", :scope => "reports.index") %></th>
+            <th><%= t("date_updated", :scope => "reports.index") %></th>
+          </tr>
+          </thead>
+          <% @files.each do |file| %>
+              <% get_file_details(file) %>
+              <tr>
+                <td style="text-align:center">
+                  <%= link_to (image_tag ('excel_icon_download.png'), :height =>"25",:width => "25",:class => "img-responsive", :title => t("download_as_excel", :scope => "reports.index")), agusta_download_path(:report => @report_variable) %>
+                </td>
+                <td><%= @report_name %></td>
+                <td><%= @report_date %> <%= @report_time %></td>
+              </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+<% end %>

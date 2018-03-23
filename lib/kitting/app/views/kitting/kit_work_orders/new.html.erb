@@ -1,0 +1,28 @@
+<%= render 'layouts/message_display' %>
+<%= form_for @kit_upload, :url=>{:controller=>"kits", :action=>"csv_import"}, :html => { :multipart => true } do |f| %>
+    <h2 class="body_header"><%= f.object.operation_type %></h2>
+    <%= image_seperator %>
+    <div class="row">
+      <div class="col-sm-12 text-right">
+        <%= link_to "Download a sample sheet", download_sample_kits_path(:type => "XLS") %> /
+        <%= link_to 'Configure spreadsheet',customer_path(current_customer)%>
+      </div>
+    </div><br>
+    <div class="row">
+      <%= f.hidden_field :operation_type %>
+      <div class="col-sm-3"><div class="text-right"><%= label_tag 'Select a Spreadsheet :', nil, :class => "control-label" %></div></div>
+      <div class="col-sm-5"><%= f.file_field :file,:class=> "btn btn-file btn-default" ,:onchange=>"checkfile(this,'.xlsx');",:required => true %></div>
+    </div><br/>
+    <div class="row">
+      <div class="col-sm-12 text-center"><%= f.submit 'Submit', :class => "btn btn-primary import_kit" %></div>
+    </div>
+<% end %>
+<%= image_seperator %>
+<p id="page_no" val= "<%= params[:page] %>" ></p>
+<p><%= (page_entries_info @kit_uploads).gsub("Kit bom bulk operation","Kit Upload(s)").html_safe %></p>
+<div class="table-responsive">
+  <table class="table tablesorter upload_details">
+    <%= render "kitting/kits/upload_data"%>
+  </table>
+</div>
+<%= will_paginate @kit_uploads %>

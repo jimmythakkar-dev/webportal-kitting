@@ -1,0 +1,22 @@
+<h2 class="body_header">Upload Part Cup Count</h2>
+<%= render 'layouts/message_display' %>
+<%= image_seperator %>
+<%= form_for @part_upload, :url=>{:controller=>"parts", :action=>"csv_import"}, :html => { :multipart => true } do |f| %>
+    <div class="row">
+      <div class="col-sm-3"><%= label_tag 'Select a CSV File :', nil, :class => "control-label" %></div>
+      <div class="col-sm-6"><%= f.file_field :file,:class=> "btn btn-file btn-default" ,:onchange=>"checkfile(this,'.csv');",:required => true %></div>
+      <div class="col-sm-3"><%= link_to "Download Sample CSV", download_sample_parts_path %></div>
+    </div><br/>
+    <div class="row text-right">
+      <div class="col-sm-5"><%= f.submit 'Submit', :class => "btn btn-primary import_kit" %></div>
+    </div>
+<% end %>
+<%= image_seperator %>
+<p id="page_no" val= "<%= params[:page] %>" ></p>
+<p><%= (page_entries_info @part_uploads ).gsub("Kit bom bulk operation","Part Upload(s)").html_safe %></p>
+<div class="table-responsive">
+  <table class="table tablesorter part_cup_count_details">
+    <%= render "upload_data"%>
+  </table>
+</div>
+<%= will_paginate @part_uploads %>

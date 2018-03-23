@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<%= render 'layouts/application_head' %>
+<body>
+<!--[if lt IE 9]>
+<script src="/ie/html5shiv.js"></script>
+<script src="/ie/respond.js"></script>
+<![endif]-->
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" style="position: relative;top: -19px;">
+      <%= render "layouts/menu" %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 header">
+      <div class="col-sm-3 text-center">
+        <%=  image_tag "KLX_logo.jpg",class: "img-responsive klx_logo" %>
+      </div>
+      <div class="col-sm-9">
+        <%= render "layouts/sub_menu" %>
+      </div>
+    </div>
+  </div>
+  <div class="row" id="header">
+    <%= image_tag "ecom_banner.jpg", class: "img-responsive" %>
+  </div>
+  <!--<div class="container-fluid">-->
+  <div class="row">
+    <div class="col-sm-3 left-sidebar">
+      <% unless session[:menu_description].blank? %>
+          <div class="navbar-wrapper">
+            <div class="navbar navbar-default navbar-static-top" role="navigation">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="glyphicon glyphicon-bar"></span>
+                  <span class="glyphicon glyphicon-bar"></span>
+                  <span class="glyphicon glyphicon-bar"></span>
+                </button>
+                <p class="navbar-brand klx_icon"><%= t('CM_Customer_Portal', :scope => "layouts.application" ) %></p>
+              </div>
+              <div class="clearfix"></div>
+              <div class="collapse navbar-collapse">
+                <ul class="nav main-menu">
+                  <% session[:menu_description].each_index do |index| %>
+                      <% url = assign_urls session[:menu_description][index] %>
+                      <% sub_menu = assign_sub_menus session[:menu_description][index], session[:user_level] %>
+                      <li class="<%= sub_menu.blank? ? '' : 'main_menu'%>" id="<%=session[:menu_description][index].gsub(" ","_") %>"><%= link_to session[:menu_description][index], url %></li>
+                      <% unless sub_menu.blank? %>
+                          <ul class="nav sub_nav">
+                            <% sub_menu['sub_menu'].each_with_index do |sm,i| %>
+                                <li><%= link_to sub_menu['sub_menu_text'][i], sm %></li>
+                            <% end %>
+                          </ul>
+                      <% end %>
+                  <% end %>
+                </ul>
+                <%= image_seperator %>
+                <p class="navbar-brand">Account information</p>
+                <div class="clearfix"></div>
+                <ul class="nav">
+                  <li><%= session[:full_name] %></li>
+                  <li><%= session[:customer_Name] %></li>
+                  <% if session[:password_lock] == "N" %>
+                      <li><%= link_to t('change_password',:scope => "layouts.application"), main_app.new_reset_password_path(password_lock: session[:password_lock]), method: :post, title: t('change_password',:scope => "layouts.application") %> </li>
+                  <% end %>
+                  <% if session[:account_switcher_array] %>
+                      <% selected_value = "#{session[:customer_number]} #{session[:customer_Name]}" %>
+                      <li><%= select_tag :account_switcher, options_for_select(session[:account_switcher_array].collect{ |u| [u.html_safe, u.html_safe] }, :selected=> selected_value.html_safe),:class => "ActionCode col-sm-12 form-control",:onchange => "change_account(this.value)" %> </li>
+                  <% end %>
+                </ul>
+                <%= image_seperator %>
+                <p class="navbar-brand">Sales Contact</p>
+                <div class="clearfix"></div>
+                <ul class="nav">
+                  <% get_name = session[:slsm_email].present? ? session[:slsm_email].split('@').first.split('_')  :""  %>
+                  <li><%= get_name.second + ", " + get_name.first rescue "No Sales Email Found "%></li>
+                  <li>TEL. <%= label_tag session[:slsm_phone] %></li>
+                  <li>FAX <%= session[:slsm_fax] %></li>
+                </ul>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <ul class="nav">
+                      <li>
+                        <%= mail_to session[:slsm_email], 'Click to Send E-Mail' if session[:slsm_email].present? %>
+                      </li>
+                    </ul>
+                  </div>
+                </div> <br/>
+              </div>
+            </div><!-- /.navbar-inner -->
+          </div>
+      <% else %>
+          <% if flash[:alert] == "Service temporarily unavailable" %>
+              <div class="navbar">
+              </div>
+          <% else %>
+              <div class="navbar">
+                <div class="navbar-inner">
+                  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="glyphicon glyphicon-bar"></span>
+                    <span class="glyphicon glyphicon-bar"></span>
+                    <span class="glyphicon glyphicon-bar"></span>
+                  </a>
+                  <p class="navbar-brand" href="#">Customer Support</p>
+                  <div class="clearfix"></div>
+                  <div class="nav-collapse">
+                    <%= image_tag 'nav_topline.jpg'%>
+                    <ul class="nav">
+                      <li><a class="nav" href="/">KLX CUSTOMER PORTAL</a></li>
+                      <li><a class="nav" href="<%= APP_URL %>/support/stock_check.cfm">INVENTORY STOCK CHECK</a></li>
+                      <li><a class="nav" href="<%= APP_URL %>/support/request_quote.cfm">REQUEST FOR QUOTE</a></li>
+                      <li><a class="nav" href="<%= APP_URL %>/support/support.cfm" onclick="window.open('<%= APP_URL %>/support/CreditApplication.pdf','mywindow','status=1 location=yes toolbar=1 resizable=1')">APPLICATION FOR CREDIT FORM</a></li>
+                      <li><a class="nav" href="http://www.klxaerospace.com/contact">CONTACT</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+          <% end %>
+      <% end %>
+    </div>
+    <div class="col-sm-9" >
+      <% if current_user %>
+          <div class="text-right logout_block"> <%= link_to 'Log Out', main_app.logout_path %> </div>
+      <% end %>
+      <div class="clearfix"></div>
+      <%= yield %>
+    </div>
+  </div>
+  <!--</div>-->
+  <%= render 'layouts/application_footer'%>
+</div>
+<!--LIVE BOX START -->
+<div id="toPopup">
+  <div id="popup_content"> <!--your content start-->
+    <span>Generating KIT BOM ...</span>
+    <p align="center"><%= image_tag "/report_generation.gif" %></p>
+  </div> <!--your content end-->
+</div> <!--toPopup end-->
+<div id="report_status" style="display:none;" val= "<%= bom_data %>" ></div>
+<!--LIVE BOX END -->
+<!-- Ajax spinner -->
+
+<div class="spin_overlay disp-block" >
+  <div class="spinner disp-block" > </div>
+</div>
+<!-- Ajax spinner -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var level = "<%=session[:user_level]%>"
+        var create_rma = "<%= t 'rma.create' %>";
+        var rma_inquiry = "<%= t 'rma.inquiry' %>";
+
+        <% if controller_name == "rma" %>
+        if( document.getElementById('RMA') != null){
+            $("#RMA").append("<ul class='sub_rma_nav'><li><a href='/rma'>"+ create_rma +"</a></li><li><a href='/rma/inquiry'>"+ rma_inquiry +"</a></li></ul>");
+
+            $("#RMA").click(function(){
+                $(".sub_rma_nav").slideToggle(100);
+            });
+        }
+        else{
+            $("#RMA_Request").append("<ul class='sub_rma_nav'><li><a href='/rma'>"+ create_rma +"</a></li><li><a href='/rma/inquiry'>"+ rma_inquiry +"</a></li></ul>");
+            $("#RMA_Request").click(function(){
+                $(".sub_rma_nav").slideToggle(100);
+            });
+        }
+        <% else %>
+        if( document.getElementById('RMA') != null){
+            $("#RMA").append("<ul class='sub_rma_nav' style='display:none;'><li><a href='/rma'>"+ create_rma +"</a></li><li><a href='/rma/inquiry'>"+ rma_inquiry +"</a></li></ul>");
+
+            $("#RMA").click(function(){
+                $(".sub_rma_nav").slideToggle(100);
+            });
+        }
+        else{
+            $("#RMA_Request").append("<ul class='sub_rma_nav' style='display:none;'><li><a href='/rma'>"+ create_rma +"</a></li><li><a href='/rma/inquiry'>"+ rma_inquiry +"</a></li></ul>");
+            $("#RMA_Request").click(function(){
+                $(".sub_rma_nav").slideToggle(100);
+            });
+        }
+        <% end %>
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<%if params[:actions] == "N"%>
+    <h2 class="body_header"><%= t('add_part_to_loc',:scope => "bin_line_station.new_part_to_location")%></h2>
+<% else %>
+    <h2 class="body_header"><%= t('bin_line_stn_update',:scope => "bin_line_station.new_part_to_location")%></h2>
+<% end %>
+<%= image_seperator %>
+<p><%= t('_desc_new_part_to_loc',:scope => "bin_line_station.new_part_to_location")%></p>
+<%= image_seperator %>
+<% if flash[:notice] %>
+    <div class="alert alert-danger"><%= flash[:notice] %></div>
+<% end %>
+<%if params[:actions] == "N"%>
+    <p class="body_text_subhead"><%= t('add_part_to_bin_loc',:scope => "bin_line_station.new_part_to_location")%> <%= t('pan_request_form',:scope => "bin_line_station.new_part_to_location")%> <%= link_to "Form 5267", panstock_requests_path(iAction: 'N', selLocation: params[:location]) %></p>
+    <%= form_tag('create_part_to_location', { class: 'form-horizontal' }) do %>
+        <%= hidden_field_tag :location, params[:location] %>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag raw t('bin_location',:scope => "bin_line_station.new_part_to_location") %></div>
+          <div class="col-sm-3"><b><%= params[:location] %></b></div>
+        </div>
+        <div>
+          <span class="body_text_subhead"><%= t('add_part',:scope => "bin_line_station.new_part_to_location")%></span>
+        </div>
+        <div class="form-group">
+          <%= label_tag t('part_num',:scope => "bin_line_station.new_part_to_location"), t('part_num',:scope => "bin_line_station.new_part_to_location"), class: "control-label col-sm-2" %>
+          <div class="col-sm-5">
+            <%= text_field_tag :part_number, params[:part_number] || flash[:part_number], :size => "12", class: "form-control",required: true %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag t('amc_qty',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label col-sm-2" %>
+          <div class="col-sm-5" >
+            <%= text_field_tag :amc_qty, params[:amc_qty] || flash[:amc_qty], :size => "4", :maxlength => "12", class: "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag t('pack_qty',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label col-sm-2"  %>
+          <div class="col-sm-5" >
+            <%= text_field_tag :pack_qty, params[:pack_qty] || flash[:pack_qty], :size => "4", :maxlength => "12", class: "form-control"  %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag t('bin',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label col-sm-2" %>
+          <div class="col-sm-5" >
+            <%= text_field_tag :bin, params[:bin] || flash[:bin], :maxlength => "25", :size => "12", class: "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag t('reference',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label col-sm-2" %>
+          <div class="col-sm-5">
+            <%= text_field_tag :reference, params[:reference] || flash[:reference], :maxlength => "25", :size => "12", class: "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2">&nbsp;</label>
+          <div class="col-sm-5">
+            <%= submit_tag t('submit_changes',:scope => "bin_line_station.new_part_to_location"),:class => "btn btn-primary" %>
+            <%= button_tag t('cancel',:scope => "bin_line_station.new_part_to_location"), type: 'button', class: 'btn btn-danger cancel_button' %>
+          </div>
+        </div>
+        <%= image_seperator %>
+    <% end %>
+<%else%>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-3">
+            <span class="body_text_subhead"><%= t('bin_detail',:scope => "bin_line_station.new_part_to_location")%></span>
+          </div>
+          <div class="col-sm-9">
+            <% if params[:exculde] == "EXCLUDE" %>
+                <div class="alert_msg"><%= t('excluded_part',:scope => "bin_line_station.new_part_to_location")%></div>
+            <% end %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= t('part_num',:scope => "bin_line_station.new_part_to_location") %></div>
+          <div class="col-sm-9"><%= params[:pnum] %></div>
+
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag t('ware_house_desc',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+          <div class="col-sm-9"><%= params[:lstation] %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag t('amc_qty',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+          <div class="col-sm-9"><%= params[:amc] %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag t('pack_qty',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+          <div class="col-sm-9"><%= params[:pakq] %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag t('bin',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+          <div class="col-sm-9"><%= params[:bin] %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag t('scancode',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+          <div class="col-sm-9"><%= params[:scode] %></div>
+        </div>
+        <%= image_tag 'content_seperatorbig.gif' %>
+        <div class="form-group">
+          <span class="body_text_subhead"><%= t('change_to',:scope => "bin_line_station.new_part_to_location")%></span>
+        </div>
+        <%= form_tag update_line_station_bin_line_station_index_path, :id => 'form_binlocator_update' do %>
+            <div class="row">
+              <div class="col-sm-3"><%= label_tag t('amc_qty',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+              <div class="col-sm-9"><%= text_field_tag :amc_qty, params[:amc]  %></div>
+              <%= hidden_field_tag "old_amc_qty", params[:amc] %>
+            </div>
+            <div class="row">
+              <div class="col-sm-3"><%= label_tag t('pack_qty',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+              <div class="col-sm-9"><%= text_field_tag :pack_qty, params[:pakq] %></div>
+              <%= hidden_field_tag "old_pack_qty", params[:pakq] %>
+            </div>
+            <div class="row">
+              <div class="col-sm-3"><%= label_tag t('bin',:scope => "bin_line_station.new_part_to_location"),nil,class: "control-label" %></div>
+              <div class="col-sm-9"><%= text_field_tag :bin, params[:bin] %></div>
+              <%= hidden_field_tag "old_bin", params[:bin] %>
+            </div>
+            <div class="row">
+              <div class="col-sm-3"><%= label_tag t('part_num',:scope => "bin_line_station.new_part_to_location"),t('part_num',:scope => "bin_line_station.new_part_to_location"),class: "control-label" %></div>
+              <div class="col-sm-9"><%= text_field_tag :part_number, params[:pnum] %></div>
+              <%= hidden_field_tag "old_part_number", params[:pnum] %>
+            </div>
+            <div class="row">
+              <div class="col-sm-3"><%= label_tag t('delete_part',:scope => "bin_line_station.new_part_to_location"),t('delete_part',:scope => "bin_line_station.new_part_to_location"),class: "control-label" %></div>
+              <div class="col-sm-2"><%= radio_button_tag "delete_part", false, true  %> NO </div><div class="col-sm-2"> <%= radio_button_tag "delete_part", true %> YES </div>
+            </div>
+
+            <%= hidden_field_tag "partno", params[:pnum] %>
+            <%= hidden_field_tag "WHSDESC", params[:lstation] %>
+            <%= hidden_field_tag "Scancode", params[:scode] %>
+            <%= hidden_field_tag "UM", params[:um] %>
+
+            <%= submit_tag t('submit_changes',:scope => "bin_line_station.new_part_to_location"),:class => "btn btn-primary" %>
+            <%= submit_tag t('print_part',:scope => "bin_line_station.new_part_to_location"), :id => "print_part",:class => "btn btn-primary" %>
+            <%= button_tag t('cancel',:scope => "bin_line_station.new_part_to_location"), type: 'button', class: 'btn btn-danger cancel_button' %>
+        <%end%>
+      </div>
+    </div>
+<%end%>

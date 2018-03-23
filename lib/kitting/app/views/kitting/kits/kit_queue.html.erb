@@ -1,0 +1,45 @@
+<h2 class="body_header">Kit Queue</h2>
+<%= image_seperator %>
+<%= image_seperator %>
+<%= form_for @kit_queue, :html => { :class => "form_horizontal"} do |f| %>
+  <div class="control-group">
+    <label class="control-label">Kit Number:</label>
+      <div class="controls inline">
+        <%= f.text_field :kit_number, :value => @kit_queue.kit_number, required: true %>
+        <!--%= select_tag 'kitnumber', options_for_select(@binCenters.collect{ |u| [u] }), class: 'display_none' %-->
+      </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">Kit Version:</label>
+      <div class="controls inline">
+        <%= f.text_field :kit_version, :value => params[:kit_version] %>
+      </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">Kit-Media Type:</label>
+      <div class="controls inline">
+        <%= f.text_field :kit_media, :value => @kit_queue.kit_media_type.name, required: true %>
+      </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">Kit Description:</label>
+      <div class="controls inline">
+        <%= text_area_tag 'description', params[:description], :cols => 60, :rows => 2 %>
+      </div>
+  </div>
+  <div class="control-group">
+    <div class="controls inline">
+      <%= select_tag 'location', options_for_select(@locations.collect{ |u| [u.name] },:selected => @kit_queue.location.name)  %>
+      <% if session[:user_level] %>
+        <% if session[:user_level] > "3" %>
+          <button class="btn">Demand</button>
+        <%end%>
+      <%end%>
+    </div>
+  </div>
+
+<% end %>
+
+<%= image_seperator %>
+
+

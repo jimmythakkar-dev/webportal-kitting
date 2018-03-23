@@ -1,0 +1,39 @@
+<% if @suspender_search_response['errMsg'] == "" %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4"><b><%= t('Supersedence_Search',:scope => "floor_views._superinc")%>:</b></div>
+          <div class="col-sm-8">for :
+                  <span class="body_text_subhead">
+                    <%= params[:part_number].try(:upcase)%>
+                  </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sep_large"><%= image_seperator %></div>
+    <% @suspender_search_response["newPartNoList"].each_index do |index| %>
+        <div class="row">
+          <div class="col-sm-12">
+
+            <div class="row">
+              <div class="col-sm-4"><%= t('Original_Part_Number',:scope => "floor_views._superinc")%></div>
+              <div class="col-sm-8 "><strong><%= @suspender_search_response["oldPartNoList"][index]%></strong>	</div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"><%= t('New_Superseding_Part_Number',:scope => "floor_views._superinc")%></div>
+              <div class="col-sm-8 "><strong><%= @suspender_search_response["newPartNoList"][index]%></strong>	</div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"><%= t('REASON',:scope => "floor_views._superinc")%></div>
+              <div class="col-sm-8 "><%= @suspender_search_response["reasonList"][index]%></div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4"><%= t('Results',:scope => "floor_views._superinc")%></div>
+              <div class="col-sm-8 "><strong><%= t("part_has_been_superseded", scope:"engineering_check._supersedence_search") %></strong>	</div>
+            </div>
+          </div>
+        </div>
+        <div class="sep_large"><%= image_seperator %></div>
+    <%end%>
+<%end%>

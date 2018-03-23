@@ -1,0 +1,76 @@
+<h2 class="body_header"><%= t('Panstock_Action_Request',:scope=> "panstock_requests.action_history") %></h2>
+<%= image_seperator %>
+<p> <%= t('_desc_action_hist',:scope=> "panstock_requests.action_history").html_safe %> </p>
+<%= image_seperator %>
+<p class="alert alert-success text-center"><%= flash[:message] %></p>
+<h4><%= t('Panstock_Action_Request',:scope=> "panstock_requests.action_history") %></h4>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="col-sm-2"><%= t('Building',:scope => "panstock_requests.send_panstock_changes") %></div>
+    <div class="col-sm-2"><b><%= params[:sendTo]%>&nbsp; </b></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="col-sm-2"><%= t('Submitted_On',:scope => "panstock_requests.send_panstock_changes") %></div>
+    <div class="col-sm-10"><b><%= Date.today.strftime("%_m/%d/%y") %></b></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="col-sm-2"><%= t('Line_Station',:scope => "panstock_requests.action_history") %></div>
+    <div class="col-sm-2"><b>  <%= params[:selLocation] %>&nbsp; </b></div>
+    <div class="col-sm-2"><%= t('Bin',:scope => "panstock_requests.send_panstock_changes") %></div>
+    <div class="col-sm-2"><b><%= params[:Bincenter] %>&nbsp;</b></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="col-sm-2"><%= t('Originator',:scope => "panstock_requests.action_history") %></div>
+    <div class="col-sm-2"><b> <%= params[:Originator] %>&nbsp;</b></div>
+    <div class="col-sm-2"><%= t('Originator',:scope => "panstock_requests.action_history") %> &nbsp; <%= t('phone',:scope => "panstock_requests.action_history") %> </div>
+    <div class="col-sm-2"><b><%= params[:OriginatorPhone] %>&nbsp; </b></div>
+    <div class="col-sm-2"><%= t('Originator',:scope => "panstock_requests.action_history") %> &nbsp; <%= t('pager',:scope => "panstock_requests.action_history") %></div>
+    <div class="col-sm-2"><b><%= params[:OriginatorPager] %>&nbsp;</b></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="col-sm-2"><%= t('Requestor',:scope => "panstock_requests.action_history") %></div>
+    <div class="col-sm-2"><b> <%= params[:RequestorName] %>&nbsp;</b></div>
+    <div class="col-sm-2"> <%= t('Requestor',:scope => "panstock_requests.action_history") %> &nbsp; <%= t('phone',:scope => "panstock_requests.action_history") %> </div>
+    <div class="col-sm-2"><b><%= params[:RequestorPhone] %>&nbsp;</b></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="col-sm-2"><%= t('Foreman',:scope => "panstock_requests.action_history") %></div>
+    <div class="col-sm-2"><b><%= params[:ForemanName] %></b></div>
+    <div class="col-sm-2"><%= t('Foreman',:scope => "panstock_requests.action_history") %> &nbsp; <%= t('phone',:scope => "panstock_requests.action_history") %> </div>
+    <div class="col-sm-2"><b><%= params[:ForemanPhone] %></b></div>
+  </div>
+</div>
+<div class="table-responsive">
+  <table class="table header_color">
+    <thead>
+    <th><strong><%= t('ACTION_CODE',:scope => "panstock_requests.send_panstock_changes")%></strong></th>
+    <th><strong><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></strong></th>
+    <th><strong><%= t('qty',:scope => "panstock_requests.panstock_history") %></strong></th>
+    <th><strong><%= t('UM',:scope => "panstock_requests.send_panstock_changes")%></strong></th>
+    <th><strong><%= t('ONE_TIME_NEED',:scope => "panstock_requests.send_panstock_changes")%></strong></th>
+    <th><strong><%= t('r/c',:scope => "panstock_requests.send_panstock_changes")%></strong></th>
+    </thead>
+    <%(0..14).each do |i|%>
+        <%if !@PartNoIn[i].nil?%>
+            <tr><td ><%= @actioncode[i] %></td>
+              <td ><%= @PartNoIn[i] %></td>
+              <td><%= @orderqty[i] %></td>
+              <td><%= @UMIn[i] %></td>
+              <td><% if @OneTimeNeedIn[i] == "1" %>YES<% else %><% end %></td>
+              <td><%= @reasonForActionIn[i] %></td>
+            </tr>
+        <%end%>
+    <%end%>
+  </table>
+</div>
+<%= button_to t('History',:scope => "panstock_requests.send_panstock_changes"), panstock_history_panstock_requests_path, :method => 'get',:class =>"btn btn-primary" %>

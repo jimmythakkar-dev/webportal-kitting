@@ -1,0 +1,394 @@
+<h2 class="body_header">Kit Design Page</h2>
+<%= image_seperator %>
+<input type="hidden" id="dup_cup_num" value="" />
+<% if @kit.blank? %>
+    <div>
+      <p class="alert alert-danger"> This Kit does not Exist. You Must Have pressed back after undoing the kit. Click the  below link to go to kit listing.
+      </p>
+      <p>
+        <%= link_to 'Click here to go to Kit List', kits_path %>
+      </p>
+    </div>
+<% else %>
+    <%= render 'layouts/message_display'%>
+    <%= form_tag({:action => 'new'} , class: "form-horizontal") do %>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label"><%= 'Kit Number'%></label>
+          <div class="col-sm-4">
+            <%= text_field_tag :kit_number, params[:kit_number], :class => "form-control", :value => params[:kit_number], :disabled =>true %>
+            <%= hidden_field_tag :mmt_kit_number, params[:mmt_kit_number], :class => "input-large", :value => params[:mmt_kit_number] || @original_kit.kit_number, :disabled =>true %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label"><%= 'Kit Media Type'%></label>
+          <div class="col-sm-4">
+            <%= text_field_tag :kit_media_type, params[:kit_media_type], :class => "form-control", :value => params[:kit_media_type], :disabled =>true %>
+            <%= hidden_field_tag :kit_type, @kit.kit_media_type.kit_type %>
+            <%= hidden_field_tag :mmt_kit_media_type, @kit.kit_media_type.name, :class => "input-medium", :value => @kit.kit_media_type.name, :disabled =>true %>
+            <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label"><%= 'Kit Bin Center'%></label>
+          <div class="col-sm-4">
+            <%= select_tag 'bincenter', options_for_select(@binCenters,@kit.bincenter), {:prompt => "Select Location", :class => "bincenter form-control", :required => true} %>
+            <%#= text_field_tag :bincenter, params[:bincenter], :class => "input-medium bincenter",
+                                   :value => @kit.bincenter   %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label"><%= 'Part Bin center'%></label>
+          <div class="col-sm-4">
+            <%= select_tag 'part_bincenter', options_for_select(@binCenters, @parent_kit.part_bincenter || @kit.part_bincenter), {:prompt => "Select Part Bin Center",:class => "part_bincenter form-control"}%>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label"><%= 'Kit Description'%></label>
+          <% if @kit.current_version < "1"  %>
+              <div class="col-sm-10">
+                <%= text_area_tag :description,  @parent_kit.try(:description) || @kit.try(:description), :value => @parent_kit.try(:description) || @kit.try(:description),  :rows => 1,:class => "kit_desc form-control" %>
+              </div>
+          <%else%>
+              <div class="col-sm-10">
+                <%= text_area_tag :description, @parent_kit.try(:description) || @kit.try(:description), :value => @parent_kit.try(:description) || @kit.try(:description),  :rows => 1,:class => "kit_desc form-control", :disabled =>true %>
+              </div>
+          <%end%>
+        </div>
+        <% if @kit.notes.present? %>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">&nbsp</label>
+              <div class="col-sm-10">
+                <%#= @parent_kit.try(:notes).html_safe if @parent_kit.notes.present? %>
+                <%= @kit.try(:notes).html_safe if @kit.notes.present? %>
+              </div>
+            </div>
+        <% end %>
+        <div class="form-group">
+          <label class="col-sm-2 control-label"><%= 'Kit Note'%></label>
+          <div class="col-sm-10">
+            <%= text_area_tag :notes, "" ,:value => "", :rows => 2, :class => "kit_notes form-control"  %>
+          </div>
+        </div>
+        <%= hidden_field_tag 'multiple_part', get_customer_list(@original_kit.cust_no).first.multiple_part? %>
+        <%= hidden_field_tag 'compartments', params[:compartments] %>
+        <%= hidden_field_tag 'kit_number', params[:kit_number] %>
+        <%= hidden_field_tag 'compartment_layout', params[:compartment_layout] %>
+    <% end %>
+    <div class="clear"></div><br>
+    <% if @multi_media_kits %>
+        <p class="text-primary"><strong class="text-info"> Kit Media Types</strong> </p>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel mmty-panel">
+              <div class="panel-heading mmty-heading">
+                <ul class="nav mmty-nav-tab nav-tabs">
+                  <% box_number = "" %>
+                  <% @multi_media_kits.each_with_index do |mmt_kit, index| %>
+                      <li class="<%= @original_kit.id == mmt_kit.id ? 'active' : '' %>">
+                        <%= link_to mmt_kit.kit_media_type.name, kits_detail_design_path(kit_id: params[:kit_id], mmt_kit_id: mmt_kit.id, kit_number: params[:kit_number],
+                                                                                         kit_media_type: params[:kit_media_type], compartments: params[:compartments], compartment_layout: params[:compartment_layout]),onclick: "show_spinner()"  %>
+                        <%= link_to "<span class='glyphicon glyphicon-remove'></span>".html_safe, '#', id:  mmt_kit.id , class: 'remove_media_type btn btn-default' %>
+                        <% if @original_kit.id == mmt_kit.id %>
+                            <% box_number = index +1  %>
+                        <% end %>
+                      </li>
+                  <% end %>
+                  <li class="add-media-type-li" style="display: none" >
+                    <div class="input-group">
+                      <%= select_tag 'add_design_kit_media_type_id', options_from_collection_for_select(@media_type, 'id', 'name'), remote: true, class: "form-control", style: "width: 150px" %>
+                      <span class="input-group-addon">
+                        <%= link_to "<span class='glyphicon glyphicon-plus'></span>".html_safe, '#', style: 'float:right', id: params[:kit_id],  class: 'add-media-type' %>
+                      </span>
+                      <span class="input-group-addon hide-add-media-type-li"><span class='glyphicon glyphicon-remove'></span></span>
+                    </div>
+                  </li>
+                  <%= @multi_media_kits.size == 0 ? "<li class='no-media-type edit-media-type'><a><span class='glyphicon glyphicon-plus'></span> Add Media Types</a></li>".html_safe : "<li class='edit-media-type'><a><span class='glyphicon glyphicon-circle-arrow-right'></span></a></li>".html_safe %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% if @multi_media_kits.size > 0  %>
+            <div class="row search-panel">
+              <div class="col-sm-8" style=" padding: 10px 25px; color: #ffffff">Box : <%= box_number %> of <%= @multi_media_kits.size %></div>
+              <div class="col-sm-4">
+                <div class="input-group">
+
+                  <%= text_field_tag 'mmt_cup_search_box', nil, :class => "form-control", placeholder: 'Enter Cup Number' %>
+                  <span class="input-group-addon"><a class="mmt_cup_search_btn"><span class='glyphicon glyphicon-search'></span></a></span>
+                </div>
+              </div>
+            </div>
+        <% else %>
+            <!-- ADD BLANK DIV SPACE FOR MULTIMEDIA TYPE-->
+            <div style="height: 500px; display: block" class="config_mmt_kit_type"></div>
+        <% end %>
+    <% end %>
+
+    <% unless @cups.blank? %>
+        <% if @original_kit.kit_media_type.kit_type != "binder" %>
+            <%= form_tag({controller: 'cup_parts', action: 'create'}, {remote: true,:id => "cup_part_data"} ) do %>
+                <div id="part_select_modal" class="modal fade add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                      <div class="modal-body">
+                        <div class="row" style="background-color: #f2f2f2;">
+                          <div class="col-lg-9" style="background-color: #ffffff;">
+                            <h2 class="body_text_subhead">Part Information</h2>
+                            <div class="add_new_cup_parts">
+                              <div class="row">
+                                <label class="col-lg-3">
+                                  <%= 'Part Number'%><span class="alert_msg">*</span>
+                                </label>
+                                <label class="col-lg-3">
+                                  <%= 'Part Name'%>
+                                </label>
+                                <label class="col-lg-2">
+                                  <%= 'Quantity'%><span class="alert_msg">*</span>
+                                </label>
+                                <label class="col-lg-2">
+                                  <%= 'UOM'%><span class="alert_msg">*</span>
+                                </label>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-3">
+                                  <%= text_field_tag :part_number_auto, nil , :class => "form-control autofillparts part_numbers_auto", :required => true, :autocomplete => :off %>
+                                  <%= hidden_field_tag :part_list,"" %>
+                                </div>
+                                <div class="col-lg-3">
+                                  <%= text_field_tag :part_name, nil , :class => "form-control", :disabled => true %>
+                                </div>
+                                <div class="col-lg-2">
+                                  <%= text_field_tag :demand_quantity, nil , :class => "form-control demand_quantities" , :required => true, :maxlength => "4" %>
+                                </div>
+                                <div class="col-lg-2">
+                                  <%= select_tag "uom", options_for_select([["EA","EA"],["LB","LB"],["HU","HU"], ["TH","TH"]]), {:class => 'form-control uoms'} %>
+                                </div>
+                                <% if session[:user_level] %>
+                                    <% if session[:user_level] >= "3" %>
+                                        <div class="col-lg-2">
+                                          <%= submit_tag 'Add', id: "add_cup_part", class: 'btn btn-primary' %>
+                                          <%= submit_tag 'Update', id: "update_cup_part", class: 'btn btn-primary', style: "display:none" %>
+                                          <p id="cancel_update" class="btn default" style="display:none">Cancel</p>
+                                        </div>
+                                    <%end%>
+                                <%end%>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-3">
+                                <div class="row part-image">
+                                  <div class="col-lg-12"></div>
+                                </div>
+                                <%= image_tag 'ajaxload.gif', id: 'loading', alt: "loading" %>
+                              </div>
+                              <div class="col-lg-3">
+                                <span class="alert_text">&nbsp;</span>
+                              </div>
+                              <div class="col-lg-3">
+                                <small class='text-info quantity_info_text'>For Water-Level insert "WL"</small>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-offset-4 col-lg-8">
+                                <small id="cust_pn_message" style="color:green; display:none;"></small>
+                              </div>
+                            </div>
+                            <%= hidden_field_tag :cup_id %>
+                            <%= hidden_field_tag 'kit_id', params[:kit_id] %>
+                            <%= hidden_field_tag 'mmt_kit_id', params[:mmt_kit_id] || @original_kit.id  %>
+                            <%= hidden_field_tag 'cup_number', params[:cup_number]%>
+                          </div>
+                          <div class="col-lg-3">
+                            <h5 style="text-align: center;min-height: 110px;font-size: 11px;margin-left: -30px;">Cup Information <br><span id="cup_number_info" style='background-color: #336699;color: #ffffff;font-size: 30px;padding: 12px 15px;position: relative; top: 30px;'></span></h5>
+                          </div>
+                        </div>
+                        <div class="row ref">
+                        </div>
+
+
+
+                      </div>
+                      <div class="modal-footer">
+                        <% if get_customer_list(current_customer.cust_no).first.non_contract_part %>
+                            <div id='non_contract_div'>
+                              <%= check_box_tag 'non_contract_part_check', nil ,nil, onChange: "check_non_contract_part_checkbox(this)" %>
+                              <small class='pull-right' style="font-size: 13px"> &nbsp; Allow Non-Contract Part</small><br />
+                              <small> *Note: This part will not be supplied by KLX</small>
+                            </div>
+                        <% end %>
+                        <button id="close-add-part-popup" class="btn btn-default close-popup" data-dismiss="modal" aria-hidden="true">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+
+            <%if @original_kit.kit_media_type.kit_type == "configurable" %>
+                <div class="stop_configuring disp-config">
+                  <div class="start_configuring disp-config"> </div>
+                </div>
+                <div class="config_mmt_kit_type">
+                  <div <%= @original_kit.kit_media_type.name != "Small Configurable TB" ? " class='gridster_container'".html_safe : "class='gridster small_orange_kit' style='position:relative;'".html_safe %>>
+                    <% display_kit = create_group @cups, @original_kit.kit_media_type.name %>
+                    <% display_kit.each_with_index do |group,index| %>
+                        <div <%= add_class_and_id_to_gridster(@original_kit.kit_media_type.name,index) %> >
+                          <% if index == 0  %>
+                              <div align="right">
+                                <span id="add_widget" data-group="<%= index + 1 %>" class="add">Add Cup</span>
+                                <div id="save_layout" class="add js-seralize">Save layout</div>
+                              </div>
+                          <% end %>
+                          <ul id="configurable_cups" style="overflow: hidden !important;">
+                            <% group.sort_by {|cup| cup.cup_number.to_i }.each_with_index do |cup,i| %>
+                                <% cup_to_display = Kitting::Cup.find_by_kit_id_and_commit_id(@original_kit.id,cup.id) %>
+                                <% if cup_to_display.present? %>
+                                    <% if cup_to_display.status %>
+                                        <%= hidden_field_tag "config_ref1_#{cup.id}",cup_to_display.ref1 %>
+                                        <%= hidden_field_tag "config_ref2_#{cup.id}",cup_to_display.ref2 %>
+                                        <%= hidden_field_tag "config_ref3_#{cup.id}",cup_to_display.ref3 %>
+                                        <% cup_dimension = cup_to_display.cup_dimension.split(",") %>
+                                        <li rel="<%= (cup_to_display.ref1 || cup_to_display.ref2 || cup_to_display.ref3)? "tooltip" : ""  %>" title='<%= cup_to_display.ref1+', ' if cup_to_display.ref1 %> <%= cup_to_display.ref2+', ' if cup_to_display.ref2 %> <%= cup_to_display.ref3 if cup_to_display.ref3 %>'
+                                            <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %>>
+                                          <span class="box-no"><%= cup_to_display.cup_number %></span>
+                                          <div class="block_area">
+                                            <%= raw get_configurable_drafted_cup_parts(cup).join('') %>
+                                          </div>
+                                          <div id="cup_parts<%= cup.cup_number %>" class="btn_area">
+                                            <span><a id="add_part_config" class="btn btn-default popup configurable-btn"><span id="plus-sign" class="glyphicon glyphicon-plus-sign" data-toggle="modal"></span></a></span>
+                                            <!--<span><a id="edit-part" class="btn btn-small popup-delete configurable-btn"><i id="edit-sign" class="icon-edit" data-toggle="modal"></i></a></span>-->
+                                          </div>
+                                          <!--<span><a class="btn btn-small remove"><i class="glyphicon glyphicon-remove-sign"></i></a></span>-->
+                                          <% if @original_kit.kit_media_type.name != "Small Configurable TB" %>
+                                              <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                                          <% elsif @original_kit.kit_media_type.name == "Small Configurable TB" && index == 1  %>
+                                              <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                                          <% end %>
+                                        </li>
+                                    <% end %>
+                                <% else %>
+                                    <% cup_dimension = cup.cup_dimension.split(",") %>
+                                    <%= hidden_field_tag "config_ref1_#{cup.id}",cup.ref1 %>
+                                    <%= hidden_field_tag "config_ref2_#{cup.id}",cup.ref2 %>
+                                    <%= hidden_field_tag "config_ref3_#{cup.id}",cup.ref3 %>
+                                    <%= hidden_field_tag 'kit_number', params[:kit_number] %>
+                                    <li rel="<%= (cup.ref1 || cup.ref2 || cup.ref3)? "tooltip" : ""  %>" title='<%= cup.ref1+', ' if cup.ref1 %> <%= cup.ref2+', ' if cup.ref2 %> <%= cup.ref3 if cup.ref3 %>'
+                                        <%= (!cup.parts.first.nil? && !cup.check_in_contract_status("cup_parts")) ? "class='gs-w non-contract-cup'".html_safe : "class='gs-w'".html_safe %> id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %> >
+                                      <span class="box-no"><%= cup.cup_number %></span>
+                                      <div class="block_area">
+                                        <%= raw get_configurable_drafted_cup_parts(cup).join('') %>
+                                      </div>
+                                      <div id="cup_parts<%= cup.cup_number %>" class="btn_area">
+                                        <span><a id="add_part_config" class="btn btn-default popup configurable-btn"><span id="plus-sign" class="glyphicon glyphicon-plus-sign" data-toggle="modal"></span></a></span>
+                                        <!--<span><a id="edit-part" class="btn btn-small popup-delete configurable-btn"><i id="edit-sign" class="icon-edit" data-toggle="modal"></i></a></span>-->
+                                      </div>
+                                      <!--<span><a class="btn btn-small remove"><i class="glyphicon glyphicon-remove-sign"></i></a></span>-->
+                                      <% if @original_kit.kit_media_type.name != "Small Configurable TB" %>
+                                          <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                                      <% elsif @original_kit.kit_media_type.name == "Small Configurable TB" && index == 1  %>
+                                          <a class="btn btn-default btn-xs remove remove_cup"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                                      <% end %>
+                                    </li>
+                                <% end %>
+                            <% end %>
+                          </ul>
+                          <% if index != 0 && @original_kit.kit_media_type.name != "Small Configurable TB" %>
+                              <br />
+                              <div align="left">
+                                <span id="add_widget" data-group="<%= index + 1 %>" class="add ">Add cup to <%= index == 1 ? 'bottom left' : 'bottom right' %> |  <span class="glyphicon glyphicon-arrow-up"></span></span>
+                              </div>
+                          <% end %>
+                        </div>
+                    <% end %>
+                  </div>
+                  <%= display_kit_handle(@kit.kit_media_type.name) %>
+                </div>
+                <%= javascript_include_tag "jquery" %>
+                <script type='text/javascript'>
+                    <%if @original_kit.kit_media_type.name == "Small Removable Cup TB" %>
+                    <%= render(:partial => 'small_removable_cup_tb', :handlers => [:erb], :formats => [:js]) %>
+                    <% elsif @original_kit.kit_media_type.name == "Large Removable Cup TB"  %>
+                    <%= render(:partial => 'large_removable_cup_tb', :handlers => [:erb], :formats => [:js]) %>
+                    <% elsif @original_kit.kit_media_type.name == "Small Configurable TB"  %>
+                    <%= render(:partial => 'c_small_config_tb', :handlers => [:erb], :formats => [:js]) %>
+                    <% end %>
+                </script>
+            <% else %>
+                <% @cups = get_cups_layout @cups, params[:compartment_layout] %>
+                <% index = 0%>
+                <div id="populate_cup_detail" class="mmt_kit_type">
+                  <% @cups.each_with_index do |row, row_index| %>
+                      <div class="cup_table">
+                        <table class="thumbnails cups">
+                          <tr>
+                            <% row.each_with_index do |value, col_index| %>
+                                <td>
+                                  <div <%= (!value.parts.first.nil? && !value.check_in_contract_status("cup_parts")) ? "class='thumbnail non-contract-cup'".html_safe : "class='thumbnail'".html_safe %>>
+                                    <div class="caption">
+                                      <% @cup_to_display = Kitting::Cup.find_all_by_kit_id_and_commit_id(@original_kit.id,value.id) %>
+                                      <% if @cup_to_display.present? %>
+                                          <% dup_val = @cup_to_display.first %>
+                                          <h5><div class="cup_number_label"><%= index + 1 %></div><span id="ref1_<%= value.id %>"><%= dup_val.ref1 ? "#{dup_val.ref1}" : "&nbsp;".html_safe %></span><br/> <span id="ref2_<%= value.id %>"><%= dup_val.ref2 ? "#{dup_val.ref2}" : "&nbsp;".html_safe %></span><br/> <span id="ref3_<%= value.id %>"><%= dup_val.ref3 ? "#{dup_val.ref3}" : "&nbsp;".html_safe %></span> </h5>
+                                      <% else %>
+                                          <h5><div class="cup_number_label"><%= index + 1 %></div><span id="ref1_<%= value.id %>"><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %></span><br/> <span id="ref2_<%= value.id %>"><%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %></span><br/> <span id="ref3_<%= value.id %>"><%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %></span> </h5>
+                                      <% end %>
+                                      <ul class="cup_parts" data-id="<%= value.id %>">
+                                        <%= raw get_drafted_cup_parts(value).join('') %>
+                                      </ul>
+                                      <p class="add_button"><a class="btn btn-default popup"></a></p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <% index += 1 %>
+                            <% end %>
+                          </tr>
+                        </table>
+                      </div>
+                  <% end %>
+                </div>
+                <br />
+            <% end %>
+            <%= image_seperator %>
+            <%= form_tag update_cardex_kits_path do %>
+                <%= hidden_field_tag 'kit_number', params[:kit_number] %>
+                <%= hidden_field_tag 'kit_action', params[:kit_action] %>
+                <%= hidden_field_tag 'kit_notes', @kit.try(:notes) %>
+                <%= hidden_field_tag 'kit_description', @kit.try(:description) %>
+                <%= hidden_field_tag 'part_bin_center'%>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <input type='hidden' id="log" name='kit_media_type[serialize_data]'/>
+                    <input type='hidden' id="log_2" name='kit_media_type[serialize_data_2]'/>
+                    <input type='hidden' id="log_3" name='kit_media_type[serialize_data_3]'/>
+                  </div>
+                  <div class="col-sm-2">
+                    <%= submit_tag "Finish", class: "btn btn-primary", id: 'send_data_btn' %>
+                  </div>
+                  <div class="col-sm-2">
+                    <%= link_to "Back" , params[:approve].present? ? kits_approval_kits_path() : kits_path,class: 'btn btn-default'%>
+                  </div>
+                  <%if params[:approve].present?%>
+                      <div class="col-sm-2">
+                        <%= link_to 'Approve', approve_kits_kits_path(:kit_number=> " ", :approved => " " ), class: 'btn btn-primary', :id => "approve_btn",:confirm => "Are you sure to approve #{params[:kit_number]}?" if can?(:>,"4") %>
+                      </div>
+                  <% end %>
+
+                </div>
+            <% end %>
+        <% elsif @cups[0].kit.kit_media_type.kit_type == "binder" %>
+            <%= render "detail_design_binder" %>
+        <% elsif @cups[0].kit.kit_media_type.kit_type == "configurable" %>
+            <%= render "config_layout" %>
+        <% end %>
+    <% else %>
+        <% if @kit.kit_media_type.kit_type == "binder" %>
+            <%= render "detail_design_binder" %>
+        <% elsif @kit.kit_media_type.kit_type == "configurable" %>
+            <%= render "config_layout" %>
+        <% end %>
+    <% end %>
+<% end %>
+<%= image_seperator %>

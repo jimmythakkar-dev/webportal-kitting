@@ -1,0 +1,13 @@
+<h2 class="body_header" style="line-height: 12px;"><%= t("engineering_check",:scope => "engineering_check._search")%></h2>
+<%= image_seperator %>
+<p><%= t("enter_part_number",:scope => "engineering_check._search")%></p>
+<%= image_seperator %>
+<%= form_tag(engineering_check_search_path, :method => 'post', class: "form-inline") do %>
+    <div class="control-group">
+      <%= t("part_number_information",:scope => "engineering_check._search")%>
+      <div>
+        <%= text_field_tag :txtPartNo, params[:txtPartNo].try(:strip).try(:upcase) || params[:id].try(:strip).try(:upcase), required:  true,:class => "form-control" %>
+        <%= submit_tag t("search", scope: "open_orders.index"),id:'validate_eng_check_btn', :class=>"btn btn-default" %>
+      </div>
+    </div>
+<% end %>

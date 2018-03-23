@@ -1,0 +1,62 @@
+<h2 class="body_header">Kit Processing</h2>
+<%= render 'search' %>
+<span class="text-center">
+<%= content_tag :p, params[:alert].html_safe, class: "#{flash_class(:success)}" if params[:alert].present? %>
+  <%= render 'layouts/message_display' %>
+  </span>
+<% unless @rbo_down.present? %>
+    <p><%= page_entries_info @kit_copies %></p>
+    <div class="table-responsive">
+      <table class="table tablesorter">
+        <thead>
+        <th class="filter-false">Order <br> status</th>
+        <th>Kit Number </th>
+        <th>Kit Bin Center</th>
+        <th>Queue </th>
+        <th>Action</th>
+        </thead>
+        <% @kit_copies.each_with_index do |kit_copy,index| %>
+            <% filling_id = check_kit_filling(kit_copy) %>
+            <% in_filling_id = get_filling_id(kit_copy)%>
+            <% in_receiving = check_kit_receiving(kit_copy) %>
+            <% if kit_copy.try(:status) != 6 || (filling_id && in_filling_id.present?) %>
+                <tr>
+                  <td>
+                    <% if @kit_copy_list.include?(kit_copy.kit_version_number) %>
+                        <p class="green_light"></p>
+                    <% else %>
+                        <p class="gray_light"></p>
+                    <% end %>
+
+                  </td>
+                  <td>
+                    <% if  kit_copy.try(:kit).try(:kit_media_type)  %>
+                        <%= link_to kit_copy.kit_version_number, kit_copy_path(kit_copy.id), title: 'Media Type : '+ kit_copy.try(:kit).try(:kit_media_type).try(:name) %>
+                    <% else %>
+                        <%= link_to kit_copy.kit_version_number, kit_copy_path(kit_copy.id) %>
+                    <% end %>
+                  </td>
+                  <td><%= kit_copy.try(:kit).try(:bincenter) %></td>
+                  <td><%= kit_copy.try(:location).try(:name) %></td>
+                  <td>
+                    <% if session[:user_level] %>
+                        <% if session[:user_level] > "3" %>
+                            <%= link_to 'Pick Ticket', pick_ticket_kit_copy_path(kit_copy) if !filling_id and !in_receiving%>
+                            <% if in_receiving && !filling_id %>
+                                <%= link_to 'Receive kit', create_filling_show_kit_receiving_path(kit_copy,:received => "R"), title: 'Click To Receive The Kit' %>
+                            <% elsif filling_id && in_filling_id.present? %>
+                                <% unless kit_copy.status == 6 %>
+                                    <%=link_to 'Reprint Pick Ticket', pick_ticket_kit_copy_path(kit_copy, reprint: true), title: 'Click To Reprint'%> /
+                                <% end %>
+                                <%= link_to 'In Filling', edit_kit_filling_path(in_filling_id.try(:first).try(:id)) %>
+                            <% end %>
+                        <%end%>
+                    <%end%>
+                  </td>
+                </tr>
+            <% end %>
+        <% end %>
+      </table>
+    </div>
+    <%= will_paginate @kit_copies %>
+<% end %>

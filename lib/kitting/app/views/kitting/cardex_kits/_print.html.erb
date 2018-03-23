@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Print Label</title>
+</head>
+<style>
+    /*Please input font-size of body,div stop 12 px from 16px*/
+    /*Please input font-size of div.description stop 20 px from 30px*/
+    body,div{
+        margin: 0px; padding: 0px; font-size: 12px;
+    }
+    table, tr, td, th, tbody, thead, tfoot {
+        margin: 0px; padding: 0px; page-break-inside: avoid; border: 1px solid #000000;
+    }
+    div.part_15px{
+        text-align: center; margin: 0px;font-family: 'Arial';font-weight: bold;font-size: 15px;
+    }
+    div.part_13px{
+        text-align: center; margin: 0px;font-family: 'Arial';font-weight: bold;font-size: 13px;
+    }
+    div.part_9px{
+        text-align: center; margin: 0px;font-family: 'Arial';font-weight: bold;font-size: 9px;
+    }
+    span.qty{
+        float: right;
+    }
+    div.cup_qty{
+        margin: 0px; padding: 0px 5px;font-family: 'Arial';font-weight: bold;font-size: 11px;
+    }
+    .page{ display:block; clear:both; page-break-after:always;margin: 4% 2% 2% 2%; }
+    .hr_page{ height: 175px; display:block; clear:both; page-break-after:always;margin: 0px 2px 0px 2px  }
+    hr {  border: 0; border-top: 1px solid #000; }
+
+    div.kit { padding-left: 5px; font-family: 'Arial'; font-size: large;font-size: 18px;  }
+    div.bin_center { padding: 7px 5px 0px 5px;font-family: 'Arial';  }
+
+    div.description{ padding: 0px 5px 5px 5px;font-weight: bold;text-align: center; font-size: 20px;}
+    span.kit_small { float: right; padding-right: 5px; }
+    span.bin_center { padding-left: 5px; }
+
+    .page-break { padding-top: 100px;background-color: #0000FF; }
+    .cup_description{ margin:auto; display:table; font-family: 'Arial';font-size: 10px;font-weight: bold;}
+    .row_breaker{background-color: #eeeeee;}
+    .cup_num{position: relative; font-size: 9px;padding:2px 3px; background-color: #1d3f62;color: #ffffff; vertical-align: top;}
+    li.empty_cup{padding: 35px 0px;}
+
+    .configurable_table_template{
+        text-align: center;
+        border: 1px solid #000;
+        background: #A1B8CF;
+
+    }
+
+    .td_div{
+        position: relative;
+    }
+    .configurable_table_template td{
+        width: 200px;
+        height: 160px;
+        background-color: #fff;
+    }
+    .box-no
+    {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        padding: 1px 3px;
+        font-size: 11px;
+    }
+    .box-no-bottom{
+        position: absolute;
+        left: 0px;
+        bottom: 0px;
+        z-index: 1;
+        padding: 1px 3px;
+        font-size: 11px;
+    }
+    .part_block{
+        display: block;
+        text-align: right;
+        font-size: 11px;
+    }
+    span.non-config-non-contract-part{
+        position: relative;
+        float: right;
+        margin-top: -65px;
+        margin-right: 10px;
+        color: #ffffff;
+    }
+    .reference_text{
+        text-align: center;
+        font-size: 11px !important;
+    }
+    .small_reference_text{
+        text-align: center;
+        font-size: 9px !important;
+    }
+    .hr_part_number{
+        text-align: left;
+        padding: 2px;
+        font-size: 11px !important;
+    }
+    .dashed_line_internal_label{
+        border: 1px dashed #000000;
+        width: 100%;
+        position: relative;
+        top: 1.75in;
+    }
+</style>
+
+
+<%= wicked_pdf_stylesheet_link_tag 'jquery.gridster' -%>
+<%#= wicked_pdf_stylesheet_link_tag 'demo' -%>
+<style>
+    .gridster{
+        /*margin-top: -50px;*/
+    }
+    .gridster.gridster_screen_2{
+        margin-top: 0px;
+    }
+    .gridster.gridster_screen_3_0{margin-top: 0px;}
+    .gridster.gridster_screen_3_1{margin-top: 0px;}
+    .gridster.gridster_screen_3_2{margin-top: 0px;}
+    .gridster ul {
+        background-color: #A1B8CF;
+        width: 380px;
+        height: 580px !important;
+        overflow:hidden;
+    }
+    .gridster ul.small-template{
+        float: left;
+    }
+    .gridster li{
+        list-style-type: none;
+    }
+    .gridster.gridster_screen_2 ul {
+        width: 780px;
+        height: 520px !important;
+    }
+    .gridster.gridster_screen_2 ul li.gs-w{
+        cursor:default;
+    }
+
+    .gridster.gridster_screen_3_0 ul {
+        width: 1222px;
+        height:640px !important;
+    }
+    .gridster.gridster_screen_3_1 ul {
+        width: 258px;
+        height: 250px !important;
+    }
+    .gridster.gridster_screen_3_2 ul {
+        width: 258px;
+        height: 250px !important;
+    }
+
+
+    /*.gridster.small_orange_kit {width:780px;}*/
+    /*.gridster.small_orange_kit ul {width:780px; height:390px !important;}*/
+    /*.gridster.small_orange_kit ul .gs-w {cursor:auto;}*/
+
+    .gridster.gridster_screen_2 li{text-align:left;}
+    .gridster.gridster_screen_3_0 li{text-align:left;}
+    .gridster.gridster_screen_3_1 li{text-align:left;}
+    .gridster.gridster_screen_3_2 li{text-align:left;}
+
+    .gridster.gridster_screen_2{
+        width: 780px;
+    }
+    .gridster_container {width:1265px; margin:0 auto; margin-bottom:100px;}
+
+    .gridster.gridster_screen_3_0{
+        width:1265px;
+    }
+    .gridster.gridster_screen_3_1{
+        width: 300px;
+        margin:0;  float:left;
+    }
+    .gridster.gridster_screen_3_2{
+        width: 300px;
+        margin:0; float:right;
+    }
+    .gridster .gs-w {
+        background: #FFF;
+        cursor: move;
+    }
+
+    .gridster.small_orange_kit .gs-w.d_none {display:none;}
+
+    /***************** Small Oragnge Kit **************/
+    .gridster.small_orange_kit {width:780px;}
+    .gridster.small_orange_kit ul {width:780px; height:130px !important;}
+    .gridster.small_orange_kit ul .gs-w {cursor:auto;}
+
+    .small_orange_kit .s_arae {width:235px; height:100px; float:left; margin:0 10px 15px;}
+
+
+    .kit_info_box {
+        position: absolute;
+        left: 450px;
+        bottom: -100px;
+    }
+    .be_logo{
+        float: left;
+        width: 400px;
+        position: relative;
+    }
+    .kit_info{
+        float: left;
+        width: 400px;
+        position: relative;
+
+    }
+    .small_y_kit_info_box{
+        width: 350px;
+        position: relative;
+        left: 8%;
+        bottom: -10px;
+    }
+    .small_y_kit_info span{
+        font-size: 14px!important;
+    }
+    .small_y_be_logo div{
+        font-size: 14px!important;
+    }
+    .small_y_be_logo{
+        position: relative;
+    }
+    .gridster.small_orange_kit ul li div.block_area img{
+        width: 100% !important;
+        height: 100px !important;
+    }
+    span.config-non-contract-part{
+        font-size: 11px;
+        position: absolute;
+        right: 3px;
+        bottom: 15px;
+        text-align: right;
+    }
+    span.large_part_number{
+        font-size: 10px;
+    }
+</style>
+<%= wicked_pdf_javascript_include_tag "jquery" %>
+<%= wicked_pdf_javascript_include_tag "jquery.gridster" %>
+<%= wicked_pdf_javascript_include_tag "jquery.coords" %>
+<%= wicked_pdf_javascript_include_tag "utils" %>
+<%= wicked_pdf_javascript_include_tag "jquery.draggable" %>
+
+<script type="text/javascript">
+    jQuery.noConflict();
+    var gridster;
+    jQuery(function(){
+
+        if(jQuery('#small_yellow_kit').length){
+            gridster = jQuery(".gridster > ul").gridster({
+                widget_margins: [5, 5],
+                widget_base_dimensions: [130, 87]
+            }).data('gridster').disable();
+        }
+        if(jQuery(".gridster_container #demo-1").length){
+
+            gridster = jQuery("#demo-1 ul").gridster({
+                namespace: '#demo-1',
+                widget_margins: [3, 5],
+                widget_base_dimensions: [120, 150]
+            }).data('gridster').disable();
+        }
+        if(jQuery(".gridster_container #demo-2").length){
+            gridster = jQuery("#demo-2 ul").gridster({
+                namespace: '#demo-2',
+                widget_margins: [5, 5],
+                widget_base_dimensions : [140, 115]
+            }).data('gridster').disable();
+        }
+        if(jQuery(".gridster_container #demo-3").length){
+            gridster = jQuery("#demo-3 ul").gridster({
+                namespace: '#demo-3',
+                widget_margins: [5, 5],
+                widget_base_dimensions: [140, 115]
+            }).data('gridster').disable();
+        }
+        if(jQuery(".gridster.small_orange_kit #demo-1").length){
+            gridster = jQuery("#demo-1 ul").gridster({
+                namespace: '#demo-1',
+                widget_margins: [5, 5],
+                widget_base_dimensions: [120, 120]
+            }).data('gridster').disable();
+        }
+        if(jQuery(".gridster.small_orange_kit #demo-2").length){
+            gridster = jQuery("#demo-2 ul").gridster({
+                namespace: '#demo-2',
+                widget_margins: [5, 5],
+                widget_base_dimensions: [120, 120]
+            }).data('gridster').disable();
+        }
+        if(jQuery(".gridster.small_orange_kit #demo-3").length){
+            gridster = jQuery("#demo-3 ul").gridster({
+                namespace: '#demo-3',
+                widget_margins: [5, 5],
+                widget_base_dimensions: [120, 120]
+            }).data('gridster').disable();
+        }
+    });
+</script>
+<body>
+<% @cardex_kit = @kit.present? ? @kit : @cardex_kit %>
+<% if @kit_type == "non-configurable"%>
+    <% @cups = get_cups_layout_for_cardex_kit JSON[@cardex_kit.kit_html_layout], @cardex_kit.kit_media_type.compartment_layout %>
+    <% index = 0 %>
+    <% @cups.each_with_index do |row, row_index| %>
+        <table  cellspacing="0" cellpadding="0" style="width: 100%;font-size: 9px;" >
+          <% width = row.blank?? 0 : (100/row.try(:count)).to_f %>
+          <tr style="page-break-inside: avoid !important;">
+            <% row.each_with_index do |value, col_index| %>
+                <% li = value[1].split(",") %>
+                <td style="width: <%= 100/8 %>%; height: 155px;">
+                  <div class="cup_num"><%= index + 1 %></div>
+                  <ul style ="height: 131px; list-style-type:none;padding-left: 0px;">
+                    <li style="font-size: 100%; font-style: normal; padding-left:5px;">
+                      <% if li[2] %>
+                          <% parts = li[2].split("#") %>
+                          <div class="block_area">
+                            <% parts.each do |part| %>
+                                <p><%= part%></p>
+                            <% end %>
+                            <% if parts.size == 1 %>
+                                <% part = parts.first.gsub(/\W[(]\d*[)]/,"") %>
+                                <%= image_tag(Kitting::Part.find_by_part_number(part) ? Kitting::Part.find_by_part_number(part).image_name.medium : "#{Rails.root}/public/image_not_available.jpg", height: '70', width: '130') %>
+                            <% end %>
+                          </div>
+                      <% else %>
+                      <% end %>
+                    </li>
+                  </ul>
+                </td>
+                <% col_index += 1 %>
+                <% if col_index != 1 && col_index % 8 == 0 %>
+                    <% if (((row.try(:count) > 8) && ((col_index/ 8) == 1)) || ((row.try(:count) > 16) && ((col_index/ 8) == 2 ))) %>
+                        <td style="width: <%= width -3 %>%; vertical-align: bottom;">
+                          <%= image_tag( Rails.root.join("app","assets","images","arrow-return.png").to_s, height: '30px', width: '30px' ) %>
+                        </td>
+                    <% end %>
+                    </tr>
+                    <tr style="page-break-inside: avoid !important;" >
+                <% end %>
+                <% index += 1 %>
+            <% end %>
+            </tr>
+            </table>
+    <% end %>
+
+    <div style="text-align: center;font-size: 16px; margin-left: 300px;">
+      <div style="float: left; width: 250px; margin-top: 45px;text-align: left;">
+        <span><b>Kit Number : </b><%= @cardex_kit.kit_number %></span><br/>
+        <% if @box_number.present? %>
+            <span><b>Box Number: </b><%= @box_number %></span><br/>
+        <% end%>
+      </div>
+      <div style="float: left; width: 400px; position: relative;">
+        <%= image_tag( Rails.root.join("app","assets","images","KLX_logo.jpg").to_s , style: 'display:block; float:left;' ) %>
+      </div>
+    </div>
+<% else %>
+    <%= @kit_media_type == "Large Removable Cup TB" ? "<div class='gridster_container' style='position:relative;'>".html_safe : @kit_media_type == "Small Configurable TB" ? "<div class='gridster small_orange_kit' style='position:relative;'>".html_safe : "<div class=\"gridster_container\">".html_safe %>
+    <% @kit_html_layout.each_with_index do |kit_html_layout,index| %>
+        <% unless kit_html_layout.empty? %>
+            <div <%= add_class_and_id_to_gridster(@kit_media_type,index) %> >
+              <ul <%= @kit_media_type == "Small Removable Cup TB" ? "class='small-template'".html_safe : ""%>>
+                <% kit_html_layout.each_with_index do |li,index| %>
+                    <% cup_data = li[1].split(",") %>
+                    <li data-row="<%= cup_data[0] %>" data-col="<%= cup_data[1] %>"  data-sizex="<%= cup_data[2] %>" data-sizey="<%= cup_data[3] %>">
+                      <span class="box-no"><%= li[0] %></span>
+                      <% if cup_data[5] %>
+                          <% parts = cup_data[5].split("#") %>
+                          <div class="block_area">
+                            <span class='part_block'><%= parts.size > 1 ? cup_data[5].gsub("#","<br>").html_safe : cup_data[5] %></span>
+                            <% if parts.size == 1 %>
+                                <% part = parts.first.gsub(/\W[(]\d*[)]/,"") %>
+                                <%= image_tag(Kitting::Part.find_by_part_number(part) ? Kitting::Part.find_by_part_number(part).image_name.medium : "#{Rails.root}/public/image_not_available.jpg", height: 'auto', width: '100%') %>
+                            <% end %>
+                          </div>
+                      <% end %>
+                    </li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
+    <% end %>
+    </div>
+    <div class=<%= @kit_media_type == "Small Removable Cup TB" || @kit_media_type == "Small Configurable TB"  ? 'small_y_kit_info_box' : 'kit_info_box' %>>
+      <div class=<%= @kit_media_type == "Small Removable Cup TB" || @kit_media_type == "Small Configurable TB" ? 'small_y_kit_info' : 'kit_info' %>>
+        <span><b>Kit Number : </b><%= @cardex_kit.kit_number %></span><br/>
+        <% if @box_number.present? %>
+            <span><b>Box Number: </b><%= @box_number %></span><br/>
+        <% end%>
+      </div>
+      <div class=<%= @kit_media_type == "Small Removable Cup TB" || @kit_media_type == "Small Configurable TB" ? 'small_y_be_logo' : 'be_logo' %>>
+        <%= image_tag( Rails.root.join("app","assets","images","KLX_logo.jpg").to_s , style: 'display:block; float:left;' ) %>
+      </div>
+    </div>
+<% end %>
+</body>
+</html>

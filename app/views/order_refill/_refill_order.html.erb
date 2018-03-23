@@ -1,0 +1,132 @@
+<!-- Displaying all refill orders for corresponding search criteria -->
+<% if @response_refill_order %>
+    <% if @response_refill_order["errCode"] != "500" %>
+        <!-- Checking whether shipDate is present -->
+        <% if @response_refill_order["shipDate"].first.blank? %>
+            <!-- If shipDate is not present, displaying flash messages and  error messages from RBO response -->
+            <div class="row">
+              <div class="col-sm-12">
+                <!--% if @response_refill_order["errMsg"].blank? %-->
+              <span class="alert_msg"><strong><%= label_tag t("no_refill_order",:scope => "order_refill._refill_order"), nil, class: 'control-label' %>
+                <%=  params[:search_for_refill].try(:upcase) %>.</strong>
+              </span>
+                <!--% else %-->
+                    <%#*<span class="alert_msg"><!--%= flash_notice %--></span>%>
+                <!--% end %-->
+              </div>
+            </div>
+            <!-- If shipDateNo is present -->
+        <% else %>
+          <div id="restock">
+            <% if @length/100 > 0 %>
+              <small>We are currently displaying from <%= params[:page].to_i * 100 - 99 %> to <% if params[:page].to_i * 100 > @length %>
+                    <%= @length %>
+                <% else %>
+                    <%= params[:page].to_i * 100 %>
+                <% end %>
+                <% if @length % 100 > 0 %>
+                    <% @last_page = @length / 100 + 1 %>
+                <% else %>
+                    <% @last_page = @length / 100 %>
+                <% end %>
+                out of <%= @length %> parts  (<i>page <%= params[:page] %> of <%= @last_page %></i>).
+              </small>
+            <% end %>
+            <br />
+          </div>
+            <!-- Displaying refill order search results from RBO response -->
+            <strong><%= label_tag t("refill_orders",:scope => "order_refill._refill_order"),nil, class: 'control-label'%></strong>
+            <%= label_tag t("for_no",:scope => "open_orders._open_order"),nil, class: 'control-label'%> <%= params["search_by_refill"].try(:upcase) %>: <em>
+            <strong><%=  params["search_for_refill"].try(:upcase) %></strong></em>
+            <div style="overflow: scroll;width: auto;height:380px">
+              <div class="table-responsive">
+                  <table class="table tablesorter" >
+                    <thead>
+                    <tr>
+                      <th><%= t("scan_date",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("est_ship",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("actual_ship",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("rec_date",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("status",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("po_num",:scope => "open_orders._open_order") %></th>
+                      <th><%= t("transfer_num",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("part_num",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("order_qty",:scope => "open_orders._shipped_order_table") %></th>
+                      <th><%= t("ship_qty",:scope => "open_orders._open_order") %></th>
+                      <th><%= t("control_num",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("scancode",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("bincenter",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("bin",:scope => "order_refill._refill_order") %></th>
+                      <th><%= t("track_num",:scope => "order_refill._refill_order") %></th>
+                    </tr>
+                    </thead>
+                    <!--- Looping through Refill orders --->
+                    <% @result.each do |key,value| %>
+                        <tr>
+                          <td>
+                            <%= @response_list[key][:createScan] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:shipDate] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:actualDate] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:recDate] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:status] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:poNo] %>
+                          </td>
+                          <td>
+                            <%= key %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:custPN] %>
+                          </td>
+                          <td class="td_align_right">
+                            <%= @response_list[key][:ordQty] %>
+                          </td>
+                          <td class="td_align_right">
+                            <%= @response_list[key][:shipQty] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:controlNo] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:scancode] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:binCenter] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:binLoc] %>
+                          </td>
+                          <td>
+                            <%= @response_list[key][:trackingNo] %>
+                          </td>
+                        </tr>
+                    <% end %>
+                    <!--- End of Looping through Refill orders --->
+                  </table>
+              </div>
+            </div>
+            <%= will_paginate @result %>
+        <% end %>
+    <% else %>
+        <div class="row">
+          <div class="col-sm-12">
+            <span class="alert_msg"><%= flash_notice %></span>
+          </div>
+        </div>
+    <% end %>
+<% else %>
+    <div class="row">
+      <div class="col-sm-12">
+        <span class="alert_msg"><%= flash_notice %></span>
+      </div>
+    </div>
+<%end%>

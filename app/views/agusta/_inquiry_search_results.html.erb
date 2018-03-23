@@ -1,0 +1,90 @@
+<% if response["errMsg"] == "" %>
+    <div class="text-right">
+      <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40", :border => 0, :title => "View/Download as Excel Spreadsheet"), download_excel_agusta_path(params) %>
+    </div>
+<% end %>
+<% unless response.kind_of? String %>
+    <div id="restock">
+      <% if @totalpage > 0 %>
+          <small> <%= I18n.t("pagination",:scope => "agusta.agusta_inquiry",:start_page => params[:page], :end_page => @totalpage ).html_safe %></small>
+      <% end %>
+      <br/>
+    </div>
+    <div id="inquiry_result" style="overflow-x:scroll;">
+      <p><b><%= t 'agusta.shipped_orders' %></b></p>
+      <table style="height:140px; white-space: nowrap !important; " class="table tablesorter">
+        <thead>
+        <tr>
+          <th><%= t('agusta.customer_name') %></th>
+          <th><%= t('agusta.be_order') %></th>
+          <th><%= t('agusta.order_line') %></th>
+          <th><%= t('agusta.parent_part_number') %></th>
+          <th><%= t('agusta.part_number') %></th>
+          <th><%= t('agusta.customer_part_number') %></th>
+          <th><%= t('agusta.order_status') %></th>
+          <th><%= t('agusta.order_qty') %></th>
+          <th><%= t('agusta.ship_status') %></th>
+          <th><%= t('agusta.ship_qty') %></th>
+          <th><%= t('agusta.ship_date') %></th>
+          <th><%= t('agusta.ship_time') %></th>
+          <th><%= t('agusta.carrier_name') %></th>
+          <th><%= t('agusta.customer_order') %></th>
+          <th><%= t('agusta.customer_order_line') %></th>
+          <th><%= t('agusta.build_assembly_program') %></th>
+          <th><%= t('agusta.station_ing') %></th>
+          <th><%= t('agusta.date_required') %></th>
+          <th><%= t('agusta.time_required') %>&nbsp;&nbsp;[CET]</th>
+          <th><%= t('agusta.order_date') %></th>
+          <th><%= t('agusta.order_time') %>&nbsp;&nbsp;[CET]</th>
+          <th><%= t('agusta.requester') %></th>
+          <th><%= t('agusta.operation') %></th>
+          <th><%= t('agusta.reason') %></th>
+          <th><%= t('agusta.remarks') %></th>
+          <th><%= t('agusta.scan_code') %></th>
+        </tr>
+        </thead>
+        <% if response["errMsg"] == "" %>
+            <% agusta_hash_en =  I18n.backend.send(:translations)[:en][:agusta] %>
+            <% agusta_hash_it =  I18n.backend.send(:translations)[:it][:agusta] %>
+            <% @inquiry_search_details["kitPartNo"].each_with_index do |result,i| %>
+                <tr>
+                  <td><%= response["custName"][i] %></td>
+                  <td><%= response["requestIdList"][i] %></td>
+                  <td><%= response["orderNoList"][i] %></td>
+                  <td><%= response["kitPartNo"][i] %></td>
+                  <td><%= response["primePns"][i] %></td>
+                  <td><%= response["custRefPns"][i] %></td>
+                  <td><%= response["orderStatus"][i] %></td>
+                  <td><%= response["pnOrderQty"][i] %></td>
+                  <td><%= response["pnShipStatus"][i] %></td>
+                  <td><%= response["pnShipQtys"][i] %></td>
+                  <td><%= response["shipDate"][i] %></td>
+                  <td><%= response["shipTime"][i] %></td>
+                  <td><%= response["carrierName"][i] %></td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td><%= response["assembly"][i] %></td>
+                  <td><%= response["stations"][i] %></td>
+                  <td><%= response["requiredDate"][i] %></td>
+                  <td><%= response["requiredTime"][i] %></td>
+                  <td><%= response["orderDate"][i] %></td>
+                  <td><%= response["orderTime"][i] %></td>
+                  <td><%= response["requester"][i] %></td>
+                  <td><%= response["operation"][i] %></td>
+                  <% key = agusta_hash_en.key(response["reason"][i]) %>
+                  <% key = agusta_hash_it.key(response["reason"][i]) unless key.present? %>
+                  <td><%= key.present? ? I18n.t(key,:scope =>"agusta") : response["reason"][i] %></td>
+                  <td><%= (response["note"][i].present? ? response["note"][i] : "" ) if response["note"].present? %></td>
+                  <td><%= (response["deliveryScanCode"][i].present? ? response["deliveryScanCode"][i] : "N/A" ) if response["deliveryScanCode"].present? %></td>
+                </tr>
+            <% end %>
+        <% end %>
+      </table>
+    </div>
+    <% if (response && response["errMsg"] == "") %>
+        <%= will_paginate @result %>
+    <% end %>
+<% else %>
+    <br/>
+    <p class="alert alert-danger"><%= response %></p>
+<% end %>

@@ -1,0 +1,61 @@
+<h2 class="body_header">Part Detail</h2>
+<%= image_seperator %>
+<%if flash[:message]%>
+    <p class="alert alert-success"><%= flash[:message] %></p>
+<%end%>
+<%if flash[:notice]%>
+    <p class="alert alert-success"><%= flash[:notice] %></p>
+<%end%>
+<div class="row">
+  <div class="col-sm-3"><label>Part Number: </label></div>
+  <div class="col-sm-9 body_text_subhead"><%= @part.part_number%></div>
+</div>
+<div class="row">
+  <div class="col-sm-3"><label>Description: </label></div>
+  <div class="col-sm-9 body_text_subhead "><%= @part.name %></div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3"><label>Note: </label></div>
+  <div class="col-sm-9 body_text_subhead"><%= @part.description.truncate(70) %></div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col-xs-8"><label>Large Cup Count: </label></div>
+      <div class="col-xs-4 body_text_subhead"><%= @part.large_cup_count %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-8"><label>Medium Cup Count: </label></div>
+      <div class="col-xs-4 body_text_subhead"><%= @part.medium_cup_count %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-8"><label>Small Cup Count: </label></div>
+      <div class="col-xs-4 body_text_subhead"><%= @part.small_cup_count %></div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col-sm-3"><label>Image: </label></div>
+      <%if @part.image_name.present? %>
+          <div class="col-sm-9"><%= image_tag ( Rails.env == "production" || Rails.env == "qa" ) ? image_parts_url(:image =>@part.image_name_url(:medium).to_s.gsub("http://","https://")) : image_parts_url(:image => @part.image_name_url(:medium).to_s) %></div>
+      <%end%>
+    </div>
+  </div>
+</div>
+
+<hr>
+<div class="row">
+  <div class="col-sm-offset-2 col-sm-10">
+    <% if session[:user_level] %>
+        <% if session[:user_level] > "3" %>
+            <%= link_to 'Edit', edit_part_path(params[:id]), class: 'btn btn-primary' %>
+        <%end%>
+    <%end%>
+    <a class="btn btn-default" href="javascript:history.go(-2)">Back</a>
+  </div>
+</div>
+<br/>

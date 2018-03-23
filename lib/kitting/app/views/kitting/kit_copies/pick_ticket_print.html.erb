@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="KLX Aerospace, Inc. is the leading provider of interior products and solutions for the commercial, business jet, and military aircraft markets, and a leading distributor of aerospace hardware."/>
+<meta name="keywords" content="Aerospace, commercial aircraft, business jet, executive aircraft, aircraft interiors,seating, seating environments, super first class, business class, main cabin, premium class, premium economy, galley inserts, aircraft galley, oven products, beverage makers, water boilers, espresso, in-air catering, refrigeration, galley air-chillers, oxygen products, military oxygen, aircraft structures, integration services, wash lighting, mood lighting, aerospace hardware"/>
+<title>KLX Aerospace</title>
+ <%= favicon_link_tag 'favicon.ico' %>
+<%= stylesheet_link_tag  "kits", :media => "all" %>
+<%= stylesheet_link_tag  "print", :media => "all" %>
+</head>
+
+<body>
+<table style="width:100%" class="tbl_pick_ticket_main">
+  <% unless params[:version_alert_message].blank?  %>
+  <tr>
+    <td colspan="8">
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <tr>
+          <td style="color:red;background-color:#f2dede;border-color:#eed3d7;height:50px;text-align:center;font-size: 25px"><%= params[:version_alert_message] %></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <% end %>
+  <tr>
+    <td colspan="8">
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <tr>
+          <td>Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%m/%d/%Y") %></td>
+          <td>Pick List</td>
+        </tr>
+        <tr>
+          <td>Time: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= Time.now.strftime("%I:%M%p")  %> </td>
+          <td>Location: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%=  @kit_copies.try(:location).try(:name) %></td>
+        </tr>
+        <tr>
+          <td>Kit Number: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= params[:kit_version_number] %></td>
+          <td>Part Bin Center: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=  @pick_ticket_print_details["binCenter"] %> </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="8">
+      <table border="1" cellspacing="0" cellpadding="2" style="width:100%">
+        <tr>
+          <td><%= @media_type == "multi-media-type" ? "BOX/COMP" : "Comp.No"%></td>
+          <td>Parts To be Picked</td>
+          <td>Part Barcode</td>
+          <td>Part Type</td>
+          <td>Req. Qty</td>
+          <td>Bin Loc</td>
+          <td>Picked</td>
+        </tr>
+        <% @array_for_pick_ticket_details.each_with_index do |pick_ticket_detail,index| %>
+          <tr>
+            <td style="width:5%"><%= pick_ticket_detail["tray_number"] %></td>
+            <td><%= pick_ticket_detail["kitCompPartNo"] %></td>
+            <td>
+             <%unless pick_ticket_detail["kitCompPartNo"] == "" %>
+               <% generate_barcode(pick_ticket_detail["kitCompPartNo"]) %>
+               <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+pick_ticket_detail["kitCompPartNo"].split('').map(&:ord).join("") +'.png' ) %>
+             <% end %>
+            </td>
+            <td style="width:8%">
+            <% if pick_ticket_detail["part_number"].blank? %>
+              <%= 'P' %>
+            <% else %>
+              <%= 'AltP' %>
+            <% end %>
+          </td>
+          <td style="width:10%"><%= pick_ticket_detail["kcpnqty"] %></td>
+          <td><%= pick_ticket_detail["kcpnbinLocation"] %></td>
+          <td>&nbsp;</td>
+          </tr>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

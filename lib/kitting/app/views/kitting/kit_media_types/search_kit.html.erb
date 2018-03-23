@@ -1,0 +1,172 @@
+<h2 class="body_header">Edit Kit Media Type</h2>
+<%= render 'layouts/message_display' %>
+<%= image_seperator %>
+<%= form_tag({:action => 'search_kit'},:method=>"post",:class => "form-horizontal", name: 'search_kit') do  %>
+    <div class="form-group">
+      <%= label_tag 'Enter a Kit Number:', nil, :class => "col-xs-12 col-sm-3 control-label" %>
+      <div class="col-xs-12 col-sm-4"><%= text_field_tag :kit_number, params[:kit_number],:class=> "form-control" ,:required => true%></div>
+      <%= hidden_field_tag :mmt_kit_id, nil,:class=> "input-medium"%>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-3 col-sm-9">
+        <%= submit_tag 'Search', :class => "btn btn-primary" %>
+        <%= link_to "Back",admin_index_path ,:class=>"btn btn-default" %>
+      </div>
+    </div>
+
+<% end %>
+<%= image_seperator %>
+<% if params[:kit_number].present? %>
+    <p class="body_text_subhead">Kit Information</p>
+    <div class="row">
+      <div class="col-sm-3"><%= label_tag 'Kit Number :', nil, :class => "control-label" %></div>
+      <div class="col-sm-9"> <%= params[:kit_number] %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3"><%= label_tag 'Kit Media Type :', nil, :class => "control-label" %></div>
+      <div class="col-sm-9"><%= @parent_kit.kit_media_type.name %></div>
+    </div>
+    <% if @multi_media_kits %>
+        <div class="row">
+          <div class="col-xs-12 col-sm-3"><p class="text-info">Kit is having Multiple Media Types <br>Please select the one you want to convert</div>
+          <div class="col-xs-12 col-sm-3">
+            <%= select_tag "mmt_kit_id", options_for_select(@multi_media_kits.collect.with_index {|kit, index| ["#{kit.kit_media_type.name} (Box - #{ index + 1})" , kit.id] }),:required => true, :onclick => ("javascript: document.getElementById('mmt_kit_id').value = this.value;  document.search_kit.submit();"),:class=> "form-control"  %>
+          </div>
+        </div>
+    <% end %>
+    <%= image_seperator %>
+    <p class="body_text_subhead">Cups Information</p>
+    <div class="row">
+      <div class="col-sm-12">
+        <% unless @kit.try(:kit_media_type).try(:kit_type) == "binder" %>
+            <%if @kit.try(:kit_media_type).try(:kit_type) == "configurable" %>
+                <%= @kit.kit_media_type.name != "Small Configurable TB" ? "<div class='gridster_container'>".html_safe : "<div class='gridster small_orange_kit' style='position:relative;'>".html_safe %>
+                <% display_kit = create_group @kit.cups.where('commit_status = ? and status = ?',true, true).sort_by {|cup| cup.cup_number.to_i }, @kit.kit_media_type.name %>
+                <% display_kit.each_with_index do |group,index| %>
+                    <div <%= add_class_and_id_to_gridster(@kit.kit_media_type.name,index) %> >
+                      <ul>
+                        <% group.each_with_index do |cup,index| %>
+                            <% cup_dimension = cup.cup_dimension.split(",") %>
+                            <li rel="<%= (cup.ref1 || cup.ref2 || cup.ref3)? "tooltip" : ""  %>" title='<%= cup.ref1+', ' if cup.ref1 %> <%= cup.ref2+', ' if cup.ref2 %> <%= cup.ref3 if cup.ref3 %>'
+                                class="gs-w" id=<%= cup.id %> data-col=<%= cup_dimension[0].to_s %> data-row=<%= cup_dimension[1].to_s %> data-sizex=<%= cup_dimension[2].to_s %> data-sizey=<%= cup_dimension[3].to_s %> data-group=<%= cup_dimension[4].to_s %> >
+                              <span class="box-no"><%= cup.cup_number %></span>
+                              <div class="block_area">
+                                <%= raw get_configurable_part_with_qty(cup).join('') %>
+                              </div>
+                            </li>
+                        <% end %>
+                      </ul>
+                    </div>
+                <% end %>
+                </div>
+                <%= display_kit_handle(@kit.kit_media_type.name) %>
+            <% else %>
+                <div class="print-box">
+                  <% if @kit.edit_status == "NK" %>
+                      <% @cups = get_cups_layout @kit.cups, @kit.kit_media_type.compartment_layout %>
+                  <% else %>
+                      <% @cups = get_cups_layout @kit.cups.where(:commit_status => true), @kit.kit_media_type.compartment_layout %>
+                  <% end %>
+                  <% index = 0 %>
+                  <% @cups.each_with_index do |row, row_index| %>
+                      <div class="cup_table">
+                        <table class="thumbnails cups">
+                          <tr>
+                            <% row.each_with_index do |value, col_index| %>
+                                <td>
+                                  <div class="thumbnail">
+                                    <div class="caption">
+                                      <h5><div class="cup_number_label"><%= index + 1 %></div><%= value.ref1 ? "#{value.ref1}" : "&nbsp;".html_safe %><br/> <%= value.ref2 ? "#{value.ref2}" : "&nbsp;".html_safe %><br/> <%= value.ref3 ? "#{value.ref3}" : "&nbsp;".html_safe %> </h5>
+                                      <ul>
+                                        <%= raw get_parts(value).join('') if value %>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </td>
+                                <% index += 1 %>
+                            <% end %>
+                          </tr>
+                        </table>
+                      </div>
+                  <% end %>
+                </div>
+            <% end %>
+
+        <% else %>
+            <table class="table table-bordered">
+              <thead>
+              <th>SLEEVES</th>
+              <th>Part Number</th>
+              <th>Quantity</th>
+              </thead>
+              <tbody>
+              <% @row_count = 0 %>
+
+              <% @kit.cups.each_with_index do |cup,cup_index|  %>
+                  <% unless @kit.cups[cup_index].parts.blank?  %>
+                      <% @kit.cups[cup_index].cup_parts.each_index do |index| %>
+                          <% unless @kit.cups[cup_index].cup_parts[index].status == false %>
+                              <% @row_count = @row_count + 1 %>
+                              <% if @kit.cups[cup_index].cup_parts[index].commit_status == true %>
+                                  <tr>
+                                    <td>
+                                      <%= label_tag "kit_tray[]", @row_count, :class =>'kit_tray form-control' %>
+                                    </td>
+                                    <td><%= @kit.cups[cup_index].parts[index].part_number %> </td>
+                                    <td><%= @kit.cups[cup_index].cup_parts[index].demand_quantity %> </td>
+                                  </tr>
+                              <% end %>
+                          <% end %>
+                      <% end %>
+                  <% end %>
+              <% end %>
+              </tbody>
+            </table>
+        <% end %>
+        </div>
+    </div>
+    <div id="media_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="body_header">Kit Media Type Details </h2>
+          </div>
+          <div class="modal-body">
+            <div id="kit_detail">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-info close-popup" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>  <%= image_seperator %></p>
+    <% if @dup_kit.present? %>
+        <div style="padding:0px;">
+          <marquee behavior="alternate" scrollamount = "1" style="padding:0px; background:#8FCFD2; height:32px; marging:0px;">
+            <span style= "display: inline-block; margin-top: 8px; font-weight:bold; color: #F50C18; ">This Kit Is Under Edit Mode. Reset/Approve the Kit for further actions. &nbsp; <%= link_to 'Reset Kit', @kit, method: :delete, data: { confirm: "Are you sure to reset #{@kit.kit_number} ?" } %></span></marquee></div>​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
+    <% else %>
+        <p class="body_text_subhead">Convert Media Type</p>
+        <%= form_tag( convert_media_type_kit_media_types_path, :method=>'post',:id => "convert_media_type") do %>
+            <%= hidden_field_tag "kit_number", @kit.kit_number %>
+            <div class="row">
+              <div class="col-sm-2"><%= label_tag 'Kit Media Type :', nil, :class => "control-label" %></div>
+              <div class="col-sm-3"><%= text_field_tag :kit_media_type,@kit.kit_media_type.name,:value => @kit.kit_media_type.name, :disabled =>true, class: "form-control" %></div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2"><%= label_tag 'Select Media Type to Convert :', nil, :class => "control-label" %></div>
+              <div class="col-sm-3"><%= select_tag "media_type", options_from_collection_for_select(@media_types, "id", "name"), :prompt => "Select Media Type",:required => true,:onchange => "$(\"#kit_detail\").html(\"\"); $(\"#media_type\").removeClass(\"active\");" , class: "form-control"%></div>
+              <div class="col-sm-4"><%= link_to "<span class='glyphicon glyphicon-eye-open'></span> View Selected Media Type Design".html_safe,"#",:id => "display_media_type", :class => "btn btb-info" %></div>
+            </div><br/>
+            <div class="row">
+              <div class="col-sm-2">&nbsp;</div>
+              <div class="col-sm-3"><%= submit_tag "Convert".html_safe,:data => { confirm: "Are you sure to Convert KMT. Your Changes will not be reverted ?" },:class => "btn btn-primary" %></div>
+            </div>
+        <% end %>
+    <% end %>
+    <%= image_seperator %>
+<% end %>
+
+<%= javascript_include_tag "jquery" %>
+<%= render 'layouts/kitting/kit_config_layout' %>

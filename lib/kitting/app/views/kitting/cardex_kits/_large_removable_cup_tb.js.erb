@@ -1,0 +1,292 @@
+function resetboxno() {
+    var count = 1;
+        $(".gs-w").each(function(){
+        $(this).find(".box-no").text(count);
+            count++;
+    });
+}
+$(document).ready(function() {
+//    $.noConflict();
+    var gridster1;
+    var gridster2;
+    var gridster3;
+//    $(function(){
+    gridster1 = $("#part-1 ul").gridster({
+        namespace: '#part-1',
+        widget_base_dimensions: [75, 100],
+        widget_margins: [5, 5],
+        min_cols: 10,
+        max_cols: 10,
+        min_rows: 6,
+        max_rows: 6,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function (e, ui, $widget) {
+                if($widget.attr("data-sizey") == 2) {
+                    gridster1.resize_widget($widget, 2, 2);
+                    if($widget.attr("data-row") == 4) {
+                        gridster1.resize_widget($widget, 1, 1);
+                    }
+                }
+                /********  Last row Blocks  **************/
+                $(".gridster > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt == 4){
+                        if(parseInt($(this).attr("data-sizex")) == 2 && parseInt($(this).attr("data-sizey")) == 2){
+                            gridster1.resize_widget($(this), 2, 1);
+                        }
+                    }
+                });
+                $(".gridster_part_3_0 > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt > 4){
+                        var lparts2 = "";
+                        $.each($(this).find("p"), function(i){
+                            lparts2 +=  "<li>" + $(this).text() + "</li>";
+
+                            gridster1.remove_widget($(this).parent().parent(), true);
+                            setTimeout(function() {
+                                resetboxno();
+                            }, 500);
+                        });
+                        $(".part_list ul").prepend(lparts2);
+                    }
+                });
+                /********  Last row Blocks End **************/
+//                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                /********  Last row Blocks  **************/
+                $(".gridster > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt == 4){
+                        if(parseInt($(this).attr("data-sizex")) == 2 && parseInt($(this).attr("data-sizey")) == 2){
+                            gridster1.resize_widget($(this), 2, 1);
+                        }
+                    }
+                });
+                /********  Last row Blocks End **************/
+//                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster')/*.disable()*/;
+
+    ///////////////////////////////////////////////////////////////////// 3.1 /////////////////////////////////////////////////////
+
+    gridster2 = $("#part-2 ul").gridster({
+        namespace: '#part-2',
+        widget_base_dimensions : [80, 80],
+        widget_margins: [5, 5],
+        min_cols: 2,
+        max_cols: 2,
+        min_rows: 2,
+        max_rows: 2,
+        enabled: true,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                if($widget.attr("data-sizex") == 2) {
+                    gridster2.resize_widget($widget, 2, 2);
+                    if($widget.attr("data-row") == 2) {
+                        gridster2.resize_widget($widget, 1, 1);
+                    }
+                }
+                $(".gridster_part_3_1 > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt > 2){
+                        var lparts2 = "";
+                        $.each($(this).find("p"), function(i){
+                            lparts2 +=  "<li>" + $(this).text() + "</li>";
+
+                            gridster2.remove_widget($(this).parent().parent(), true);
+                            setTimeout(function() {
+                                resetboxno();
+                            }, 500);
+                        });
+                        $(".part_list ul").prepend(lparts2);
+                    }
+                });
+
+//                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+//                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster').disable();
+
+
+    ///////////////////////////////////////////////////////////////////// 3.1 /////////////////////////////////////////////////////
+
+    gridster3 = $("#part-3 ul").gridster({
+        namespace: '#part-3',
+        widget_margins: [5, 5],
+        widget_base_dimensions: [80, 80],
+        min_cols: 2,
+        max_cols: 2,
+        min_rows: 2,
+        max_rows: 2,
+        enabled: true,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                if($widget.attr("data-sizex") == 2) {
+                    gridster3.resize_widget($widget, 2, 2);
+                    if($widget.attr("data-row") == 2) {
+                        gridster3.resize_widget($widget, 1, 1);
+                    }
+                }
+                $(".gridster_part_3_2 > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt > 2){
+                        var lparts2 = "";
+                        $.each($(this).find("p"), function(i){
+                            lparts2 +=  "<li>" + $(this).text() + "</li>";
+
+                            gridster3.remove_widget($(this).parent().parent(), true);
+                            setTimeout(function() {
+                                resetboxno();
+                            }, 500);
+                        });
+                        $(".part_list ul").prepend(lparts2);
+                    }
+                });
+//                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+//                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster').disable();
+
+    var widgets = [
+        ['<li><span class="box-no">-</span> <span class="remove"></span></li>', 1, 1]
+    ];
+    ///////////////////////////////////////////// Remove /////////////////////////////////////////////////////
+
+    function resetboxno() {
+        var count = 1;
+        $(".gs-w").each(function(){
+            $(this).find(".box-no").text(count);
+            count++;
+        });
+    }
+
+    // Method to remove Cup from Configurable KMT
+
+
+    ///////////////////////////////////////////// Add /////////////////////////////////////////////////////
+
+    $("#part-1 #add_widget").on('click', function(){
+        $.each(widgets, function(i, widget){
+            if($("#part-1 .gs-w").length < 40) {
+                gridster1.add_widget.apply(gridster1, widget);
+            }
+        });
+        setTimeout(function() {
+            resetboxno();
+        }, 500);
+    });
+
+    $("#part-2 #add_widget").on('click', function(){
+        $.each(widgets, function(i, widget){
+            gridster2.add_widget.apply(gridster2, widget);
+        });
+        setTimeout(function() {
+            resetboxno();
+        }, 500);
+    });
+
+    $("#part-3 #add_widget").on('click', function(){
+        $.each(widgets, function(i, widget){
+            gridster3.add_widget.apply(gridster3, widget);
+        });
+        setTimeout(function() {
+            resetboxno();
+        }, 500);
+    });
+
+    ///////////////////////////////////////////// Serialize /////////////////////////////////////////////////////
+    $('#part-1 .js-seralize').click (function() {
+
+        var s = gridster1.serialize();
+        var T = gridster2.serialize();
+        var U = gridster3.serialize();
+        $('#kit_html_layout').val(JSON.stringify(s));
+        $('#kit_html_layout1').val(JSON.stringify(T));
+        $('#kit_html_layout2').val(JSON.stringify(U));
+
+    });
+
+    $("li.gs-w").on("click",function(){
+        select_cup($(".gridster ul li"), $(this));
+    });
+    $(document).on("keyup",function(e) {
+        if (e.keyCode == 88) {
+            if ($(".selected_cup").length == 1){
+                var lparts2 ="";
+                $.each($(".selected_cup").find("p"), function(i){
+                    lparts2 +=  "<li>" + $(this).text() + "</li>";
+                    $(this).remove();
+                });
+                $(".part_list ul").prepend(lparts2);
+            }
+            gridster1.remove_widget($(".selected_cup"), true);
+            setTimeout(function() {
+                resetboxno();
+            }, 500);
+        }
+    });
+    $(document).keyup(function(e) {
+        var lparts2 = "";
+
+        if (e.keyCode == 69) {
+            if ($(".selected_cup").length == 1){
+                $.each($(".selected_cup").find("p"), function(i){
+                    lparts2 +=  "<li>" + $(this).text() + "</li>";
+                    $(this).remove();
+                });
+                $(".part_list ul").prepend(lparts2);
+            }
+        }
+    });
+});

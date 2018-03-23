@@ -1,0 +1,41 @@
+<%= image_seperator %>
+<% if controller.action_name == "index" %>
+  <p>Please enter kit number or work order or select due date to print pick list and bag labels for that kit.</p>
+<%= image_seperator %>
+<% end %>
+<% if session[:user_level] >= "5" %>
+  <div class="row">
+    <div class="col-sm-12 text-right"><%= link_to 'Upload BOM and WorkOrder',new_kit_work_order_path  if controller.action_name == "index"%></div>
+  </div>
+<% end %>
+<br>
+<% form_submit_val = controller.action_name == "index" ? kit_work_orders_path : work_order_fillings_kit_work_orders_path %>
+  <%= form_tag( form_submit_val, :method => 'get', :class => "form-inline") do %>
+    <div class="form-group">
+      <%= label_tag 'Kit NO', nil %>
+      <%= text_field_tag :ag_kit_number_search, params[:ag_kit_number_search], class: 'form-control', placeholder: "Kit Number" %>
+    </div>
+    <div class="form-group">
+      <%= label_tag 'W/O NO', nil %>
+      <%= text_field_tag :ag_kit_wo_search, params[:ag_kit_wo_search], class: 'form-control', placeholder: "Work Order" %>
+    </div>
+    <% if controller.action_name == "index" %>
+        <div class="form-group">
+          <%= label_tag 'Due Date Within', nil %>
+          <%= select_tag :start_date, options_for_select(@days_format, :selected => params[:start_date]),class: "form-control" %>
+        </div>
+    <% else %>
+        <div class="form-group">
+          <%= label_tag 'Queue', nil %>
+          <%= select_tag :kit_queue, options_from_collection_for_select(@location, 'id', 'name', :selected => params[:kit_queue]), {:prompt => "Select a Queue", class: 'form-control'} %>
+        </div>
+    <% end %>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-sm-6 text-center">
+        <%= submit_tag 'Search', :class => "btn btn-primary text-center" %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>

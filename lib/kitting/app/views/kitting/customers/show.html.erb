@@ -1,0 +1,62 @@
+<h5 class="body_header"><%= "Upload Configuration for #{@customer.cust_name}" %></h5>
+<%= render 'layouts/message_display' %>
+<div class="row">
+  <div class="col-sm-12 text-right">
+    <%= link_to "Edit", edit_customer_path(@customer), class: "btn btn-default" %>
+    <% if @customer.upload_configuration %>
+        <%= link_to "Use default configuration", use_default_customer_path(@customer), class: "btn btn-info" %>
+    <% end %>
+  </div>
+</div>
+<% if @column_hash %>
+    <table class="table">
+      <thead>
+      <tr>
+        <th style="width: 250px !important;">Header Name</th>
+        <th style="width: 100px !important;">Spreadsheet Column</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Material (Part Numbers) </td>
+        <td><%= @column_hash["Material"] %></td>
+      </tr>
+      <tr>
+        <td>Material Description (Kit Description/Job Card Description)</td>
+        <td><%= @column_hash["Material Description"] %></td>
+      </tr>
+      <tr>
+        <td>Bulk Material </td>
+        <td><%= @column_hash["Bulk Material"] %></td>
+      </tr>
+      <tr>
+        <td>Work Order</td>
+        <td><%= @column_hash["Order"] %></td>
+      </tr>
+      <tr>
+        <td>Material (Stage)</td>
+        <td><%= @column_hash["Stage Material"] %></td>
+      </tr>
+      <tr>
+        <td>WBS element (Aircraft Tail Number/Serial Number)</td>
+        <td><%= @column_hash["WBS element"] %></td>
+      </tr>
+      <tr>
+        <td>Pegged requirement (Kit Numbers/Job Card Number)</td>
+        <td><%= @column_hash["Pegged requirement"] %></td>
+      </tr>
+      <tr>
+        <td>Base Unit of Measure</td>
+        <td><%= @column_hash["Base Unit of Measure"] %></td>
+      </tr>
+      <tr>
+        <td>Requirement Quantity</td>
+        <td><%= @column_hash["Requirement Quantity"] %></td>
+      </tr>
+      <tr>
+        <td>Requirement Date(Due Date)</td>
+        <td><%= @column_hash["Requirement Date"] %></td>
+      </tr>
+      </tbody>
+    </table>
+<% end %>

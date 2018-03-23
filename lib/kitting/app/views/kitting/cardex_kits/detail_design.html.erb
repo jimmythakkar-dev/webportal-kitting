@@ -1,0 +1,171 @@
+<div class="col-sm-3 part_list">
+  <%= render 'part_list_col' %>
+</div>
+<div class="col-sm-9">
+  <br>
+  <div class="row">
+    <div class="col-sm-8">
+      <% if @kitting_response %>
+
+          <%= form_tag(print_template_cardex_kits_path, :method => 'POST', target: "_blank", :class => "form-horizontal") do %>
+              <%= hidden_field_tag :kit_html_layout ,nil,class: 'print_layout_box'%>
+              <%= hidden_field_tag :kit_html_layout1,nil,class: 'print_layout_box' %>
+              <%= hidden_field_tag :kit_html_layout2,nil,class: 'print_layout_box' %>
+              <%= hidden_field_tag :cardex_kit_id, @cardex_kit.id %>
+              <%= hidden_field_tag :kit_number, @cardex_kit.kit_number %>
+              <%= hidden_field_tag :kit_type, @cardex_kit.kit_media_type.kit_type %>
+              <%= hidden_field_tag :kit_media_type ,@cardex_kit.kit_media_type.name %>
+              <%= hidden_field_tag :mmt_kit , @mmt_kit.id rescue "" %>
+              <% if @cardex_kit.kit_media_type.kit_type == "configurable" %>
+                  <div id="save_cardex_kit_layout" class="js-seralize btn btn-default save_cardex_layout">Save layout</div>
+              <% else %>
+                  <div id="save_non_config_kit_layout" class="js-seralize btn btn-default save_cardex_layout">Save layout</div>
+              <% end %>
+
+              <a id="small_removable" class="btn btn-info fill_all_cups" >Fill All Cups</a>
+              <%= submit_tag 'Print', :class => "btn btn-success print js-seralize"%>
+          <% end %>
+      <% end %>
+    </div>
+    <div class="col-sm-3 pull-right">
+      <%= link_to "Back", cardex_kits_path, class: "btn btn-default" %>
+      <% if @cardex_kit%>
+          <%= link_to "Reset kit", reset_layout_cardex_kit_path(@mmt_kit.present? ? @mmt_kit.id : @cardex_kit.id), class: "btn btn-default reset_cardex_kit_layout" %>
+      <% end %>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-sm-4 text-info" id="save_template_alert" style="visibility: hidden">Save Successfully.<span class="glyphicon"></span></div>
+    <div class="col-sm-7 text-info text-right">Press 'E' to empty parts from cup | Press 'X' to remove cup </div>
+  </div>
+  <% if @multi_media_kits  %>
+      <p class="text-primary"><strong class="text-info"> Kit Media Types</strong> </p>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel mmty-panel">
+            <div class="panel-heading mmty-heading">
+              <ul class="nav mmty-nav-tab nav-tabs">
+                <% box_number = "" %>
+                <% @multi_media_kits.each_with_index do |mmt_kit, index| %>
+                    <li class="<%= @cardex_kit.id == mmt_kit.id ? 'active' : '' %>">
+                      <%= link_to mmt_kit.kit_media_type.name, "/kitting/cardex_kits/detail_design?mmt_id=#{@mmt_kit.id}&kit_media_type=#{mmt_kit.kit_media_type.id}&sub_kit=#{mmt_kit.id}",onclick: "show_spinner()"  %>
+                      <%= link_to "<span class='glyphicon glyphicon-remove'></span>".html_safe, '#', id:  mmt_kit.id , class: 'remove_media_type btn btn-default' %>
+                      <% if @cardex_kit.id == mmt_kit.id %>
+                          <% box_number = index +1  %>
+                      <% end %>
+                    </li>
+                <% end %>
+                <li class="add-media-type-li" style="display: none" >
+                  <div class="input-group">
+                    <%= select_tag 'add_design_kit_media_type_id', options_from_collection_for_select(@kit_media_types.reject { |kmt| (kmt.kit_type == "multi-media-type" || kmt.name == "Small Configurable TB" || kmt.kit_type == "binder")}, 'id', 'name'), remote: true, class: "form-control", style: "width: 150px" %>
+                    <span class="input-group-addon">
+                        <%= link_to "<span class='glyphicon glyphicon-plus'></span>".html_safe, '#', style: 'float:right', id: @mmt_kit.id ,  class: "add-media-type box_#{box_number.to_i+1}" %>
+                      </span>
+                    <span class="input-group-addon hide-add-media-type-li"><span class='glyphicon glyphicon-remove'></span></span>
+                  </div>
+                </li>
+                <%= @multi_media_kits.size == 0 ? "<li class='no-media-type edit-media-type'><a><span class='glyphicon glyphicon-plus'></span> Add Media Types</a></li>".html_safe : "<li class='edit-media-type'><a><span class='glyphicon glyphicon-circle-arrow-right'></span></a></li>".html_safe %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+  <% end %>
+  <%#= display_part_difference(@parts_not_in_cardex, @parts_not_in_oracle) %>
+  <%= image_seperator %>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="main-div">
+        <% if @cardex_kit %>
+            <div class="update_div">
+              <% if @cardex_kit.kit_media_type.kit_type == "configurable" %>
+                  <%= @cardex_kit.kit_media_type.name == "Large Removable Cup TB" ? "<div class='kit_container' style='position:relative;'>".html_safe : @cardex_kit.kit_media_type.name == "Small Configurable TB" ? "<div class='gridster small_orange_kit' style='position:relative;'>".html_safe : "<div class=\"gridster_container\">".html_safe %>
+                  <% box_no  =  0 %>
+                  <% JSON[@cardex_kit.kit_html_layout].each_with_index do |kit_html_layout,index| %>
+                      <% unless kit_html_layout.empty? %>
+                          <div <%= add_class_and_id_to_print_template(@cardex_kit.kit_media_type.name,index) %> >
+                            <% if index == 0  %>
+                                <div align="right">
+                                  <span id="add_widget" data-group="<%= index + 1 %>" class="btn btn-info">Add Cup</span>
+                                </div>
+                            <% end %>
+                            <ul <%= @cardex_kit.kit_media_type.name == "Small Removable Cup TB" ? "class='small-template'".html_safe : ""%>>
+                              <% kit_html_layout.each_with_index do |cupdata,i| %>
+                                  <% li = cupdata[1].split(",") %>
+                                  <li data-row="<%= li[0] %>" data-col="<%= li[1] %>" data-sizex="<%= li[2] %>" data-sizey="<%=li[3] %>">
+                                    <span class="box-no"><%= box_no = index == 0 ? i + 1 : box_no + 1 %></span>
+                                    <% if li[5] %>
+                                        <% parts = li[5].split("#") %>
+                                        <div class="block_area">
+                                          <% parts.each do |part| %>
+                                              <p><%= part%></p>
+                                          <% end %>
+                                        </div>
+                                    <% end %>
+                                  </li>
+                              <% end %>
+                              <% box_no = box_no %>
+                            </ul>
+                            <% if index != 0 && @cardex_kit.kit_media_type.name != "Small Configurable TB" %>
+                                <br />
+                                <div align="left">
+                                  <span id="add_widget" data-group="<%= index + 1 %>" class="btn btn-info ">Add cup to <%= index == 1 ? 'bottom left' : 'bottom right' %> |  <span class="glyphicon glyphicon-arrow-up"></span></span>
+                                </div>
+                            <% end %>
+                          </div>
+
+                      <% end %>
+                  <% end %>
+                  </div>
+                  </div>
+              <% else %>
+                  <% index = 0 %>
+                  <% @cups = get_cups_layout_for_cardex_kit JSON[@cardex_kit.kit_html_layout], @cardex_kit.kit_media_type.compartment_layout %>
+                  <% @cups.each_with_index do |cup_count,row| %>
+                      <div class="cup_table">
+                        <table class="thumbnails cups">
+                          <tr>
+                            <% cup_count.each_with_index do |cup_data,col| %>
+                                <% li = cup_data[1].split(",") %>
+                                <td>
+                                  <div class='thumbnail'>
+                                    <div class="caption">
+                                      <ul class="cup_parts">
+                                        <li data-row = "<%= li[0] %>" data-col = "<%= li[1] %>">
+                                          <span class="box-no"><%= box_no = index == 0 ? index + 1 : box_no + 1 %></span>
+                                          <% if li[2] %>
+                                              <% parts = li[2].split("#") %>
+                                              <div class="block_area">
+                                                <% parts.each do |part| %>
+                                                    <p><%= part%></p>
+                                                <% end %>
+                                              </div>
+                                          <% end %>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </td>
+                                <% index += 1 %>
+                            <% end %>
+                          </tr>
+                        </table>
+                      </div>
+                  <% end %>
+              <% end %>
+        <% end %>
+        </div>
+  </div>
+</div>
+</div>
+<%= javascript_include_tag "jquery" %>
+<script type='text/javascript'>
+    <%if @cardex_kit.kit_media_type.name == "Small Removable Cup TB" %>
+    <%= render(:partial => 'small_removable_cup_tb', :handlers => [:erb], :formats => [:js]) %>
+    <% elsif @cardex_kit.kit_media_type.name == "Large Removable Cup TB"  %>
+    <%= render(:partial => 'large_removable_cup_tb', :handlers => [:erb], :formats => [:js]) %>
+    <% elsif @cardex_kit.kit_media_type.name == "Small Configurable TB"  %>
+    <%= render(:partial => 'c_small_config_tb', :handlers => [:erb], :formats => [:js]) %>
+    <% end %>
+</script>

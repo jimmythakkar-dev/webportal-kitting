@@ -1,0 +1,60 @@
+<h2 class="body_header">Kit History</h2>
+<%= image_seperator %>
+<% if @versions.blank? %>
+    <div class ="alert_msg"><h3><%= flash[:notice]%></h3></div>
+<% else %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+        <th>History Index</th>
+        <th>Timeline</th>
+        <th>Date</th>
+        </thead>
+        <% count = 1 %>
+        <% @versions.each_with_index do |version, index| %>
+            <tr>
+              <% if version.event =="create" && version.item_type == "Kitting::Kit" %>
+                  <td><%= count %></td>
+                  <td> Kit <%= version.event %>d with <%= version.item.cups.count %> Cups
+                    With Kit Number <strong><%= version.item.kit_number %></strong>
+                  </td>
+                  <td><%= version.created_at %></td>
+                  <% count = count + 1 %>
+              <% elsif version.item_type == "Kitting::CupPart" && version.event == "create"%>
+                  <td><%= count %></td>
+                  <% if version.next %>
+                      <td>Part <strong> <%= version.item.part.part_number %> </strong>
+                        Added with  Quantity
+                        <%= version.next.reify.demand_quantity%>
+                        in<strong> Cup <%= get_cup_number version.item %></strong>
+                      </td>
+                  <% else %>
+                      <td>Part <strong><%= version.item.part.part_number %></strong>
+                        Added with  Quantity <%= version.item.demand_quantity %>
+                        in <strong>Cup <%= get_cup_number version.item %></strong>
+                      </td>
+                  <% end %>
+                  <td><%= version.created_at %></td>
+                  <% count = count + 1 %>
+              <% elsif version.item_type == "Kitting::CupPart" && version.event == "update"%>
+                  <% if version.reify.status == false %>
+                      <td><%= count %></td>
+                      <td>Part <strong><%= version.reify.part.part_number %></strong>
+                        Deleted from <strong> Cup <%= get_cup_number version.item %></strong></td>
+                      <td><%= version.created_at %></td>
+                  <% else %>
+                      <td><%= count %></td>
+                      <td>Part <strong><%= version.reify.part.part_number %></strong> Updated with  Quantity
+                        <%= version.reify.demand_quantity %>
+                        in <strong> Cup <%= get_cup_number version.item %></strong>
+                      </td>
+                      <td><%= version.created_at %></td>
+                  <% end %>
+                  <% count = count +1 %>
+              <% end %>
+            </tr>
+        <% end %>
+      </table>
+    </div>
+<% end %>
+<%= link_to 'Back', kitting.kit_path(params[:kit]) %>

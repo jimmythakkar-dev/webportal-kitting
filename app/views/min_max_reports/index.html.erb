@@ -1,0 +1,10 @@
+<p class="body_header"><%= t("report_metrics",:scope => "min_max_reports.index") %></p>
+<%= image_seperator %>
+<%  if params[:send_order] %>
+   <% if flash[:notice].present? %>
+     <%= flash[:notice] %>
+   <% end %>
+<% else %>
+<p class="report_body_text"><%= t("_desc",:name => session[:buyer_email],:scope => "min_max_reports.index").html_safe %></p>
+<%= link_to t('send_report',:scope => "min_max_reports.index") , min_max_reports_path(:send_order => "true"), :class => "btn btn-default" %>
+<% end %>

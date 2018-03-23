@@ -1,0 +1,110 @@
+<h2 class="body_header"><%= t('Panstock_Action_Request',:scope=> "panstock_requests.action_history")%></h2>
+<%= image_seperator %>
+<%= t('_desc_form_process',:scope => "panstock_requests.form_process")%>
+<%= image_seperator %>
+<%if @General_Error %>
+    <% if @General_Error > "0"%>
+        <%= "#{@General_Error}"%>
+    <%end%>
+<%end%>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-sm-4"> <%= label_tag "Buyer", t('Buyer',:scope => "panstock_requests.form_process")  %></div>
+      <div class="col-sm-8"><%= session[:full_name]%> </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"> <%= label_tag "Email", t('Email',:scope => "panstock_requests.form_process")  %> </div>
+      <div class="col-sm-8"> <%= session[:buyer_email]%> </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"> <%= label_tag "Comp", t('Comp',:scope => "panstock_requests.form_process") %> </div>
+      <div class="col-sm-8 "><%= session[:customer_Name]%> </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"> <%= label_tag "UserName", t('UserName',:scope => "panstock_requests.form_process")  %> </div>
+      <div class="col-sm-8 "><%= session[:user_name]%></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4"> <%= label_tag "Clock_No", t('Clock_No',:scope => "panstock_requests.form_process") %> </div>
+      <div class="col-sm-8 "><%= session[:buyer_id]%></div>
+    </div>
+    <div class="row">
+      <div class = "col-sm-4"> <%= label_tag "Ship-To", t('Ship-To',:scope => "panstock_requests.form_process") %> </div>
+      <div class="col-sm-8 "><%=  @shipto_response["shipTo"].html_safe%></div>
+    </div>
+  </div>
+</div>
+<%= image_seperator %>
+<%if @General_Error %>
+    <%if @General_Error >= "0" %>
+        <b><%= @General_Error%></b>
+        <br/>
+    <%end%>
+<%end%>
+<% if @good_pns_array != ""%>
+    <div class="alert alert-success text-center">
+      <%= t('p/n_order',:scope => "panstock_requests.form_process")%>
+    </div>
+    <div class="table-responsive">
+      <table id="table">
+        <thead>
+        <th><%= t('LINE',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('QUANTITY',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('UM',:scope => "panstock_requests.send_panstock_changes") %></th>
+        <th><%= t('DELIVER_TO',:scope => "panstock_requests.form_process") %></th>
+        </thead>
+        <% @line_array = @good_pns_array.split("|")%>
+        <tr>
+          <td><%= @line_array[0]%></td>
+          <td><%= @line_array[1]%></td>
+          <td><%= @line_array[2]%></td>
+          <td><%= @line_array[3]%></td>
+          <td><%= @line_array[4]%></td>
+        </tr>
+      </table>
+    </div>
+    <br />
+<%end%>
+<%if @bad_pns_array != ""%>
+    <div class="alert alert-danger">
+      <%if params[:approvalStatus] != "Approved"%>
+          <%= t('part_not_ordered',:scope => "panstock_requests.form_process") %>
+      <%else%>
+          <%= t('part_number_invalid',:scope => "panstock_requests.form_process") %>
+      <%end%>
+    </div>
+    <div class="table-responsive">
+      <table id="table">
+        <thead>
+        <th><%= t('LINE',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('QUANTITY',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('UM',:scope => "panstock_requests.send_panstock_changes") %></th>
+        <th><%= t('REASON',:scope => "panstock_requests._edit_panstock") %></th>
+        <th><%= t('DELIVER_TO',:scope => "panstock_requests.form_process") %></th>
+        </thead>
+        <% @line_array = @bad_pns_array.split("|")%>
+        <% @rason = params[:statusReason]%>
+        <tr>
+          <td><%= @line_array[0]%></td>
+          <td><%= @line_array[1]%></td>
+          <td><%= @line_array[2]%></td>
+          <td><%= @line_array[3]%></td>
+          <td><%= @reason%></td>
+          <td><%= @line_array[4]%></td>
+        </tr>
+      </table>
+    </div>
+    <br />
+<%end%>
+<% if params[:AdditionalComments] && params[:AdditionalComments] != "" %>
+    <div class="col-sm-12 table_title"><%= t('ADDITIONAL_COMMENTS',:scope => "panstock_requests.form_process")%> </div>
+    <div class="row"><div class="col-sm-12"><%= params[:AdditionalComments]%></div></div>
+    <% mylist = params[:AdditionalComments]%>
+    <% @action_form = mylist.split("|")%>
+    <br />
+<%end%>
+
+<%= button_to t('View_History_List',:scope => "panstock_requests.form_process"), panstock_history_panstock_requests_path, :method => 'get',:class => "btn btn-default" %>

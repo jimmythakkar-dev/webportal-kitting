@@ -1,0 +1,36 @@
+<div class="table-row">
+  <div class="col"><%= t('updated',:scope => "critical_watch.new") %>:</div>
+  <div class="col">
+    <%= @response_get_bins["updatedDt"] %>
+  </div>
+</div>
+<div class="table-row">
+  <div class="col"><%= t('Updated_By',:scope => "floor_views._floor_view_search") %>:</div>
+  <div class="col">
+    <%= @response_get_bins["updatedBy"] %>
+  </div>
+</div>
+<div class="table-row">
+  <div class="col"><%= t('PART_NUMBER',:scope => "floor_views._location_search") %>:</div>
+  <div class="col">
+    <%= @part_number.try(:upcase) %>
+  </div>
+</div>
+<div class="table-row">
+  <div class="col"><%= t('alt_part_number',:scope => "remote_inv.search") %>:</div>
+  <div class="col">
+    <%= @response_get_bins["altPartNo"] %>
+  </div>
+</div>
+<div class="table-row">
+  <div class="col"><%= t('cust_part_number',:scope => "remote_inv.search") %>:</div>
+  <div class="col">
+    <%= @response_get_bins["custPartNo"]  %>
+  </div>
+</div>
+<div class="table-row">
+  <div class="col"><%= t('shipping_add',:scope => "bin_line_station.search_part_number") %>:</div>
+  <div class="col">
+    <strong><%= @response_get_bins["shipTo"].html_safe%></strong>
+  </div>
+</div>

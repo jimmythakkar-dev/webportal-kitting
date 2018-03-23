@@ -1,0 +1,64 @@
+<% if @kitting_response["errCode"] == "0"  %>
+<h2 class="body_header">Kit History</h2>
+<%= render 'search' %>
+    <%= render 'layouts/message_display' %>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <span class="col-sm-9 body_text_subhead">History <span style="font-weight: normal;color: #000000;">for:</span>
+        <b style="color: #008000;"><%= params[:id].upcase %></b></span>
+      <span class="col-sm-3"><%= link_to 'Current Kit Details', kitting_path(CGI.escape(params[:id])) %></span>
+    </div>
+  </div>
+
+  <table id="table">
+  <thead>
+    <th></th>
+    <th>SITE</th>
+    <th>LOCATION</th>
+    <th>DESCRIPTION</th>
+    <th>STATUS</th>
+    <th>DATE</th>
+    <th>TIME </th>
+    <th>BY </th>
+  </thead>
+
+  <% unless @kitting_response["kitLocList"].join().blank? %>
+    <% @kitting_response["kitLocList"].each_index do |index| %>
+      <tr>
+        <td><%= link_to '[view]', kitting_path(:id => CGI.escape(params[:id]),:KitHistId => CGI.escape(@kitting_response["kitHistIdList"][index])) %></td>
+        <td>
+          <% if current_user    == CUST_FORECAST_USER_ARR[0] %> MESA
+          <% elsif current_user == CUST_FORECAST_USER_ARR[1] %> LONG BCH.
+          <% elsif current_user == CUST_FORECAST_USER_ARR[2] %> MACON
+          <% elsif current_user == CUST_FORECAST_USER_ARR[3] %> ST. LOUIS
+          <% else %> &nbsp;
+          <% end %>
+        </td>
+        <td><%= @kitting_response["kitLocList"][index] %></td>
+        <td><%= @kitting_response["kitDescList"][index] %></td>
+        <td><%= display_status(@kitting_response["kitStatList"][index]) %></td>
+        <td><%= @kitting_response["kitHistDateList"][index] %></td>
+        <td><%= @kitting_response["kitHistTimeList"][index] %></td>
+        <td><%= @kitting_response["kitHistUserList"][index] %></td>
+      </tr>
+    <% end %>
+  <% end %>
+  </table>
+
+  <%= image_seperator %>
+
+  <div class="control-group">
+    <div class="controls">
+      <%= submit_tag 'Search Again', :class => "btn btn-primary"%>
+    </div>
+  </div>
+
+<% else %>
+  <p class="text-danger">  Sorry, <strong><%= params[:id].upcase %></strong> was not found. <br />Would you like to </p>
+  <% if session[:user_level] > "3" %>
+    <% link_to 'create new kit?', new_kitting_url %>
+  <% else %>
+    <p class=text-dangerr"> create new kit? (please contact your supervisor or KLX representative.)</p>
+  <% end %>
+<% end %>

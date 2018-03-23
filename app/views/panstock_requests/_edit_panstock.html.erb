@@ -1,0 +1,167 @@
+<%= form_tag  send_panstock_changes_panstock_requests_path, :method => :post,:class => "form-inline" do %>
+    <%= hidden_field_tag  "myaction", "5"%>
+    <%= hidden_field_tag  "form5267", "1"%>
+    <%= hidden_field_tag  "iAction", "N"%>
+    <div class="row">
+      <div class="col-sm-8">
+        <%= t('Building/Ship_To',:scope => "panstock_requests._edit_panstock") %> <span class="alert_msg">*</span>
+        <%= select_tag(:sendTo, options_for_select(@BldgList),:'data-remote' =>'true', :'data-url' => url_for(:controller => 'panstock_requests', :action => 'get_line_station'), :prompt => 'Select',:class => "form-control",:style =>"margin-left: 4px;") %>
+      </div>
+      <div class="col-sm-4">
+        <%= t('Date',:scope => "panstock_requests._edit_panstock")%>
+        <span><%= Date.today.strftime("%_m/%d/%y")%></span>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+      <div class="col-sm-2">
+        <%= t('Line_Station' ,:scope => "panstock_requests._edit_panstock") %> <span class="alert_msg">*</span>
+      </div>
+      <div id="line_station" class="col-sm-4">
+        <% if params[:selLocation] %>
+            <%= select_tag("selLocation",options_for_select(@locations["binCenterList"], params[:selLocation]),:prompt => "Select Bin Location", class: 'form-control',:style =>"width:100%;") %>
+        <%else%>
+            <%= select_tag("selLocation", nil, :prompt => "Select", class: 'form-control',:style =>"width:100%;") %>
+        <%end%>
+      </div>
+      <div class="col-sm-5">
+        <%= t('Bin_Number',:scope => "panstock_requests._edit_panstock") %>
+        <%= text_field_tag 'Bincenter', nil, :class => "form-control"%>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+      <div class="col-sm-2">
+        <%=  t('Originator',:scope => "panstock_requests._edit_panstock")  %>
+      </div>
+      <div class="col-sm-3">
+        <%= text_field_tag 'Originator',nil, :class => "form-control" %>
+        <%=  t('Name',:scope => "panstock_requests._edit_panstock") %> <span class="alert_msg">*</span>
+      </div>
+      <div class="col-sm-3">
+        <%= text_field_tag 'OriginatorPhone', nil, :class => "form-control" %>
+        <%= t('phone',:scope => "panstock_requests._edit_panstock") %><span class="alert_msg">*</span>
+      </div>
+      <div class="col-sm-4">
+        <%= text_field_tag 'OriginatorPager', nil, :class => "form-control" %>
+        <%=t('pager',:scope => "panstock_requests._edit_panstock") %>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+      <div class="col-sm-2">
+        <%= t('Requestor',:scope => "panstock_requests._edit_panstock") %>
+      </div>
+      <div class="col-sm-3">
+        <%= text_field_tag 'RequestorName',nil, :class => "form-control" %>
+        <%= t('Name',:scope => "panstock_requests._edit_panstock") %>
+      </div>
+      <div class="col-sm-3">
+        <%= text_field_tag 'RequestorPhone',  nil, :class => "form-control" %>
+        <%= t('phone',:scope => "panstock_requests._edit_panstock") %>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+      <div class="col-sm-2">
+        <%= t('Foreman',:scope => "panstock_requests._edit_panstock")  %>
+      </div>
+      <div class="col-sm-5">
+        <%= text_field_tag 'ForemanName' ,nil, :class => "form-control" %><br/>
+        <%=  t('Name',:scope => "panstock_requests._edit_panstock") %><span class="alert_msg">*</span><%= t('Required_for_all_action_codes',:scope => "panstock_requests._edit_panstock")  %>
+      </div>
+      <div class="col-sm-4">
+        <%= text_field_tag 'ForemanPhone', nil, :class => "form-control" %><br/>
+        <%= t('phone',:scope => "panstock_requests._edit_panstock") %><span class="alert_msg">*</span>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <small><strong><%= t('Actions',:scope => "panstock_requests._edit_panstock")%></strong><br/> <em><%= t('Add_Delete_Change_Qty_Expedite',:scope => "panstock_requests._edit_panstock") %></em>(<strong><%= t('Next_Day',:scope => "panstock_requests._edit_panstock") %></strong>)<em > Jig Down </em>(<strong> <%= t('Same_Day_if_Available',:scope => "panstock_requests._edit_panstock") %></strong>)<em ><%= t('Non-Critical',:scope => "panstock_requests._edit_panstock") %></em> (<strong>2-5 <%= t('Days',:scope => "panstock_requests._edit_panstock") %></strong>) </small>
+    <div class="alert alert-danger" style="display:none;" id="contract_error"></div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+        <td class="header"><%= t('LINE',:scope => "panstock_requests._edit_panstock") %><br/><%= t('NUMBER',:scope => "panstock_requests._edit_panstock") %></td>
+        <td class="header"><%= t('ACTION',:scope => "panstock_requests._edit_panstock") %></td>
+        <td class="header"><%= t('PART_NUMBER',:scope => "panstock_requests._edit_panstock") %> <span class="alert_msg">*</span></td>
+        <td class="header"><%= t('QUANTITY',:scope => "panstock_requests._edit_panstock") %> <span class="alert_msg">*</span></td>
+        <td class="header"><%= t('UNIT_OF',:scope => "panstock_requests._edit_panstock") %><br/><%= t('MEASURE',:scope => "panstock_requests._edit_panstock") %></td>
+        <td class="header"><%= t('ONE_TIME',:scope => "panstock_requests._edit_panstock") %><br/><%= t('NEED',:scope => "panstock_requests._edit_panstock") %></td>
+        <td class="header"><%= t('REASON',:scope => "panstock_requests._edit_panstock") %><br/><%= t('COMMENTS',:scope => "panstock_requests._edit_panstock") %></td>
+        </thead>
+        <tbody>
+        <%(1..15).each do |index|%>
+            <tr>
+              <td class="pan_text_align">
+                <%= index%>
+              </td>
+              <%if index == 1%>
+                  <%if @ac && @tpn %>
+                      <td>
+                        <%= select_tag "ActionCode_#{index}", options_for_select([["Non Critical","Non Critical"],["Expedite","Expedite"],["Jig Down","Jig Down"], ["AOG","AOG"], ["Add","Add"], ["Change Qty","Chg Qty"], ["Delete","Delete"]], :selected => params[:ac]), :class => "ActionCode form-control" %>
+                      </td>
+                      <td>
+                        <%= text_field_tag "PartNo_#{index}", params[:tpn], :class => 'PartNo form-control' %>
+                      </td>
+                      <td>
+                        <%= text_field_tag "OrderQty_#{index}", nil, :class => 'OrderQty form-control' %>
+                      </td>
+                      <td>
+                        <%= select_tag "um_#{index}", options_for_select([["EA","EA"],["LB","LB"],["HU","HU"], ["TH","TH"]]),:class => 'UM form-control' %>
+                      </td>
+                      <td class="pan_text_align">Y <%= check_box_tag "OneTimeNeed_#{index}" %></td>
+                      <td>
+                        <%= text_field_tag "ReasonForAction_#{index}", nil, :class => 'ReasonForAction form-control' %>
+                      </td>
+                  <%else%>
+                      <td>
+                        <%= select_tag "ActionCode_#{index}", options_for_select([["Non Critical","Non Critical"],["Expedite","Expedite"],["Jig Down","Jig Down"], ["AOG","AOG"], ["Add","Add"], ["Change Qty","Chg Qty"], ["Delete","Delete"]]), :class => "ActionCode form-control" %>
+                      </td>
+                      <td>
+                        <%= text_field_tag "PartNo_#{index}",nil, :class => 'PartNo form-control' %>
+                      </td>
+                      <td>
+                        <%= text_field_tag "OrderQty_#{index}", nil, :class => 'OrderQty form-control' %>
+                      </td>
+                      <td>
+                        <%= select_tag "um_#{index}", options_for_select([["EA","EA"],["LB","LB"],["HU","HU"], ["TH","TH"]]),:class => 'UM form-control' %>
+                      </td>
+                      <td class="pan_text_align">Y <%= check_box_tag "OneTimeNeed_#{index}" %></td>
+                      <td>
+                        <%= text_field_tag "ReasonForAction_#{index}", nil, :class => 'ReasonForAction form-control' %>
+                      </td>
+                  <%end%>
+              <%else%>
+                  <td>
+                    <%= select_tag "ActionCode_#{index}", options_for_select([["Non Critical","Non Critical"],["Expedite","Expedite"],["Jig Down","Jig Down"], ["AOG","AOG"], ["Add","Add"], ["Change Qty","Chg Qty"], ["Delete","Delete"]]), :class => "ActionCode form-control" %>
+                  </td>
+                  <td>
+                    <%= text_field_tag "PartNo_#{index}", nil, :class => 'PartNo form-control' %>
+                  </td>
+                  <td>
+                    <%= text_field_tag "OrderQty_#{index}", nil, :class => 'OrderQty form-control' %>
+                  </td>
+                  <td>
+                    <%= select_tag "um_#{index}", options_for_select([["EA","EA"],["LB","LB"],["HU","HU"], ["TH","TH"]]),:class => 'UM form-control' %>
+                  </td>
+                  <td class="pan_text_align">Y <%= check_box_tag "OneTimeNeed_#{index}" %></td>
+                  <td>
+                    <%= text_field_tag "ReasonForAction_#{index}", nil, :class => 'ReasonForAction form-control' %>
+                  </td>
+              <%end%>
+            </tr>
+        <%end%>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <b><%= t('NOTES',:scope => "panstock_requests._edit_panstock")%></b><br />
+      <i><%= t('note_desc',:scope => "panstock_requests._edit_panstock")%></i><br />
+      <span class="alert_msg"> *<%= t('req_field',:scope => "panstock_requests._edit_panstock")%></span><br/>
+    </p>
+    <div class="pull-right">
+      <%= submit_tag t('Submit_Request',:scope => "panstock_requests._edit_panstock"), :id => "panstock_action_request", class: 'btn btn-primary' %>
+      <%=  link_to "<button class='btn btn-danger'>#{t('Cancel',:scope => "panstock_requests._edit_panstock") }</button>".html_safe, panstock_requests_path, :method => :get %>
+    </div>
+    <div class="clear"></div>
+<%end%>

@@ -1,0 +1,45 @@
+
+<% if @superSedenceSearch_response["errMsg"].blank? %>
+  <%= image_seperator %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-4"><%= t("Supersedence_Search", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-8 body_text_subhead">for :<%= @superSedenceSearch_response["partNo"][0] || params[:id] %></div>
+        </div>
+      </div>
+    </div>
+  <%= image_seperator %>
+
+  <% @superSedenceSearch_response["newPartNoList"].each_index do |index| %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-6"><%= t("Original_Part_Number", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-6"><b><%= @superSedenceSearch_response["oldPartNoList"][index].upcase %></b></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6"><%= t("New_Superseding_Part_Number", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-6"><b><%= @superSedenceSearch_response["newPartNoList"][index].upcase %></b></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6"><%= t("REASON", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-6"><%= @superSedenceSearch_response["reasonList"][index].upcase %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6"><%= t("Results", scope:"floor_views._floor_view_search") %></div>
+          <div class="col-sm-6"><b><%= t("part_has_been_superseded", scope:"engineering_check._supersedence_search") %></b></div>
+        </div>
+      </div>
+    </div>
+
+  <%= image_seperator %>
+  <% end %>
+
+<% else %>
+  <% unless @superSedenceSearch_response["errMsg"].blank? %>
+    <%# if @partNums_response["errMsg"].blank? %>
+      <div class="text-danger"><%= @superSedenceSearch_response["errMsg"] %></div>
+    <%# end %>
+  <% end %>
+<% end %>

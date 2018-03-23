@@ -1,0 +1,56 @@
+<h2 class="body_header">Kit Design Page</h2>
+<%= image_seperator %><br/>
+<div class="text-right">
+ <p><%= link_to 'Kit List',kits_path() %></p>
+</div>
+
+<%= render 'layouts/message_display' %>
+<% if @kit %>
+    <%= form_for @kit, :html => { :class => "form-horizontal"} do |f| %>
+        <% if @kit.errors.any? %>
+            <div class="alert_msg">
+              <h4><%= pluralize(@kit.errors.count, "error") %> prohibited this post from being saved:</h4>
+              <ul>
+                <% @kit.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
+        <%= hidden_field_tag 'cust_id', session[:customer_number] %>
+        <%= hidden_field_tag 'kit_id', @kit_id %>
+        <div class="form-group">
+          <%= f.label 'Kit Bin Center:', class: "col-sm-2 control-label"%>
+          <div class="col-sm-4">
+            <%= f.select 'bincenter', @binCenters, { :prompt => ' Select Location ' }, :required => true, class: "form-control" %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label 'kit Number: *', :class => "col-sm-2 control-label" %>
+          <div class="col-sm-4">
+            <%= f.text_field :kit_number, class: "form-control", required: true  %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label 'kit_media_type:', :class => "col-sm-2 control-label" %>
+          <div class="col-sm-4">
+            <%= f.select :kit_media_type_id, @media_type.map{ |c| [c.name, c.id] } ,{ :prompt => ' Select Kit Media Type ' }, :required => true,  class: "form-control" %>
+          </div>
+        </div>
+        <div class="row-for-multi-media-type">
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <% if session[:user_level] %>
+                <% if session[:user_level] >= "3" %>
+                    <%= f.submit :class => "btn btn-primary"%>
+                <%end%>
+            <%end%>
+          </div>
+        </div>
+    <% end %>
+<% end %>
+<%= image_seperator %>

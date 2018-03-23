@@ -1,0 +1,78 @@
+<% if params[:web_order_type]=="Sikorsky" %>
+    <p class="body_header"><%= t("title_sikorsky",:scope => "web_order_request.index") %></p>
+<% else %>
+    <p class="body_header"><%= t("title_vbo",:scope => "web_order_request.index") %></p>
+<% end %>
+<%= image_seperator %>
+<%= render "layouts/message_display" %>
+<% unless @error %>
+    <%= form_tag process_form_web_order_request_index_path, {:class => "web_order_request form-horizontal", :id => params[:web_order_type]=="Sikorsky" ? "sikorsky" : "variable_quantity_bin_order" } do %>
+        <%= hidden_field_tag :web_order_type, (@sikorsky_order_type ? "Sikorsky" : "Variable Quantity Bin Order") %>
+        <div class="form-group">
+          <div class="col-sm-2"><label class="control-label"><%= I18n.t("name",:scope => "web_order_request.index")%>:</label></div>
+          <div class="col-sm-3"><%= text_field_tag :name, h(session["full_name"]), :class => "form-control web_order_request_name",:style=>"width:150px;",:maxlength => "12" %></div>
+          <div class="col-sm-7"><small class="small"><em>(Limited to 12 characters to fit in label)</em></small></div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-2"><label class="control-label"><%= I18n.t("email",:scope => "web_order_request.index")%>:</label></div>
+          <div class="col-sm-7"><%= email_field_tag :email, h(session["buyer_email"]), :class => "form-control web_order_request_email",:size => "45",:maxlength => "45" %></div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-2"><label class="control-label"><%= I18n.t("company",:scope => "web_order_request.index")%>:</label></div>
+          <div class="col-sm-7"><%= text_field_tag :company, h(session["customer_Name"]), :class => "form-control web_order_request_company",:size => "45",:maxlength => "45" %></div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-2"><label class="control-label"><%= I18n.t("clock",:scope => "web_order_request.index")%>:</label></div>
+          <div class="col-sm-7"><%= text_field_tag :buyer_id, "", :class => "form-control web_order_request_buyer_id",:placeholder => "Enter Buyer ID",:size => "45",:maxlength => "45" %></div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-2"><label class="control-label"><%= I18n.t("ship_to",:scope => "web_order_request.index")%>:</label></div>
+          <div class="col-sm-7">
+            <% if @sikorsky_order_type %>
+                <%= select_tag :ship_to, @ship_to.html_safe, class: "form-control web_order_request_sikorsky_ship_to" %>
+            <% else %>
+                <%= select_tag :ship_to, options_for_select(@ship_to,  :selected => params[:ship_to] ), class: "form-control web_order_request_vbo_ship_to" %>
+            <% end %>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <td class="web_request">&nbsp;</td>
+            <td class="web_request"><%= t("part_number",:scope => "web_order_request.index") %></td>
+            <td class="web_request"><%= t("qty",:scope => "web_order_request.index") %></td>
+            <td class="web_request"><%= t("um",:scope => "web_order_request.index") %></td>
+            <% if @sikorsky_order_type %>
+                <td class="web_request"><%= t("oat",:scope => "web_order_request.index") %></td>
+            <% end %>
+            <td class="web_request"><%= t("deliver_to",:scope => "web_order_request.index") %>(10 chars)</td>
+            </thead>
+            <!--- Generate the part number detail lines code --->
+            <tbody>
+            <% (1..10).each do |ln| %>
+                <tr class="web_order_request_details">
+                  <td><%= ln %></td>
+                  <td><%= text_field_tag "part_number[]", "", :class => "form-control web_order_request_pn" %></td>
+                  <td><%= text_field_tag "quantity[]", "", :class => "form-control web_order_request_qty" %></td>
+                  <td><%= select_tag "uom[]", options_for_select([ "EA", "LB" ], "EA"),:class => "form-control web_order_request_uom"%></td>
+                  <% if @sikorsky_order_type %>
+                      <td><%= select_tag "oat[]", options_for_select(@oat),:prompt=> "Select OAT",:class=> "form-control web_order_request_sikorsky_oat" %></td>
+                  <% end %>
+                  <td><%= text_field_tag "deliver_to[]", "", :class => "form-control web_order_request_deliver"%></td>
+                </tr>
+            <% end %>
+            <tbody>
+            </table>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-5"><label class="control-label"><%= I18n.t("additional_comments",:scope => "web_order_request.index")%>:</label></div>
+          <div class="col-sm-10"><%= text_area_tag "additional_comments", nil, :class => "form-control", rows: 4, cols: 250%></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"><%= submit_tag t('Submit_Request',:scope => "panstock_requests._edit_panstock"), :id => "web_request_submit_request", class: 'btn btn-default' %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8"><i>* <%= t("check_local_stocking_area",:scope => "web_order_request.index") %></i></div>
+        </div>
+    <% end %>
+<% end %>

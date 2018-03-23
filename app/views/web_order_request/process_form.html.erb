@@ -1,0 +1,137 @@
+<% if @sikorsky_order_type %>
+    <p class="body_header"><%= t("title_sikorsky",:scope => "web_order_request.index") %></p>
+<% else %>
+    <p class="body_header"><%= t("title_vbo",:scope => "web_order_request.index") %></p>
+<% end %>
+<%= image_seperator %>
+<%= render "layouts/message_display" %>
+<%= hidden_field_tag :web_order_type, (@sikorsky_order_type ? "Sikorsky" : "Variable Quantity Bin Order") %>
+<% if @result["errMsg"].present? %>
+    <div class="row">
+      <div class="col-sm-9"><p class="alert alert-danger" ><%= @result["errMsg"] == "No parts entered. Press back button" ? t("no_parts_entered",:scope => "web_order_request.process_form") : @result["errMsg"] %> </p></div>
+    </div>
+    <% if @sikorsky_order_type %>
+        <%= link_to t("enter_new_order",:scope=> "web_order_request.process_form"), main_app.web_order_request_index_path(:web_order_type => "Sikorsky"),:class=>"btn" %>
+    <% else %>
+        <%= link_to t("enter_new_order",:scope=> "web_order_request.process_form"), main_app.web_order_request_index_path,:class=>"btn" %>
+    <% end %>
+<% else %>
+    <div class="col-sm-9"><p class="alert alert-info" ><%= t("purchase_request",:scope=> "web_order_request.process_form") %> </p></div>
+    <table class="table">
+      <tr>
+        <td>
+          <div class="row">
+            <div class="col-sm-2"><label class="control-label"><%= I18n.t("name",:scope => "web_order_request.index")%>:</label></div>
+            <div class="col-sm-9"><%= @result["custName"]%></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="row">
+            <div class="col-sm-2"><label class="control-label"><%= I18n.t("email",:scope => "web_order_request.index")%>:</label></div>
+            <div class="col-sm-7"><%= @result["custEmail"] %></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="row">
+            <div class="col-sm-2"><label class="control-label"><%= I18n.t("company",:scope => "web_order_request.index")%>:</label></div>
+            <div class="col-sm-7"><%= @result["compName"] %></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="row">
+            <div class="col-sm-2"><label class="control-label"><%= I18n.t("clock",:scope => "web_order_request.index")%>:</label></div>
+            <div class="col-sm-7"><%= @result["buyerID"] %></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="row">
+            <div class="col-sm-2"><label class="control-label"><%= I18n.t("ship_to",:scope => "web_order_request.index")%>:</label></div>
+            <div class="col-sm-7"><%= @result["shipto"] %></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <%= image_seperator %>
+    <% if @result["goodPns"].present? %>
+        <div class="row">
+          <div class="alert alert-success"><%= I18n.t("part_numbers_accepted",:scope=>"web_order_request.process_form") %></div>
+        </div>
+        <table class="table" border="0" cellpadding="4" cellspacing="1" width="620">
+          <thead>
+          <th><%= I18n.t("line",:scope=>"web_order_request.process_form") %></th>
+          <th><%= I18n.t("part_number",:scope=>"web_order_request.index") %></th>
+          <th><%= I18n.t("qty",:scope=>"web_order_request.index") %></th>
+          <th><%= I18n.t("um",:scope=>"web_order_request.index") %></th>
+          <% if @sikorsky_order_type %>
+              <th><%= I18n.t("oat",:scope=>"web_order_request.index") %></th>
+          <% end %>
+          <th><%= I18n.t("deliver_to",:scope=>"web_order_request.index") %></th>
+          </thead>
+          <!--- Generate the part number detail lines code --->
+          <% @result["goodPns"].split(",").each do |approved_detail| %>
+              <% list = approved_detail.split("|")%>
+              <tr>
+                <td align="center"><%= list[0] %></td>
+                <td><%= list[1] %></td>
+                <td align="right"><%= list[2] %></td>
+                <td align="center"><%= list[3] %></td>
+                <% if @sikorsky_order_type %>
+                    <td><%= list[5] %>&nbsp;</td>
+                <% end %>
+                <td><%= list[4] %>&nbsp;</td>
+              </tr>
+          <% end %>
+        </table>
+    <% end %>
+
+    <% if @result["badPns"].present? %>
+        <div>
+          <div class="col-sm-12 alert alert-danger"><%= I18n.t("part_number_sent_for_review",:scope=>"web_order_request.process_form") %></div>
+        </div>
+        <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <th><%= I18n.t("line",:scope=>"web_order_request.process_form") %></th>
+          <th><%= I18n.t("part_number",:scope=>"web_order_request.index") %></th>
+          <th><%= I18n.t("qty",:scope=>"web_order_request.index") %></th>
+          <th><%= I18n.t("um",:scope=>"web_order_request.index") %></th>
+          <th><%= I18n.t("deliver_to",:scope=>"web_order_request.index") %></th>
+          <th><%= I18n.t("reason",:scope=>"web_order_request.process_form") %></th>
+          </thead>
+          <!--- Generate the part number detail lines code --->
+          <% @result["badPns"].split(",").each do |approved_detail| %>
+              <% list = approved_detail.split("|")%>
+              <tr>
+                <td align="center"><%= list[0] %></td>
+                <td><%= list[1] %></td>
+                <td align="right"><%= list[2] %></td>
+                <td align="center"><%= list[3] %></td>
+                <td><%= list[4] %>&nbsp;</td>
+                <td><%= @sikorsky_order_type ? list[6] : list[5] %>&nbsp;</td>
+              </tr>
+          <% end %>
+        </table>
+        </div>
+    <% end %>
+    <div class="clear"></div>
+    <% if @result["userComments"].present? %>
+        <div class="row">
+          <div class="col-sm-3"><%= label_tag t("additional_comments",:scope => "web_order_request.index") %></div>
+          <div class="col-sm-9"><%= @result["userComments"] %></div>
+        </div>
+    <% end %>
+    <br/>
+    <% if @sikorsky_order_type %>
+        <%= link_to t("enter_new_order",:scope=> "web_order_request.process_form"), main_app.web_order_request_index_path(:web_order_type => "Sikorsky"),:class=>"btn btn-default" %>
+    <% else %>
+        <%= link_to t("enter_new_order",:scope=> "web_order_request.process_form"), main_app.web_order_request_index_path,:class=>"btn btn-default" %>
+    <% end %>
+<% end %>

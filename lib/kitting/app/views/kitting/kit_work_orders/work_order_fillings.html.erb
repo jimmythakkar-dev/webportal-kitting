@@ -1,0 +1,41 @@
+<h2 class="body_header">Work Order Processing</h2>
+<%= render 'search' %>
+<span class="text-center">
+<%= content_tag :p, params[:alert].html_safe, class: "#{flash_class(:success)}" if params[:alert].present? %>
+  <%= render 'layouts/message_display' %>
+</span>
+<% if @work_order_fillings && @work_order_fillings.present? %>
+<div id="kit_table">
+  <% unless @work_order_fillings.nil? %>
+      <small><em> <%= page_entries_info(@work_order_fillings) %></em></small>
+      <div class="table-responsive">
+        <table class="table tablesorter filling_table">
+          <thead>
+          <th>Delivery ID</th>
+          <th>Kit Number </th>
+          <th>WO Number </th>
+          <th>Filled State </th>
+          <th>Queue </th>
+          <th>Created By</th>
+          <!--<th>RePrint</th>-->
+          </thead>
+          <% @work_order_fillings.each do |wo_kit_filling| %>
+              <tr>
+                <td><%= link_to wo_kit_filling.id, edit_kit_filling_path(wo_kit_filling,:type=>"work_order") %></td>
+                <!--<td><%#= link_to wo_kit_filling.id, edit_kit_filling_path(wo_kit_filling.id) %></td>-->
+                <td><%= wo_kit_filling.kit_work_order.kit.customer_kit_part_number %></td>
+                <td><%= wo_kit_filling.kit_work_order.work_order.order_number %></td>
+                <td><%= Kitting::KitFilling.filled_state_display(wo_kit_filling.filled_state) %></td>
+                <td><%= wo_kit_filling.location.name %></td>
+                <td><%= wo_kit_filling.customer.user_name %></td>
+                <!--<td class="text-center"><%#= check_box_tag 'pick_ticket[]', false %></td>-->
+              </tr>
+          <% end %>
+        </table>
+      </div>
+      <%= will_paginate @work_order_fillings  %>
+  <%end%>
+</div>
+<%else%>
+    <p class="text-primary">No records found</p>
+<%end%>

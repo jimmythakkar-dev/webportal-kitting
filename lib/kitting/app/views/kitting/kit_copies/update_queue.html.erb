@@ -1,0 +1,28 @@
+<h2 class="body_header">Update Kit Location</h2>
+<%= image_seperator %>
+<p>Scan/Enter all kit copies and then, select target queue for the move.</p>
+<%= image_seperator %>
+<% if flash[:notice].present? %>
+    <%= flash[:notice] %>
+<% end %>
+
+<%= form_tag kit_queue_update_path, :method=>"get", class: 'form-horizontal' do  %>
+    <div class="form-group">
+      <%= label_tag 'Kit Copy Number', nil, class: "control-label col-sm-3" %>
+      <div class="col-sm-9">
+        <%= text_area_tag :scan_copy_numbers , nil, :rows => 7, :required => true, class: "form-control" %>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= label_tag 'Select Queue:', nil, class: "control-label col-sm-3" %>
+      <div class="col-sm-4">
+        <%= select_tag 'location', options_for_select(@locations.collect{ |loc| [loc.name] }),{:prompt => "Please Select..." , :required => true, class: "form-control"} %>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <%= submit_tag 'Move', class: 'btn btn-primary' %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>

@@ -1,0 +1,26 @@
+<%= render 'search' %>
+<% if @binCenterParts_response["errMsg"].blank? && !@binCenterParts_response["bcpartList"].blank? %>
+    <div class="row">
+      <div class="col-sm-2"><%= t("Bin_Location",scope: "floor_views._location_search") %></div>
+      <div class="col-sm-7"><span><strong class="body_text_subhead"><%= params[:id] %></strong>
+        <%= "["+ @binCenterParts_response["custNo"] +"]" %></span></div>
+      <div class="col-sm-3">
+        <%= link_to image_tag("excel_icon_download.png", :height => "40", :width => "40",:class => "img-responsive", :border => 0, :title => t("view_or_download", scope:"engineering_check.view_location_parts")), download_excel_path(bin_location: params[:id],page: params[:page],format: 'xls')  %>
+      </div>
+    </div>
+    <%= image_seperator %>
+    <p>
+      <small><%= "#{t('bin_paginate',:start_page => params[:page].to_i * 100 - 99, :end_page => (params[:page].to_i * 100 > @total_records ?  @total_records : params[:page].to_i * 100 ),:total_records => @total_records , :first_page => params[:page],:last_page =>  @total_page,:scope => "bin_line_station.search_by_location")}".html_safe %></small>
+    </p>
+    <div class="row">
+      <div class="col-sm-9 body_text_subhead"><%= t("location_detail",scope: "engineering_check.view_location_parts") %></div>
+      <div class="col-sm-3"><%=  link_to t("Add_Part_to_Location",scope: "bin_line_station.search_by_location"),new_part_to_location_bin_line_station_index_path(actions: 'N',location: params[:id]) %></div>
+    </div>
+    <div class="table_title"> <%= t("PARTS_AT_LOCATION",scope: "bin_line_station.search_by_location") %> <%= params[:id] %></div>
+    <%= render 'part_at_location' %>
+    <div class="pager">
+      <%= render 'pagination' %>
+    </div>
+<% else %>
+    <div><%= t("no_records_found",scope: "engineering_check.view_location_parts") %></div>
+<% end %>

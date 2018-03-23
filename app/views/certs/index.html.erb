@@ -1,0 +1,72 @@
+<p class="body_header"><%= t('title',:scope => "certs.index")%></p>
+<%= image_seperator %>
+<p><%= t('_desc',:scope => "certs.index").html_safe%></p>
+<%= image_seperator %>
+<%= form_tag search_certs_path, :method => 'post', class: "form-inline" do %>
+    <div class="form-group">
+      <%= label_tag "#{t('control_number',:scope => "certs.index")}:",nil, class: 'control-label' %>
+      <%= text_field_tag :control_number, params[:control_number].try(:strip).try(:upcase),
+                         class: "form-control", required: true %>
+      <%= submit_tag t('Search',:scope => "floor_views.index"), class: "btn btn-primary" %>
+    </div>
+<% end %>
+<%= image_seperator %>
+<% if params[:control_number] %>
+    <p class="text_alert">
+      <%= flash[:alert] %>
+    </p>
+    <% if @response_certs %>
+        <% if @response_certs["errMsg"] != "" %>
+            <div class="row">
+              <div class="col-sm-5">
+                <span class="alert_msg"><%= flash_notice.html_safe %></span>
+              </div>
+            </div>
+        <% else %>
+            <% if session["acct_switch"].length >= 2 %>
+                <% customer_numbers_array = session["acct_switch"] %>
+            <% else %>
+                <% customer_numbers_array = current_user.split(",") %>
+            <% end %>
+            <% customer_numbers_array.each_with_index do |customer_number, index| %>
+                <div class="row">
+                  <div class="col-sm-12"><strong><%= t('account',:scope => "certs.index")%> <%= customer_number %></strong></div>
+                </div>
+                <table class="table tablesorter">
+                  <thead>
+                  <tr>
+                    <th><%= t('item',:scope => "rma")%></th>
+                    <th><%= t('control_number',:scope => "certs.index")%></th>
+                    <th><%= t('part_num',:scope => "open_orders.invoice_display")%></th>
+                    <th><%= t('Description',:scope => "floor_views._floor_view_search")%></th>
+                    <th><%= t('ACTION',:scope => "panstock_requests._edit_panstock")%></th>
+                  </tr>
+                  </thead>
+                  <% @array_for_certs_details.each_with_index do |cert_detail, index_of_cert_detail| %>
+                      <% if customer_number == cert_detail["customer_number"]%>
+                          <% get_image_details(cert_detail["images"].split(","), cert_detail["imagesFullPath"].split(","))%>
+                          <%= form_tag view_certs_certs_path, :target =>'_blank' do %>
+                              <tr>
+                                <td><%= index_of_cert_detail+1 %></td>
+                                <td><%= cert_detail["controlNo"] %></td>
+                                <td><%= cert_detail["partNo"] %></td>
+                                <td><%= cert_detail["desc"] %></td>
+                                <%= hidden_field_tag 'control_number', cert_detail["controlNo"] %>
+                                <%= hidden_field_tag 'images', @images_array %>
+                                <%= hidden_field_tag 'image_names', cert_detail["images"] %>
+                                <td><%= submit_tag t('view_cert',:scope => "certs.index"), class: "btn btn-info" %></td>
+                              </tr>
+                          <% end %>
+                      <% end %>
+                  <% end %>
+                </table>
+            <% end %>
+        <% end %>
+    <% else %>
+        <div class="row">
+          <div class="col-sm-5">
+            <span class="alert_msg"><%= flash[:notice] %></span>
+          </div>
+        </div>
+    <% end %>
+<% end %>

@@ -1,0 +1,57 @@
+<%= javascript_include_tag "jquery" %>
+<script type="text/javascript">
+        jQuery.noConflict();
+var gridster;
+
+jQuery(function(){
+    if(jQuery('#small_yellow_kit').length){
+        gridster = jQuery(".gridster > ul").gridster({
+            widget_margins: [5, 5],
+            widget_base_dimensions: [150, 100]
+        }).data('gridster').disable();
+    }
+    if(jQuery(".gridster_container #demo-1").length){
+
+        gridster = jQuery("#demo-1 ul").gridster({
+            namespace: '#demo-1',
+            widget_margins: [3, 5],
+            widget_base_dimensions: [120, 150]
+        }).data('gridster').disable();
+    }
+    if(jQuery(".gridster_container #demo-2").length){
+        gridster = jQuery("#demo-2 ul").gridster({
+            namespace: '#demo-2',
+            widget_margins: [5, 5],
+            widget_base_dimensions : [140, 120]
+        }).data('gridster').disable();
+    }
+    if(jQuery(".gridster_container #demo-3").length){
+        gridster = jQuery("#demo-3 ul").gridster({
+            namespace: '#demo-3',
+            widget_margins: [5, 5],
+            widget_base_dimensions: [140, 120]
+        }).data('gridster').disable();
+    }
+    if(jQuery(".gridster.small_orange_kit #demo-1").length){
+        gridster = jQuery("#demo-1 ul").gridster({
+            namespace: '#demo-1',
+            widget_margins: [5, 5],
+            widget_base_dimensions: [120, 120]
+        }).data('gridster').disable();
+    }
+    if(jQuery(".gridster.small_orange_kit #demo-2").length){
+        gridster = jQuery("#demo-2 ul").gridster({
+            namespace: '#demo-2',
+            widget_margins: [5, 5],
+            widget_base_dimensions: [120, 120]
+        }).data('gridster').disable();
+    }
+    if(jQuery(".gridster.small_orange_kit #demo-3").length){
+        gridster = jQuery("#demo-3 ul").gridster({
+            namespace: '#demo-3',
+            widget_margins: [5, 5],
+            widget_base_dimensions: [120, 120]
+        }).data('gridster').disable();
+    }
+});
+</script>

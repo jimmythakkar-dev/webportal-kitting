@@ -1,0 +1,62 @@
+<%= image_seperator %>
+<p>Please enter Kit Number to view the details for that Kit. If you do not know the Kit Number,<br />
+you can search by Part Number. Selecting a Kit status is optional.</p>
+<%= image_seperator %>
+
+<% if session[:user_level] > "2" %>
+  <div class="row">
+    <div class="text-right">
+      <%= link_to "Create New Kit", new_kitting_url %>
+    </div>
+</div>
+<% end %>
+
+<%= form_tag(kitting_search_path, :method => 'post', :class => "form-horizontal") do %>
+  <div class="control-group">
+    <%= label_tag 'Search :', nil, :class => "control-label" %>
+      <div class="controls inline">
+        <%= text_field_tag :kit_number_search, params[:kit_number_search].try(:strip).try(:upcase) || params[:id].try(:strip).try(:upcase), class: 'kit_number_search_box'  %>
+        <%= radio_button_tag :kit_search_type, "SK", params[:kit_search_type] == "SK" ? true : true %>
+        <%= label_tag :Kit, params[:Kit], :class => "radio inline"  %>
+
+        <%= radio_button_tag :kit_search_type, "SP", params[:kit_search_type] == "SP" ? true : false %>
+        <%= label_tag :part, params[:part],:class=>"radio inline" %>
+
+        <%= radio_button_tag :kit_search_type, "SL", params[:kit_search_type] == "SL"? true : false %>
+        <%= label_tag :Location, params[:Location],:class=>"radio inline" %>
+
+      </div>
+  </div>
+
+  <div class="control-group">
+    <% kit_statuses =[[ "1","Active","true"],["2","Pending","true"],["6","Inactive" ]] %>
+    <%= label_tag 'Status:', nil, :class=>"control-label" %>
+      <div class="controls">
+
+        <% if @kitting_response && !@kitting_response["kitStatus"].blank?%>
+            <% status_select ="" %>
+            <% status_select = @kitting_response["kitStatus"] %>
+            <% kit_statuses.each do |status| %>
+              <%= check_box_tag 'kit_status[]', status[0],  status_select == status[0] ? true : false  %>
+                <%= label_tag status[1], nil, :class =>"checkbox inline" %>
+            <% end %>
+        <% else %>
+          <% kit_statuses.each do |status| %>
+            <% if params[:kit_status] %>
+              <%= check_box_tag 'kit_status[]', status[0], (params[:kit_status].include? status[0]) ? true :false %>
+            <% else %>
+              <%= check_box_tag 'kit_status[]', status[0], status[2]%>
+            <% end %>
+              <%= label_tag status[1], nil, :class =>"checkbox inline" %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <%= submit_tag 'Search', :class => "btn btn-primary"%>
+      </div>
+    </div>
+<% end%>
+
+<%= image_seperator %>

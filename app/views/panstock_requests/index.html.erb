@@ -1,0 +1,16 @@
+<h2 class="body_header" style="line-height: 12px;"><%= t("Stock_Action_Request",:scope => "panstock_requests.index") %></h2>
+<%= image_seperator %>
+<%= t('_desc',:scope => "panstock_requests.index")%>
+<%= image_seperator %>
+<div class="pull-right">
+  <%= link_to t('View/Approve_Stock_History',:scope => "panstock_requests.index"), panstock_history_panstock_requests_path, :method => 'get'%> &nbsp;
+  <% if session[:user_level] >= "4" %>
+      <%= link_to t('Stock_Bulk_Approval',:scope => "panstock_requests.index"), bulk_history_panstock_requests_path(:iAction => "B"), :method => 'get'%>
+  <% end %>
+</div>
+<div class="clear"></div>
+<% if @error %>
+    <%= render "layouts/message_display" %>
+<% else %>
+    <%= render :partial => "edit_panstock"%>
+<% end %>

@@ -1,0 +1,156 @@
+<% @cup = cup.cup_parts.where(:commit_status => true, :status => true ) %>
+<% if label_type == "label_1" %>
+  <% @cup.each_with_index do |cup_part,i| %>
+    <% if cup_part.in_contract %>
+      <% generate_barcode_for_all_in_one(cup_part.part.part_number.upcase) %>
+      <% if kit_type && kit_type == 'multi-media-type' %>
+        <%= "<div class='page'>
+              <div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}</div>
+              <div class='cup_qty'><span class='cup'>Box#{box_number}-#{cup.cup_number}</span><span class='qty'>#{(cup_part.demand_quantity.downcase=='wl')? " " : "Qty- #{cup_part.demand_quantity}"}</span></div><hr/>
+              <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+cup_part.part.part_number.upcase.split("").map(&:ord).join("")+'.png' )}</div>
+              </div>".html_safe if cup_part.status %>
+      <% elsif kit_type && kit_type == 'binder' %>
+        <%= "<div class='page'>
+              <div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}</div>
+              <div class='cup_qty'><span class='cup'>#{cup.cup_number}</span><span class='qty'>#{(cup_part.demand_quantity.downcase=='wl')? " " : "Qty- #{cup_part.demand_quantity}"}</span></div><hr/>
+              <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+cup_part.part.part_number.upcase.split("").map(&:ord).join("")+'.png' )}</div>
+              </div>".html_safe if cup_part.status %>
+      <% else %>
+        <%= "<div class='page'>
+              <div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}</div>
+              <div class='cup_qty'><span class='cup'>#{kit_type == 'configurable' ? cup.cup_number : index}</span><span class='qty'>#{(cup_part.demand_quantity.downcase=='wl')? " " : "Qty- #{cup_part.demand_quantity}"}</span></div><hr/>
+              <div style='text-align:center;'>#{pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+cup_part.part.part_number.upcase.split("").map(&:ord).join("")+'.png' )}</div>
+              </div>".html_safe if cup_part.status %>
+      <% end %>
+    <% else %>
+      <% generate_barcode_for_all_in_one(cup_part.part.part_number.upcase) %>
+      <% if kit_type && kit_type == 'multi-media-type' %>
+          <%= "<div class='page'>
+                  <div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}</div>
+                  <div class='cup_qty'><span class='cup'>Box#{box_number}-#{cup.cup_number}</span><span class='qty'>#{(cup_part.demand_quantity.downcase=='wl')? " " : "Qty- #{cup_part.demand_quantity}"}</span></div><hr/>
+                  <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup_part.status%>
+      <% elsif kit_type && kit_type == 'binder' %>
+        <%= "<div class='page'>
+                  <div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}</div>
+                  <div class='cup_qty'><span class='cup'>#{cup.cup_number}</span><span class='qty'>#{(cup_part.demand_quantity.downcase=='wl')? " " : "Qty- #{cup_part.demand_quantity}"}</span></div><hr/>
+                  <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup_part.status%>
+      <% else %>
+            <%= "<div class='page'>
+                  <div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}</div>
+                  <div class='cup_qty'><span class='cup'>#{kit_type == 'configurable' ? cup.cup_number : index}</span><span class='qty'>#{(cup_part.demand_quantity.downcase=='wl')? " " : "Qty- #{cup_part.demand_quantity}"}</span></div><hr/>
+                  <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup_part.status%>
+      <% end %>
+    <% end %>
+  <%end%>
+<% elsif label_type == "label_2"%>
+  <% if cup.ref1 || cup.ref2 || cup.ref3 %>
+    <% if @cup.size > 0 %>
+      <% if !cup.parts.first.nil? && cup.check_in_contract_status("cup_parts") %>
+        <% if kit_type && kit_type == 'multi-media-type' %>
+            <%= "<div class='page'>
+                  <div class='part_13px'>#{ cup.ref1+'<br> ' if cup.ref1} #{cup.ref2+'<br> ' if cup.ref2} #{cup.ref3 if cup.ref3 }</div>
+                  <div class='cup_qty'><span class='cup'>Box#{box_number}-#{cup.cup_number}</span></div></div>".html_safe if cup.commit_status %>
+        <% else %>
+            <%= "<div class='page'>
+                  <div class='part_13px'>#{ cup.ref1+'<br> ' if cup.ref1} #{cup.ref2+'<br> ' if cup.ref2} #{cup.ref3 if cup.ref3 }</div>
+                  <div class='cup_qty'><span class='cup'>#{kit_type == 'configurable' ? cup.cup_number : index}</span></div></div>".html_safe if cup.commit_status %>
+        <% end %>
+      <% else %>
+        <% if kit_type && kit_type == 'multi-media-type' %>
+            <%= "<div class='page'>
+              <div class='part_13px'>#{ cup.ref1+'<br> ' if cup.ref1} #{cup.ref2+'<br> ' if cup.ref2} #{cup.ref3 if cup.ref3 }</div>
+              <div class='cup_qty'><span class='cup'>Box#{box_number}-#{cup.cup_number}</span></div>
+              <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup.commit_status%>
+        <% else %>
+            <%= "<div class='page'>
+              <div class='part_13px'>#{ cup.ref1+'<br> ' if cup.ref1} #{cup.ref2+'<br> ' if cup.ref2} #{cup.ref3 if cup.ref3 }</div>
+              <div class='cup_qty'><span class='cup'>#{kit_type == 'configurable' ? cup.cup_number : index}</span></div>
+              <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup.commit_status%>
+        <% end %>
+      <% end %>
+    <%end%>
+  <%end%>
+<% elsif label_type == "label_3"%>
+  <% if kit_type == 'multi-media-type' %>
+      <% if @cup.size > 0 %>
+        <% if !cup.parts.first.nil? && cup.check_in_contract_status("cup_parts") %>
+          <%= "<div class='page'>".html_safe %>
+          <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+            <%= "<div class='#{ (@cup.size > 3)? 'part_9px': (cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}<span>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</span></div>".html_safe %>
+          <% end %>
+          <%= "<div class=#{ (@cup.size > 3)? 'small_reference_text': 'reference_text'}>".html_safe%>
+          <%= cup.ref1 ? "#{cup.ref1}" : "&nbsp;".html_safe %><br/> <%= cup.ref2 ? "#{cup.ref2}" : "&nbsp;".html_safe %><br/> <%= cup.ref3 ? "#{cup.ref3}" : "&nbsp;".html_safe %>
+          <%= "</div><div class='cup_qty'><span class='cup'>Box#{box_number}-#{cup.cup_number}</span></div>".html_safe %>
+          <%= "</div>".html_safe if cup.commit_status %>
+        <% else %>
+          <%= "<div class='page'>".html_safe %>
+          <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+            <%= "<div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}<span>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</span></div>".html_safe %>
+          <% end %>
+          <%= "<div class='cup_qty'><span class='cup'>Box#{box_number}-#{cup.cup_number}</span></div><hr/>
+               <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup.commit_status %>
+        <% end %>
+      <% end %>
+  <% elsif kit_type == 'binder' %>
+    <% if @cup.size > 0 %>
+        <% if !cup.parts.first.nil? && cup.check_in_contract_status("cup_parts") %>
+            <%= "<div class='page'>".html_safe %>
+            <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+                <%= "<div class='#{ (@cup.size > 3)? 'part_9px': (cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}<span>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</span></div>".html_safe %>
+            <% end %>
+            <%= "<div class=#{ (@cup.size > 3)? 'small_reference_text': 'reference_text'}>".html_safe%>
+            <%= cup.ref1 ? "#{cup.ref1}" : "&nbsp;".html_safe %><br/> <%= cup.ref2 ? "#{cup.ref2}" : "&nbsp;".html_safe %><br/> <%= cup.ref3 ? "#{cup.ref3}" : "&nbsp;".html_safe %>
+            <%= "</div><div class='cup_qty'><span class='cup'>#{cup.cup_number}</span></div>".html_safe %>
+            <%= "</div>".html_safe if cup.commit_status %>
+        <% else %>
+            <%= "<div class='page'>".html_safe %>
+            <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+                <%= "<div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}<span>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</span></div>".html_safe %>
+            <% end %>
+            <%= "<div class='cup_qty'><span class='cup'>#{cup.cup_number}</span></div><hr/>
+           <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup.commit_status %>
+        <% end %>
+    <% end %>
+  <% else %>
+      <% if @cup.size > 0 %>
+        <% if !cup.parts.first.nil? && cup.check_in_contract_status("cup_parts") %>
+            <%= "<div class='page'>".html_safe %>
+            <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+                <%= "<div class='#{ (@cup.size > 3)? 'part_9px': (cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}<span>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</span></div>".html_safe %>
+            <% end %>
+            <%= "<div class=#{ (@cup.size > 3)? 'small_reference_text': 'reference_text'}>".html_safe%>
+            <%= cup.ref1 ? "#{cup.ref1}" : "&nbsp;".html_safe %><br/> <%= cup.ref2 ? "#{cup.ref2}" : "&nbsp;".html_safe %><br/> <%= cup.ref3 ? "#{cup.ref3}" : "&nbsp;".html_safe %>
+            <%= "</div><div class='cup_qty'><span class='cup'>#{kit_type == 'configurable' ? cup.cup_number : index}</span></div>".html_safe %>
+            <%= "</div>".html_safe if cup.commit_status %>
+        <% else %>
+            <%= "<div class='page'>".html_safe %>
+            <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+                <%= "<div class='#{(cup_part.part.part_number.size.to_i>14)? 'part_13px':'part_15px'}'>#{cup_part.part.part_number}<span>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</span></div>".html_safe %>
+            <% end %>
+            <%= "<div class='cup_qty'><span class='cup'>#{kit_type == 'configurable' ? cup.cup_number : index}</span></div><hr/>
+           <div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup.commit_status %>
+        <% end %>
+    <% end %>
+  <% end %>
+
+<% elsif label_type == "label_4"%>
+  <% if @cup.size > 0 %>
+    <% if !cup.parts.first.nil? && cup.check_in_contract_status("cup_parts") %>
+      <%= "<div class='hr_page'><hr class='dashed_line_internal_label'/>".html_safe %>
+      <%= "<div class='hr_part_number'>#{cup.cup_number}</div>".html_safe %>
+      <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+        <%= "<div class='hr_part_number'>#{cup_part.part.part_number}<br>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</div>".html_safe %>
+      <% end %>
+      <%= "<div class='hr_part_number'>".html_safe %>
+      <%= cup.ref1 ? "#{cup.ref1}" : "&nbsp;".html_safe %><br/> <%= cup.ref2 ? "#{cup.ref2}" : "&nbsp;".html_safe %><br/> <%= cup.ref3 ? "#{cup.ref3}" : "&nbsp;".html_safe %>
+      <%= "</div></div>".html_safe if cup.commit_status %>
+    <% else %>
+      <%= "<div class='hr_page'><hr class='dashed_line_internal_label'/>".html_safe %>
+      <%= "<div class='hr_part_number'>#{cup.cup_number}</div>".html_safe %>
+      <% cup.cup_parts.where('commit_status = ? and status = ? ',true,1).each_with_index do |cup_part,i| %>
+        <%= "<div class='hr_part_number'>#{cup_part.part.part_number}<br>#{(cup_part.demand_quantity.downcase=='wl')? " " : "(#{cup_part.demand_quantity})"}</div>".html_safe %>
+      <% end %>
+      <%= "<hr/><div style='text-align:center;'>Not Provided by KLX</div></div>".html_safe if cup.commit_status %>
+    <% end %>
+  <% end %>
+<%end%>

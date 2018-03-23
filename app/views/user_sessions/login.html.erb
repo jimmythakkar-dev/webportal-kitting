@@ -1,0 +1,29 @@
+<div class="row"><div class="text-right">&nbsp;</div></div>
+<h2 class="body_header"><%= t('CM_Customer_Portal', :scope => "layouts.application" )%></h2>
+<%= image_seperator %>
+<%= render 'layouts/message_display' %>
+<div class="col-sm-12">
+  <% if defined?(errCode) && errCode == "4" && defined?(pass_lock) && pass_lock == "N" %>
+      <p> NEW :<%= link_to "Change your Password to REACTIVATE your account:" , new_reset_password_path(password_lock: pass_lock), method: :post %></p>
+      <br/>
+  <% end %>
+</div>
+<div class="col-sm-6">
+  <%= form_tag  user_sessions_path, autocomplete: "off",role: "form" do %>
+      <div class="form-group">
+        <%= label_tag t("user_name", scope:"user_session"), nil, :class => "some_space"  %>
+        <%= text_field_tag :username, params[:username], :required => true,:class => "form-control",:placeholder => "Enter Username" %>
+      </div>
+      <div class="form-group">
+        <%= label_tag 'Password:', nil, :class => "some_space"  %>
+        <%= password_field_tag :password, nil, :required => true, :class => "form-control",:placeholder => "Enter Password" %>
+      </div>
+      <div class="form-group">
+        <%= label_tag '',nil, :class => "some_space"  %>
+        <%= submit_tag t("login", scope:"user_session"), class: 'btn btn-primary' %>
+      </div>
+  <% end %>
+</div>
+<div class="col-sm-12">
+  <%= image_seperator %>
+</div>

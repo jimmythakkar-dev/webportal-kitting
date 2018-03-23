@@ -1,0 +1,62 @@
+<h2 class="body_header">Crib Part Requests</h2>
+<%= render 'search' %>
+<span class="text-center">
+<%= render 'layouts/message_display' %>
+</span>
+<% if @order_part_details && @order_part_details.size > 0 %>
+    <div class="row">
+      <div class="col-lg-9">
+        <p><%= page_entries_info @order_part_details %></p>
+      </div>
+      <div class="col-lg-3 text-right">
+        <%= link_to "Ship Parts", kitting.ship_crib_part_list_crib_part_requests_path %>
+      </div>
+    </div>
+    <br>
+    <%= form_tag print_crib_part_requests_path, :target =>'_blank' do  %>
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead>
+            <th>Part Number </th>
+            <th>Quantity</th>
+            <th>Queue</th>
+            <th>Requestor</th>
+            <th>Request Date</th>
+            <th class="filter-false">Pick sheet</th>
+            <th class="filter-false">Bag label</th>
+            </thead>
+            <% @order_part_details.each do |part| %>
+                <tr>
+                  <td><%= part.part_number %></td>
+                  <td><%= part.quantity %></td>
+                  <td><%= part.location.name %></td>
+                  <td><%= part.order.created_by %></td>
+                  <td><%= part.order.created_at.strftime("%m/%d/%Y") %></td>
+                  <td class="td_pick_crib_part"><%= check_box_tag 'print[]', part.id, false %></td>
+                  <td class="print_crib_part"><%= check_box_tag 'print_label[]', part.id, false if part.location.name != "NEW KIT QUEUE" %></td>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+
+        <%= will_paginate @order_part_details %>
+        <div class="row">
+          <div class="col-sm-2 text-right">
+            <%= label_tag 'Bin Center:', 'Bin Center:' %>
+          </div>
+          <div class="col-sm-4">
+            <%= select_tag :crib_bin_center, options_for_select(get_crib_bin(current_user), :selected =>@dft_part_bin || "-"), class: "form-control" %>
+          </div>
+          <div class="col-sm-3">
+            <%= submit_tag 'Print Pick Sheet', class: 'btn btn-primary pick_crib_parts' %>
+          </div>
+          <div class="col-sm-3">
+            <%= submit_tag 'Print Inner Labels', class: 'btn btn-primary print_crib_parts' %>
+          </div>
+
+        </div>
+        <br>
+    <% end %>
+<% else %>
+    <p class="text-primary">No records found</p>
+<% end %>

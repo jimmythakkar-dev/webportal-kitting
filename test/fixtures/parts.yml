@@ -1,0 +1,35 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# This model initially had no columns defined.  If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: 
+  id: 10014
+  part_number: "NAS2410V06"
+  image_name: nil
+  description: nil
+  status: true
+  created_at: "2013-12-10 06:21:20"
+  updated_at: "2013-12-10 06:21:20"
+  name: "BOLT"
+  customer_number: nil
+  customer_name: nil
+  customer_id: nil
+  commit_id: nil
+  commit_status: nil
+  
+two: 
+  id: 10127,
+  part_number: "BACR15DP5AD6"
+  image_name: nil
+  description: nil
+  status: true
+  created_at: "2013-12-11 12:12:07"
+  updated_at: "2013-12-11 12:12:07"
+  name: "RIVET, SOLID"
+  customer_number: nil
+  customer_name: nil
+  customer_id: nil
+  commit_id: nil
+  commit_status: nil

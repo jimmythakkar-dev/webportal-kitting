@@ -1,0 +1,75 @@
+<h2 class="body_header">Kit Search Result</h2>
+
+<%= render 'search' %>
+
+<%= render 'layouts/message_display' %>
+
+<% if @kitting_response["errCode"] == "0" %>
+  <p><small>We are currently displaying from <%= params[:page].to_i * 100 - 99 %> to
+    <% if params[:page].to_i * 100 > @total_records %>
+      <%= @total_records %>
+    <%else%>
+      <%= params[:page].to_i * 100 %>
+    <%end%>
+    out of <%= @total_records %> parts  (<em>page <%= params[:page] %> of <%= @total_page %></em>).</small></p>
+    <table class="table tablesorter">
+    <thead>
+    <th>KIT NUMBER</th>
+    <th>LOCATION</th>
+    <th>DESCRIPTION</th>
+    <th>STATUS</th>
+    </thead>
+      <% @kitting_response["kitNoList"].each_index do |index| %>
+      <tr>
+        <td><%= link_to @kitting_response["kitNoList"][index],
+                        CGI.escape(@kitting_response["kitNoList"][index]),:kit_number => @kitting_response["kitNoList"][index] %></td>
+        <td><%= @kitting_response["kitLocList"][index] %></td>
+        <td> <%= @kitting_response["kitDescList"][index] %></td>
+        <td><%= display_status(@kitting_response["kitStatList"][index]) %></td>
+      </tr>
+    <% end %>
+  </table>
+
+
+  <div class="pager">
+    <% if @total_records >= 1 %>
+      <% if (params[:page].to_i > 1) %>
+        <% @prev_page = params[:page].to_i - 1 %>
+        <%= link_to image_tag("prev.png",:alt => "previous",title: "Previous"),kitting_search_path(page: @prev_page, params: params.reject {|k, v| %w"utf8 authenticity_token commit controller action page".include? k }), class: "prev" %>
+      <% else %>
+        <%= image_tag("prev.png",alt: "previous",title: "Previous", class: "disabled") %>
+      <% end %>
+
+      <% (1..@total_page).each do |i| %>
+        <% if i != params[:page].to_i %>
+          <%= link_to "#{i}", kitting_search_path(page: i ,params: params.reject {|k, v| %w"utf8 authenticity_token commit controller action page".include? k }),class: "page"%>
+        <% else %>
+          <span class="current"><%= i %></span>
+        <% end %>
+      <%end%>
+
+      <% if (params[:page].to_i < @total_page) %>
+        <% @next_page = params[:page].to_i + 1 %>
+          <%= link_to image_tag("next.png",alt: "next",title: "Next"),kitting_search_path(page: @next_page, params: params.reject {|k, v| %w"utf8 page authenticity_token commit controller action".include? k }), class: "next"%>
+        <% else %>
+          <%= image_tag("next.png",:alt => "next",title: "Next", class: "disabled") %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= image_seperator %>
+
+    <div class="control-group">
+      <div class="controls">
+        <div class="col-sm-4 "><%= link_to 'Search Again', kitting_index_path , class: 'btn btn-primary' %></div>
+      </div>
+    </div>
+<% else %>
+    <p> Sorry, <strong><%= @kitting_response["kitNo"] %></strong> was not found. <br />Would you like to
+    <% if session[:user_level] > "3" %>
+      <%= link_to "Create New Kit", new_kitting_path %>
+    <% else %>
+        <p class="text-danger">create new kit? (please contact your supervisor or KLX reprsentative.) </p>
+    <% end  %>
+    </p>
+<% end  %>

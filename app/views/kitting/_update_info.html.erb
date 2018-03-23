@@ -1,0 +1,51 @@
+<h3>KIT ACTION REQUEST</h3>
+<table border="0" cellspacing="4">
+  <tr>
+    <td>Kit: </td>
+    <td><strong><%= params[:kit_number] %></strong></td>
+  </tr>
+  <tr>
+    <td>Description: </td>
+    <td><strong><%= params[:kit_description] %></strong></td>
+  </tr>
+  <tr>
+    <td>Submitted On: </td>
+    <td><strong><%= (Date.today).strftime('%-m/%-d/%y') %></strong></td>
+  </tr>
+  <tr>
+    <td>Originator: </td>
+    <td><strong><%= session[:user_name] %></strong></td>
+  </tr>
+  <tr>
+    <td>Kit Status: </td>
+    <td><strong><%= params[:kit_status] %></strong></td>
+  </tr>
+  <tr>
+    <td>Line Station / Location: </td>
+    <td><strong><%= params[:kit_location] %></strong></td>
+  </tr>
+  <tr>
+    <td>Kit Update Note: </td>
+    <td><strong><%= params[:kit_Notes].values %></strong></td>
+  </tr>
+</table>
+<br />
+
+<table>
+  <thead>
+  <th>TRAY</th>
+  <th>PART NUMBER</th>
+  <th>QUANTITY</th>
+  <th>UM</th>
+  <th>BIN</th>
+  </thead>
+  <% params[:kit_part_number].values.each_index do |index| %>
+      <tr>
+        <td><%= params[:kit_tray].values[index] %></td>
+        <td><%= params[:kit_part_number].values[index] %></td>
+        <td><%= params[:kit_quantity].values[index] %></td>
+        <td><%= params[:um].values[index] %></td>
+        <td><%= params[:bin_number].values[index] %></td>
+      </tr>
+  <% end %>
+</table>

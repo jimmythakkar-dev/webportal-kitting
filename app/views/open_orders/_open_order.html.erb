@@ -1,0 +1,128 @@
+<!-- Displaying all open orders for corresponding search criteria -->
+<% if @response_orders %>
+    <!-- Checking whether invNo is present -->
+    <% if @response_orders["openOrders"]["invNo"].split(",").blank? %>
+        <!-- If invNo is not present, displaying flash messages and  error messages from RBO response -->
+        <div class="row">
+          <div class="col-sm-12">
+            <% if @response_orders["openOrders"]["errCode"] == "" %>
+          <span class="alert_msg"><strong><%= t("no_open_order",:scope => "open_orders._open_order")%>
+            <%=  @response_orders["openOrders"]["srch"].try(:upcase) %>.</strong>
+          </span>
+            <% else %>
+                <%= flash_notice %>
+            <% end %>
+          </div>
+        </div>
+        <!-- If invNo is present -->
+    <% else %>
+        <!-- Displaying open order search results from RBO response -->
+        <strong><%= t("open_orders",:scope => "open_orders._open_order")%></strong>
+        <%= t("for_no",:scope => "open_orders._open_order")%> <%= @response_orders["openOrders"]["srchBy"] %>: <em>
+  <strong><%=  @response_orders["openOrders"]["srch"].try(:upcase) %></strong>
+</em>
+        <div style="overflow: scroll">
+          <table style="width: 1377px;height:140px" class="table tablesorter" >
+            <thead>
+            <tr>
+              <th><%= t("order_date",:scope => "open_orders._open_order") %></th>
+              <th><%= t("prom_date",:scope => "open_orders._open_order") %></th>
+              <th><%= t("po_num",:scope => "open_orders._open_order") %></th>
+              <th><%= t("order_num",:scope => "open_orders._open_order") %></th>
+              <th><%= t("status",:scope => "open_orders._open_order") %></th>
+              <th><%= t("part_num",:scope => "open_orders._open_order") %></th>
+              <th><%= t("total_qty",:scope => "open_orders._open_order") %></th>
+              <th><%= t("open_qty",:scope => "open_orders._open_order") %></th>
+              <th><%= t("ship_qty",:scope => "open_orders._open_order") %></th>
+              <th><%=  @response_orders["openOrders"]["miscTitle1"] == "Location" ? t("loc",:scope => "open_orders._open_order") :  @response_orders["openOrders"]["miscTitle1"] %></th>
+              <th><%=  @response_orders["openOrders"]["miscTitle2"] == "Area" ? t("area",:scope => "open_orders._open_order"): @response_orders["openOrders"]["miscTitle2"] %></th>
+              <th><%=  @response_orders["openOrders"]["miscTitle3"]%></th>
+              <th><%=  @response_orders["openOrders"]["miscTitle4"]%></th>
+            </tr>
+            </thead>
+            <!--- Looping through Open orders --->
+            <% @response_orders["openOrders"]["invNo"].split(",").each_index do |index| %>
+                <tr>
+                  <td>
+                    <%= @response_orders["openOrders"]["invDt"].split(",")[index] unless @response_orders["openOrders"]["invDt"] == "" %>
+                  </td>
+                  <td>
+                    <%= @response_orders["openOrders"]["invPSD"].split(",")[index] unless @response_orders["openOrders"]["invPSD"] == "" %>
+                  </td>
+                  <td>
+                    <%= @response_orders["openOrders"]["poNo"].split(",")[index] unless @response_orders["openOrders"]["poNo"] == "" %>
+                  </td>
+                  <td class="td_align_center">
+                    <%= @response_orders["openOrders"]["invNo"].split(",")[index] unless @response_orders["openOrders"]["invNo"] == "" %>
+                  </td>
+                  <td>
+                    <%= @response_orders["openOrders"]["ostatus"].split(",")[index] unless @response_orders["openOrders"]["ostatus"] == "" %>
+                  </td>
+                  <td>
+                    <%= @response_orders["openOrders"]["partNos"].split(",")[index] unless @response_orders["openOrders"]["partNos"] == "" %>
+                  </td>
+                  <td class="td_align_right">
+                    <%= @response_orders["openOrders"]["totalOrder"].split(",")[index] unless @response_orders["openOrders"]["totOrd"] == "" %>
+                  </td>
+                  <td class="td_align_right">
+                    <%= @response_orders["openOrders"]["openQty"].split(",")[index] unless @response_orders["openOrders"]["openQty"] == "" %>
+                  </td>
+                  <td class="td_align_right">
+                    <%= @response_orders["openOrders"]["shippedQty"].split(",")[index] unless @response_orders["openOrders"]["shippedQty"] == "" %>
+                  </td>
+                  <td class="td_align_center">
+                    <%= @response_orders["openOrders"]["misc1"].split(",")[index] unless @response_orders["openOrders"]["misc1"] == "" %>
+                  </td>
+                  <td class="td_align_center">
+                    <%= @response_orders["openOrders"]["misc2"].split(",")[index] unless @response_orders["openOrders"]["misc2"] == "" %>
+                  </td>
+                  <td class="td_align_center">
+                    <%= @response_orders["openOrders"]["misc3"].split(",")[index] unless @response_orders["openOrders"]["misc3"] == "" %>
+                  </td>
+                  <td class="td_align_center">
+                    <%= @response_orders["openOrders"]["misc4"].split(",")[index] unless @response_orders["openOrders"]["misc4"] == "" %>
+                  </td>
+                </tr>
+            <% end %>
+            <!--- End of Looping through Open orders --->
+          </table>
+        </div>
+    <% end %>
+
+    <!--- Beginning of displaying Shipped Orders --->
+    <% @shipped_order_found = 0 %>
+    <% if @response_orders["shippingStatus"]["invNo"][0].blank? %>
+        <% @shipped_order_found = @shipped_order_found + 0 %>
+    <% else %>
+        <!-- In old coldfusion code, shipping address is displaying but new code
+          there is no shipping address --->
+        <%#*<div class="row">%>
+        <%#*<div class="col-sm-12 table_title">%>
+        <!--%=  @response_orders["custInvoices"]["shipTo"].gsub("<BR>"," ") %-->
+        <%#*</div>%>
+        <%#*</div>%>
+        <strong><%= t("shipped_orders",:scope => "open_orders._open_order")%></strong>
+        <%= t("for",:scope => "open_orders._open_order")%><%= @response_orders["openOrders"]["srchBy"] %>:
+        <em><strong><%=  @response_orders["openOrders"]["srch"].try(:upcase) %></strong>
+        </em>
+        <%= render 'open_orders/shipped_order_table' %>
+
+    <%end%>
+    <!--- End of displaying Shipped Orders --->
+
+    <% if params[:search_for] != "" && @shipped_order_found == 0 %>
+        <div class="row">
+          <div class="col-sm-12">
+      <span class="alert_msg"><strong><%= t("no_shipped_open_order",:scope => "open_orders._open_order")%>
+        <%=  @response_orders["openOrders"]["srch"].try(:upcase) %>.</strong><br />
+        <%= t("open_order_msg",:scope => "open_orders._open_order").html_safe %></span>
+          </div>
+        </div>
+    <%end%>
+<% else %>
+    <div class="row">
+      <div class="col-sm-12">
+        <%= flash_notice %>
+      </div>
+    </div>
+<%end%>

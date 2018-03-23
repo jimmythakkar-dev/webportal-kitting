@@ -1,0 +1,313 @@
+<p class="body_header"><%= t("critical_watch_list",:scope => "critical_watch.index") %></p>
+<%= image_seperator %>
+<p>
+  <span class="ft_blue"><strong><%= t("new_critical_case",:scope => "critical_watch.new") %>:</strong>
+    <%= t("initial_details",:scope => "critical_watch.new") %></span>
+</p>
+<%= form_tag :action => :create, :method => 'post' do %>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="table-responsive">
+          <table class="tbl_res">
+            <tr class="tr_initial_status">
+              <td class="td_initial_status">
+                <%= t("initial_status",:scope => "critical_watch.new") %> <span class="alert_msg">*</span>
+                <p>
+                  <%= select_tag :update_item_status,
+                                 options_for_select(@initial_status,
+                                                    :selected => params[:update_item_status] ||  t("new_add",:scope => "critical_watch.new")),:class => "form-control" %>
+                </p>
+              </td>
+              <td colspan="2">
+                <%= text_area_tag 'update_item_note', params[:update_item_note], :rows => 2,:class => "form-control" %>
+              </td>
+            </tr>
+            <tr  class="tr_item_colors">
+              <td class="td_item_color_codes"><%= t("color_codes",:scope => "critical_watch.new") %>:</td>
+              <td class="td_item_colors" colspan="2">
+                <%= t("impact",:scope => "critical_watch.new") %>:
+        <span style="background-color:#FF9F9F; color: red">&nbsp; &nbsp;
+        </span>&nbsp; &nbsp;
+                -  <%= t("delivered",:scope => "critical_watch.new") %> <span style="background-color:lightgreen; color: lightgreen">
+          &nbsp; &nbsp; </span>&nbsp;
+                - <%= t("updated",:scope => "critical_watch.new") %> <span style="background-color:lightblue; color: lightblue">
+          &nbsp; &nbsp; </span>&nbsp;
+                - <%= t("new_add",:scope => "critical_watch.new") %> <span style="background-color:yellow; color: yellow">
+          &nbsp; &nbsp; </span>&nbsp; &nbsp;
+                - <%= t("closed",:scope => "critical_watch.new") %> <span style="background-color:lightgrey; color: lightgrey">
+          &nbsp; &nbsp; </span>&nbsp; &nbsp;
+              </td>
+            </tr>
+          </table>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("status",:scope => "critical_watch.new") %>: <span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :status, options_for_select(@status,:selected => params[:status] || "Select"),:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("line_responsible",:scope => "critical_watch.new") %>: <span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :line_responsible, options_for_select(@line_responsible,:selected => params[:line_responsible] || "Select"),:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("contact",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'contact_information', params[:contact_information],:maxlength => 150, :size => 35, :tabindex => "5",:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'Building:' %> <span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :building, options_for_select(@building, :selected => params[:building] || "Select"), :onchange => "updatecities(this.selectedIndex)",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("location",:scope => "critical_watch.new") %> <span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :location, options_for_select(@location_program, :selected => params[:location] || "Select"), :class => "select_width form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("program",:scope => "critical_watch.new") %>: <span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= select_tag :program, options_for_select(@location_program,:selected => params[:program] || "Select"), :class => "select_width form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("aircraft",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'aircraft_section', params[:aircraft_section], :maxlength => 150, :size => 35, :tabindex => "8",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("Line_Station",:scope => "floor_views._location_search") %>
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'line_station', params[:line_station],:maxlength => 150, :size => 35, :tabindex => "9",:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("part_num",:scope => "rma") %><span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'part_number', params[:part_number], :maxlength => 150, :size => 35, :tabindex => "10", :required => "true" ,:class => "form-control"%>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("supplier_name",:scope => "critical_watch.index") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'supplier', params[:supplier], :maxlength => 150, :size => 35, :tabindex => "12" ,:class => "form-control"%>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("manufacturer",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'manufacturer', params[:manufacturer], :maxlength => 150, :size => 35, :tabindex => "13",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("sub_coverage",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'substitution_coverage', params[:substitution_coverage],:maxlength => 150, :size => 35, :tabindex => "14" ,:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("need_date",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "need_date", params[:need_date] || date_format, { class: 'datepicker form-control', tabindex: '15' } %>
+              <label for="need_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("promise_dock",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "promise_on_dock",params[:promise_on_dock] || date_format,{ class: 'datepicker form-control', :tabindex => "16" } %>
+              <label for="promise_on_dock" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("slipped",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'days_slipped', params[:days_slipped],:maxlength => 5, :size => 1,:tabindex => "17",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("customer_date",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "impact_date", params[:impact_date] || date_format,{ class: 'datepicker form-control', :tabindex => "18" } %>
+              <label for="impact_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= "1st P.O." "#{t('quantity',:scope => 'agusta')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'first_po_quantity', params[:first_po_quantity],:maxlength => 7, :size => 3, :tabindex => "19",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("quantity_due",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'quantity_due_in', params[:quantity_due_in], :maxlength => 7, :size => 3, :tabindex => "20",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("minimum_need",:scope => "critical_watch.new") %>:<span class="alert_msg">*</span>
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'minimum_need_quantity', params[:minimum_need_quantity], :maxlength => 7, :size => 3, :tabindex => "21",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("release_qty",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'release_quantity', params[:release_quantity], :maxlength => 7, :size => 3, :tabindex => "22",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("lines_affected",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'lines_affected', params[:lines_affected], :maxlength => 7, :size => 3, :tabindex => "23",:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP '"#{t('quantity',:scope => 'agusta')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'gap_quantity', params[:gap_quantity], :maxlength => 7, :size => 3, :tabindex => "24",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP ' "#{t('date',:scope => 'rma')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <div id="datepicker" class="input-group">
+              <%= text_field_tag "gap_date", params[:gap_date], :tabindex => "25" ,:class=> "form-control datepicker" %>
+              <label for="gap_date" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP ' "#{t('number',:scope => 'critical_watch.new')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'gap_po_number', params[:gap_po_number], :maxlength => 50, :size => 15, :tabindex => "26",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= 'GAP ' "#{t('tracking_number',:scope => 'critical_watch.new')}" %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_field_tag 'gap_tracking_number', params[:gap_tracking_number], :maxlength => 150, :size => 35, :tabindex => "27",:class => "form-control" %>
+          </div>
+        </div>
+        <%= image_seperator %>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("root_cause",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'root_cause', params[:root_cause], :cols => 45, :rows => 2, :tabindex => "28",:class => "form-control" %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("corrective_action",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'corrective_action', params[:corrective_action], :rows => 2, :tabindex => "29",:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("comments",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'comments', params[:comments], :rows => 2, :tabindex => "30",:class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <%= t("old_comments",:scope => "critical_watch.new") %>:
+          </div>
+          <div class="col-sm-6">
+            <%= text_area_tag 'old_comments', params[:old_comments], :cols => 45, :rows => 2, :tabindex => "31",:class => "form-control" %>
+          </div>
+        </div>
+        <br/>
+        <div class="row">
+          <div class="col-sm-3">
+            <i class="alert_msg"> * <%= t("required_fields",:scope => "critical_watch.new") %></i>
+          </div>
+          <div class="col-sm-6">
+            <%= submit_tag "#{t('create_case',:scope => 'critical_watch.new')}", :class => "btn btn-primary btn_submit" %>&nbsp;&nbsp;&nbsp;
+            <%= link_to "#{t('cancel',:scope => 'bin_line_station.new_part_to_location')}", :back, :class => "btn btn-default"  %>
+          </div>
+        </div>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>
+<%= javascript_tag do %>
+    window.publicURL = '<%= j root_url %>';
+<% end %>

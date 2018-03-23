@@ -1,0 +1,28 @@
+<h2 class="body_header">Kits in Demand</h2>
+<%= image_seperator %>
+<p>Please Check the kit for moving to particular queue and select queue from select box</p>
+<%= image_seperator %>
+
+<%= render 'layouts/message_display' %>
+<% if @kit_demand_response %>
+<table class="table tablesorter">
+
+  <thead>
+  <th>KIT ID</th>
+  <th>SCANCODE</th>
+  <th>Order No.</th>
+  <th>LOCATION</th>
+  <th>CUST.NO </th>
+  </thead>
+
+  <% @kit_demand_response["kitIdList"].each_with_index do |kit,index| %>
+      <tr>
+        <td><%= kit %></td>
+        <td><%= @kit_demand_response["scanCodeList"][index] %></td>
+        <td><%= @kit_demand_response["orderNoList"][index] %></td>
+        <td><%= @kit_demand_response["locationList"][index] %></td>
+        <td><%= @kit_demand_response["custNoList"][index] %></td>
+      </tr>
+  <% end %>
+</table>
+<% end %>

@@ -1,0 +1,18 @@
+<%= render 'search' %>
+  <div class="table_title"><%= t("part_number_with_value", part_number: params["txtPartNo"], scope: "engineering_check.fuzzy_search")  %></div>
+
+<div class="row">
+  <% @partNums_response["searchPartList"].each_index do |index| %>
+    <div class="col-sm-3">
+           <%= link_to @partNums_response["searchPartList"][index],
+                       search_bin_part_path(@partNums_response["searchPartList"][index]) %>
+    </div>
+    <% index = index + 1 %>
+    <% if index != 1 && index % 4 == 0 %>
+      </div>
+      <div class="row">
+    <% end %>
+  <% end %>
+</div>
+<br>
+<div><%= t("please_select_to_see_part_details", scope:"engineering_check.fuzzy_search") %></div>

@@ -1,0 +1,52 @@
+<h2 class="body_header" xmlns="http://www.w3.org/1999/html">Kit Deliveries</h2>
+<hr>
+<p>Scan Kit Delivery Details </p>
+<hr>
+<%= form_tag(process_deliveries_kit_delivery_index_path, :method => 'post', :class => "form-horizontal") do %>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="Kit_Copy_Number"><%= "SCAN DETAILS :"%></label>
+      <div class="col-sm-9">
+        <%= text_area_tag 'scanned_list' ,nil, class: "form-control", required: "required", rows: "7" %>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <input class="btn btn-primary" name="commit" value="Deliver" type="submit">
+      </div>
+    </div>
+<% end %>
+<% if @result_set && @result_set.count > 0 %>
+    <hr/>
+    <div class="table-responsive">
+      <p><strong>Kit Delivery Status</strong></p>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th><strong>Delivery Detail</strong></th>
+          <th><strong>Status</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @result_set.each_with_index do |result,index| %>
+            <% css_class = result[0] == 1 ? "success" : result[0] == 5 ? "warning" : "danger" %>
+            <tr class="<%= css_class %>">
+              <th scope="row"><%= index+1 %></th>
+              <th scope="row"><b><%= result[1] %></b></th>
+              <% if result[0] == 5 %>
+                  <th scope="row"><b><%= process_message result[0],result[2] %></b></th>
+              <% else %>
+                  <th scope="row"><b><%= process_message result[0] %></b></th>
+              <% end %>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+<% else %>
+    <% if defined?(@result_set) %>
+        <div class="alert alert-danger">
+          <p><strong>INVALID DELIVERY ENTRY</strong></p>
+        </div>
+    <% end %>
+<% end %>

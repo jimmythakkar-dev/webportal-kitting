@@ -1,0 +1,19 @@
+<h2 class="body_header">Users</h2>
+<table class="table">
+  <thead>
+  <th>Customer Name</th>
+  <th>User Name</th>
+  <th>Level</th>
+  <th>Type</th>
+  <th>Upload Config</th>
+  </thead>
+    <% @customers.each do |cust| %>
+       <tr>
+         <td><%= link_to cust.user_name, customer_path(cust) %></td>
+         <td><%=  cust.cust_name %></td>
+         <td><%= cust.user_level %></td>
+         <td><%= cust.user_type %></td>
+         <td><%= link_to "<span class='glyphicon glyphicon-edit'></span>".html_safe, customer_path(cust),class: "btn btn-default" %></td>
+       </tr>
+    <% end %>
+</table>

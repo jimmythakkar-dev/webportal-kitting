@@ -1,0 +1,33 @@
+<h2 class="body_header">Kit Receiving</h2>
+<%= render 'search' %>
+<%= render 'layouts/message_display' %>
+<div class="tabel-responsive">
+  <table class="table tablesorter">
+    <thead>
+    <th>Kit Copy Number </th>
+    <th>Location</th>
+    <th>Kit Bin Center</th>
+    <th>Action</th>
+    </thead>
+    <small><%= page_entries_info @kit_copy_response %></small>
+    <% @kit_copy_response.each do |kit_copy| %>
+        <% filling_id = check_kit_filling(kit_copy) %>
+        <% in_filling_id = get_filling_id(kit_copy)%>
+        <% if kit_copy.try(:status) != 6 || (filling_id && in_filling_id.present?) %>
+            <tr>
+              <td><%= kit_copy.try(:kit_version_number)  %></td>
+              <td><%= kit_copy.try(:location).try(:name) %></td>
+              <td><%= kit_copy.try(:kit).try(:bincenter) %></td>
+              <td>
+                <% if session[:user_level] %>
+                    <% if session[:user_level] > "3" %>
+                        <%= filling_id ? "In Filling" : "#{link_to 'Fill Kit', create_filling_show_kit_receiving_path(kit_copy,:received => "R") }".html_safe %>
+                    <%end%>
+                <%end%>
+              </td>
+            </tr>
+        <%end%>
+    <% end %>
+  </table >
+</div>
+<%= will_paginate @kit_copy_response %>

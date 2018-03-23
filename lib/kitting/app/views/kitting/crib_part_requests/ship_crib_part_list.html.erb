@@ -1,0 +1,47 @@
+<h2 class="body_header">Ship Crib Parts</h2>
+<%= render 'search' %>
+<span class="text-center">
+<%= render 'layouts/message_display' %>
+</span>
+<% if @order_part_details && @order_part_details.size > 0 %>
+    <div class="row">
+      <div class="col-lg-9">
+        <p><%= page_entries_info @order_part_details %></p>
+      </div>
+    </div>
+    <br>
+    <%= form_tag ship_crib_part_crib_part_requests_path do  %>
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead>
+            <th>Part Number </th>
+            <th>Quantity</th>
+            <th>Queue</th>
+            <th>Requestor</th>
+            <th>Request Date</th>
+            <th class="filter-false">Ship</th>
+            </thead>
+            <% @order_part_details.each do |part| %>
+                <tr>
+                  <td><%= part.part_number %></td>
+                  <td><%= part.quantity %></td>
+                  <td><%= part.location.name %></td>
+                  <td><%= part.order.created_by %></td>
+                  <td><%= part.order.created_at.strftime("%m/%d/%Y") %></td>
+                  <td class="ship_part_list"><%= check_box_tag 'print[]', part.id, false %></td>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+
+        <%= will_paginate @order_part_details %>
+        <div class="row">
+          <div class="col-sm-10 text-right">
+            <%= submit_tag 'Ship', class: 'btn btn-primary', id: "ship_crib_part" %>
+          </div>
+        </div>
+        <br>
+    <% end %>
+<% else %>
+    <p class="text-primary">No records found</p>
+<% end %>

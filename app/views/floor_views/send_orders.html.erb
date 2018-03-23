@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>KLX Aerospace</title>
+  <%= favicon_link_tag 'favicon.ico' %>
+  <style>
+      body{
+          font-family:Arial, Helvetica, sans-serif;
+      }
+      .underline{
+          float: left;
+          width: 80%;
+          padding:10px 20px;
+          border-bottom: 2px solid #000;
+      }
+      table.main_table{
+          width: 100% !important;
+          border: 1px solid #000;
+      }
+      table.main_table tr th,table.main_table tr td{
+          font-size: 18px;
+          font-family:Arial, Helvetica, sans-serif;
+          white-space: nowrap;
+          padding: 5px;
+      }
+  </style>
+</head>
+
+<body>
+<strong><span style="font-size: 26px; padding: 5px 0px"><%= "#{t('pn',:scope => "floor_views._send_orders")}" %>: <%= params[:partno].upcase %> </span> -  <span style="font-size: 13px; float: right;"><%= Time.now.strftime("%-m/%-d/%y") %> - <%= Time.now.strftime("%-I:%M %p")  %> - <%= "#{t('by',:scope => "floor_views._location_search")}" %> : <%= session[:user_name] %></span></strong>
+<div class="table-responsive">
+  <table class="main_table" border="1" cellspacing="1">
+    <tr>
+      <th><%= "#{t('qty',:scope => "floor_views._send_orders")}" %></th>
+      <th><%= "#{t('bin',:scope => "floor_views._send_orders")}" %></th>
+      <th><%= "#{t('location',:scope => "floor_views._send_orders")}" %></th>
+      <th><%= "#{t('scan_code',:scope => "floor_views._send_orders")}" %></th>
+      <th><%= "#{t('trace',:scope => "floor_views._send_orders")}" %>:</th>
+    </tr>
+    <% (0... @expedit_array.length).each do |index| %>
+        <tr>
+          <td width="2%"><%= @expedit_array[index][1] %></td>
+          <td width="5%"><%= @expedit_array[index][8].gsub(';','') %></td>
+          <td width="25%"><%= @expedit_array[index][6] %></td>
+          <td align="center" style="font-size: 12px; text-align: center; font-weight: bold">
+            <%= @expedit_array[index][5] %><br>
+            <% unless @expedit_array[index][5] == "" %>
+                <% generate_barcode(@expedit_array[index][5]) %>
+                <%= pdf_image_tag('/'+APP_CONFIG['kitting_barcode_path']+@expedit_array[index][5].split('').map(&:ord).join("") +'.png', width: '90%',height: '50px' ) %>
+            <% end %>
+
+          </td>
+          <td width="25%"><div class="underline">&nbsp;</div></td>
+        </tr>
+    <% end %>
+  </table>
+</div>
+</body>
+</html>

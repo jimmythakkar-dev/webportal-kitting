@@ -1,0 +1,441 @@
+var update_cup_id = new Array();
+var disabled_cups = new Array();      // Stores Disabled Part Information.
+var disabled_cups_id = new Array();   // Stores Disabled Cup Ids.
+
+$(document).ready(function() {
+//    $.noConflict();
+    var gridster1;
+    var gridster2;
+    var gridster3;
+//    $(function(){
+    gridster1 = $("#demo-1 ul").gridster({
+        namespace: '#demo-1',
+        widget_base_dimensions: [120, 150],
+        widget_margins: [3, 5],
+        min_cols: 10,
+        max_cols: 10,
+        min_rows: 6,
+        max_rows: 6,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function (e, ui, $widget) {
+                if($widget.attr("data-sizey") == 2) {
+                    gridster1.resize_widget($widget, 2, 2);
+                    if($widget.attr("data-row") == 4) {
+                        gridster1.resize_widget($widget, 1, 1);
+                    }
+                }
+                /********  Last row Blocks  **************/
+                $(".gridster > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt == 4){
+                        if(parseInt($(this).attr("data-sizex")) == 2 && parseInt($(this).attr("data-sizey")) == 2){
+                            gridster1.resize_widget($(this), 2, 1);
+                        }
+                    }
+                });
+                /********  Last row Blocks End **************/
+                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                /********  Last row Blocks  **************/
+                $(".gridster > ul > li").each(function(i){
+                    var row_cnt = parseInt($(this).attr("data-row"));
+                    if(row_cnt == 4){
+                        if(parseInt($(this).attr("data-sizex")) == 2 && parseInt($(this).attr("data-sizey")) == 2){
+                            gridster1.resize_widget($(this), 2, 1);
+                        }
+                    }
+                });
+                /********  Last row Blocks End **************/
+                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster')/*.disable()*/;
+
+    ///////////////////////////////////////////////////////////////////// 3.1 /////////////////////////////////////////////////////
+
+    gridster2 = $("#demo-2 ul").gridster({
+        namespace: '#demo-2',
+        widget_base_dimensions : [140, 120],
+        widget_margins: [5, 5],
+        min_cols: 2,
+        max_cols: 2,
+        min_rows: 2,
+        max_rows: 2,
+        enabled: true,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                if($widget.attr("data-sizex") == 2) {
+                    gridster2.resize_widget($widget, 2, 2);
+                    if($widget.attr("data-row") == 2) {
+                        gridster2.resize_widget($widget, 1, 1);
+                    }
+                }
+                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster').disable();
+
+
+    ///////////////////////////////////////////////////////////////////// 3.1 /////////////////////////////////////////////////////
+
+    gridster3 = $("#demo-3 ul").gridster({
+        namespace: '#demo-3',
+        widget_margins: [5, 5],
+        widget_base_dimensions: [140, 120],
+        min_cols: 2,
+        max_cols: 2,
+        min_rows: 2,
+        max_rows: 2,
+        enabled: true,
+        avoid_overlapped_widgets: true,
+        resize: {
+            enabled: true,
+            max_size: [2, 2],
+            start: function(e, ui, $widget) {
+            },
+            resize: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                if($widget.attr("data-sizex") == 2) {
+                    gridster3.resize_widget($widget, 2, 2);
+                    if($widget.attr("data-row") == 2) {
+                        gridster3.resize_widget($widget, 1, 1);
+                    }
+                }
+                $("#save_layout").trigger( "click" );
+            }
+        },
+
+        draggable: {
+            start: function(e, ui, $widget) {
+            },
+            drag: function(e, ui, $widget) {
+            },
+            stop: function(e, ui, $widget) {
+                $("#save_layout").trigger( "click" );
+            }
+        }
+    }).data('gridster').disable();
+
+
+    ///////////////////////////////////////////// Remove /////////////////////////////////////////////////////
+
+    function resetboxno() {
+        var count = 1;
+        $(".gs-w").each(function(){
+            $(this).find(".box-no").text(count);
+            count++;
+        });
+    }
+
+    // Method to remove Cup from Configurable KMT
+    $(".remove_cup").click(function(){
+        var result = confirm("Are you sure ?");
+        if (result == true){
+            cup_to_disable = $(this).parent().attr("id");
+            var disabled_cups = new Array();
+            disabled_cups.push(cup_to_disable);
+            if (cup_to_disable != "") {
+                $.ajax ({
+                    url: '/kitting/cups/disable_cup',
+                    type: 'GET',
+                    data: "cup_id="+disabled_cups,
+                    onLoading: start_configuring(),
+                    success: function(data) {
+                        stop_configuring();
+//                    alert(data);
+                    }
+                });
+                gridster1.remove_widget($(this).parent("li"), true);
+                gridster2.remove_widget($(this).parent("li"), true);
+                gridster3.remove_widget($(this).parent("li"), true);
+                setTimeout(function() {
+                    resetboxno();
+                }, 500);
+            }
+        }
+    });
+
+    ///////////////////////////////////////////// Add /////////////////////////////////////////////////////
+
+    $("#demo-1 span.add").on('click', function(){
+      var kit_number = $("#mmt_kit_number").val() == '' ? $("#kit_number").val() : $("#mmt_kit_number").val();
+        var group_id = $(this).attr("data-group");
+        $.ajax({
+            url: '/kitting/kits/add_widget_kit_layout',
+            data: {"kit_number" : kit_number},
+            type: "PUT",
+            dataType: 'json',
+            onLoading: start_configuring(),
+            success: function(data){
+                stop_configuring();
+                if(data.cup_id != 0){
+                    create_cup_id = data.cup_id;
+                    var widgets = [
+                        ['<li id='+create_cup_id+' data-group='+group_id+'><span class="box-no">New</span> <span class="remove">Remove</span></li>', 1, 1]
+                    ];
+                    $.each(widgets, function(i, widget){
+                        if($("#demo-1 .gs-w").length < 40) {
+                            gridster1.add_widget.apply(gridster1, widget);
+                        }
+                    });
+                    setTimeout(function() {
+                        resetboxno();
+                    }, 500);
+                    $("#save_layout").trigger( "click" );
+                }
+                else {
+                    alert( "Unable to Create Cup, Contact KLX Administrator");
+                }
+            },
+            error: function(data) {
+                stop_configuring();
+                alert( "Unable to add");
+            }
+        });
+    });
+
+    $("#demo-2 span.add").on('click', function(){
+      var kit_number = $("#mmt_kit_number").val() == '' ? $("#kit_number").val() : $("#mmt_kit_number").val();
+        var group_id = $(this).attr("data-group");
+        $.ajax({
+            url: '/kitting/kits/add_widget_kit_layout',
+            data: {"kit_number" : kit_number},
+            type: "PUT",
+            dataType: 'json',
+            onLoading: start_configuring(),
+            success: function(data){
+                stop_configuring();
+                if(data.cup_id != 0){
+                    create_cup_id = data.cup_id;
+                    var widgets = [
+                        ['<li id='+create_cup_id+' data-group='+group_id+'><span class="box-no">New</span> <span class="remove">Remove</span></li>', 1, 1]
+                    ];
+                    $.each(widgets, function(i, widget){
+                        gridster2.add_widget.apply(gridster2, widget);
+                    });
+                    setTimeout(function() {
+                        resetboxno();
+                    }, 500);
+                    $("#save_layout").trigger( "click" );
+                }
+                else {
+                    alert( "Unable to Create Cup, Contact KLX Administrator");
+                }
+            },
+            error: function(data) {
+                stop_configuring();
+                alert( "Unable to add");
+            }
+        });
+    });
+
+    $("#demo-3 span.add").on('click', function(){
+      var kit_number = $("#mmt_kit_number").val() == '' ? $("#kit_number").val() : $("#mmt_kit_number").val();
+        var group_id = $(this).attr("data-group");
+        $.ajax({
+            url: '/kitting/kits/add_widget_kit_layout',
+            data: {"kit_number" : kit_number},
+            type: "PUT",
+            dataType: 'json',
+            onLoading: start_configuring(),
+            success: function(data){
+                stop_configuring();
+                if(data.cup_id != 0){
+                    create_cup_id = data.cup_id;
+                    var widgets = [
+                        ['<li id='+create_cup_id+' data-group='+group_id+'><span class="box-no">New</span> <span class="remove">Remove</span></li>', 1, 1]
+                    ];
+                    $.each(widgets, function(i, widget){
+                        gridster3.add_widget.apply(gridster3, widget);
+                    });
+                    setTimeout(function() {
+                        resetboxno();
+                    }, 500);
+                    $("#save_layout").trigger( "click" );
+                }
+                else {
+                    alert( "Unable to Create Cup, Contact KLX Administrator");
+                }
+            },
+            error: function(data) {
+                stop_configuring();
+                alert( "Unable to add");
+            }
+        });
+    });
+
+    ///////////////////////////////////////////// Serialize /////////////////////////////////////////////////////
+    $('.js-seralize').click (function() {
+
+        var s = gridster1.serialize();
+        var T = gridster2.serialize();
+        var U = gridster3.serialize();
+
+        $('#log').val(JSON.stringify(s));
+        $('#log_2').val(JSON.stringify(T));
+        $('#log_3').val(JSON.stringify(U));
+
+//        $('.gridster li').each(function() {
+//            if( ($(this).attr("data-row")>="5")){
+//                $(this).remove();
+//            }
+//        });
+    });
+
+
+
+    $("#save_layout").on("click",function(){
+        save_layout_click()
+    });
+
+});
+
+
+function save_layout_click(){
+    var kit_number = $("#mmt_kit_number").val() == '' ? $("#kit_number").val() : $("#mmt_kit_number").val();
+    var serialize_data = $("#log").val();
+    var serialize_data_2 = $("#log_2").val();
+    var serialize_data_3 = $("#log_3").val();
+    find_disable_and_update_cup(serialize_data,4);
+    find_disable_and_update_cup(serialize_data_2,2);
+    find_disable_and_update_cup(serialize_data_3,2);
+
+    if(disabled_cups_id.length > 0){
+
+        if (disabled_cups.length > 0)
+        {
+            var result = confirm("Part Number with quantity " +disabled_cups+" will be destroyed, are you sure to continue ?");
+            if (result == true){
+                $.ajax ({
+                    url: '/kitting/cups/disable_cup',
+                    type: 'GET',
+                    data: "cup_id="+disabled_cups_id,
+                    onLoading: start_configuring(),
+                    success: function(data) {
+                        stop_configuring();
+                        $.ajax({
+                            url: '/kitting/kits/update_kit_layout',
+                            data: {"kit_number" : kit_number, "serialize_data": serialize_data,"serialize_data_2": serialize_data_2,"serialize_data_3": serialize_data_3},
+                            type: "PUT",
+                            onLoading: start_configuring(),
+                            success: function(data){
+                                stop_configuring();
+//                        window.location.reload();
+                            },
+                            error: function(data) {
+                                stop_configuring();
+                                alert( "Unable to update after delete cup with part");
+                            }
+                        });
+                    },
+                    error: function(data) {
+                        stop_configuring();
+                        alert( "Unable to delete cup with part");
+                    }
+                });
+            }
+            else
+            {
+                start_configuring();
+                window.location.reload();
+            }
+        }
+        else{
+            $.ajax ({
+                url: '/kitting/cups/disable_cup',
+                type: 'GET',
+                data: "cup_id="+disabled_cups_id,
+                onLoading: start_configuring(),
+                success: function(data) {
+                    stop_configuring();
+                    $.ajax({
+                        url: '/kitting/kits/update_kit_layout',
+                        data: {"kit_number" : kit_number, "serialize_data": serialize_data,"serialize_data_2": serialize_data_2,"serialize_data_3": serialize_data_3},
+                        type: "PUT",
+                        onLoading: start_configuring(),
+                        success: function(data){
+                            stop_configuring();
+//                        window.location.reload();
+                        },
+                        error: function(data) {
+                            stop_configuring();
+                            alert( "Unable to update after delete cup");
+                        }
+                    });
+                },
+                error: function(data) {
+                    stop_configuring();
+                    alert( "Unable to delete cup");
+                }
+            });
+        }
+    }
+    else
+    {
+        $.ajax({
+            url: '/kitting/kits/update_kit_layout',
+            data: {"kit_number" : kit_number, "serialize_data": serialize_data,"serialize_data_2": serialize_data_2,"serialize_data_3": serialize_data_3},
+            type: "PUT",
+            onLoading: start_configuring(),
+            success: function(data){
+                stop_configuring();
+//                    window.location.reload();
+            },
+            error: function(data) {
+                stop_configuring();
+                alert( "Unable to update");
+            }
+        });
+    }
+}
+function find_disable_and_update_cup(serialize_data,row_cnt) {
+    $.each(eval(serialize_data),function(index,value){
+        if(parseInt(value.row) > row_cnt ) {
+            if($("li[id="+value.id+"] div.block_area").find(".part_block").length > 0 ){
+                $("li[id="+value.id+"] div.block_area span.part_block").map(function() {
+                    disabled_cups.push( $(this).text() );
+                });
+                disabled_cups_id.push(value.id);
+            }
+            else{
+                disabled_cups_id.push(value.id);
+            }
+        }
+        else{
+            update_cup_id.push(value.id);
+        }
+    });
+}

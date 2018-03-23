@@ -1,0 +1,186 @@
+<table class="tbl_invoice_main">
+  <tr>
+    <td colspan="8">
+      <div class="td_align_center">
+        <% if @old_be_logo && @old_be_logo == 1 %>
+            <%= image_tag "BE_BWlogo.jpg", :alt => "B/E logo" %>
+        <% else %>
+            <%= image_tag "KLX_BW.png", :alt => "KLX logo" %>
+        <% end %>
+        <label><h3><%= t("invoice_info",:scope => "open_orders.invoice_display") %></h3></label>&nbsp;
+      </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan="4">
+      <label><strong><%= t("invoice_id",:scope => "open_orders.invoice_display") %><%= params[:id]%></strong></label>&nbsp;
+    </td>
+    <td colspan="4">
+      <div id="printOption" class="td_align_right">
+        <strong>
+          <%= link_to image_tag('/assets/ico_print.gif') + t("print_page",:scope => "open_orders.invoice_display"),
+                      '#',:style => "color:black;",
+                      :onclick => "document.getElementById('printOption').style.visibility = 'hidden';document.getElementById('closeButton').style.visibility = 'hidden';window.print();return false;" %>
+        </strong>
+      </div>
+    </td>
+  </tr>
+  <tr class="tr_invoice_subheaders">
+    <td colspan="3"><div class="td_align_center"><%= t("billed_to",:scope => "open_orders.invoice_display") %></div></td>
+    <td colspan="5"><div class="td_align_center"><%= t("shipped_to",:scope => "open_orders.invoice_display") %></div></td>
+  </tr>
+  <tr>
+    <td class="vertical_align" colspan="4">
+      <table>
+        <% @response_invoice_record_for_popup.first["billtoLines"].split(",").each do |billed_address| %>
+            <tr>
+              <td>
+                <% if billed_address.include?("'") %>
+                    <%= billed_address.gsub("'",",") %>
+                <% else %>
+                    <%= billed_address %>
+                <%end%>
+              </td>
+            </tr>
+        <% end %>
+      </table>
+    </td>
+    <td class="vertical_align" colspan="4">
+      <table>
+        <% @response_invoice_record_for_popup.first["shiptoLines"].split(",").each do |shipped_address| %>
+            <tr>
+              <td>
+                <% if shipped_address.include?("'") %>
+                    <%= shipped_address.gsub("'",",") %>
+                <% else %>
+                    <%= shipped_address %>
+                <%end%>
+              </td>
+            </tr>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">
+      <table class="tbl_invoice_sub">
+        <tr class="tr_invoice_subheaders">
+          <td><div class="td_align_center"><%= t("po_id",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("invoice_date",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("ship_via",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("terms",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("fob",:scope => "open_orders.invoice_display") %></div></td>
+        </tr>
+        <tr>
+          <% @response_invoice_record_for_popup.first["poLine"].each do |po_values| %>
+              <td><%= po_values %></td>
+          <% end %>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="8">
+      <table class="tbl_invoice_sub">
+        <tr class="tr_invoice_subheaders">
+          <td><div class="td_align_center"><%= t("so_id",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("ship_date",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("entry_date",:scope => "open_orders.invoice_display") %></div></td>
+          <td><div class="td_align_center"><%= t("sales_person",:scope => "open_orders.invoice_display") %></div></td>
+        </tr>
+        <tr>
+          <% @response_invoice_record_for_popup.first["miscLines"].each do |misc_values| %>
+              <td class="td_align_center">
+                <% if misc_values.include?("'") %>
+                    <%= misc_values.gsub("'",",") %>
+                <% else %>
+                    <%= misc_values %>
+                <%end%>
+              </td>
+          <% end %>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <tr class="tr_invoice_subheaders">
+    <td><div class="td_align_center"><%= t("item_id",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("quantity",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("part_num",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("price",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("unit_of_measurment",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("back_order",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("shipped",:scope => "open_orders.invoice_display") %></div></td>
+    <td><div class="td_align_center"><%= t("extension",:scope => "open_orders.invoice_display") %></div></td>
+  </tr>
+  <tr>
+    <% @response_invoice_record_for_popup.first["pNLines"].each_with_index do |pn_values,index_of_pn_values| %>
+        <% pn_values.split(',').each_with_index do |pn_value,index_of_pn_value| %>
+            <td class="td_invoice_content"
+                <% if index_of_pn_values % 7 == 2 %>
+                align="left"
+                <% else %>
+                align="right"
+                <% end %> >
+              <%= pn_value %>
+            </td>
+            <% unless index_of_pn_value == 1 %>
+                <% if index_of_pn_values % 7 == 0 && index_of_pn_values > 0 %>
+                    </tr>
+                    <tr>
+                <% end %>
+            <% end %>
+        <%end%>
+    <% end %>
+    </tr>
+    <tr class="tr_invoice_subheaders">
+      <td colspan="8"><div class="td_align_center"><%= t("summary_info",:scope => "open_orders.invoice_display") %></div></td>
+    </tr>
+    <tr>
+      <td class="vertical_align" colspan="4">
+        <div class="align_left">
+          <table>
+            <% @response_invoice_record_for_popup.first["notesLines"].split(",").each do |note_values| %>
+                <tr>
+                  <td class="align_left"><%= note_values %></td>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+      </td>
+      <td class="vertical_align" colspan="4">
+        <div class="float_right">
+          <table>
+            <tr>
+              <% @response_invoice_record_for_popup.first["totalsLines"].each_with_index do |total_lines_values,index| %>
+                  <% total_lines_values.split(",").each_with_index do |val,i| %>
+                      <td class="td_align_right">
+                        <%= val %>
+                      </td>
+                      <% unless (index == 1 || index == 2) && i == 1 %>
+                          <% if index % 1 == 0 && index > 0 %>
+                              </tr>
+                              <tr>
+                          <% end %>
+                      <%end%>
+                  <%end%>
+              <% end %>
+              </tr>
+              </table>
+        </div>
+      </td>
+    </tr>
+    <tr class="tr_invoice_subheaders">
+      <td colspan="8"><div class="td_align_center"><%= t("end_of_invoice",:scope => "open_orders.invoice_display") %></div></td>
+    </tr>
+    <tr>
+      <td colspan="8">
+        <div id="closeButton" class="td_align_center">
+          <%= submit_tag t("close",:scope => "open_orders.invoice_display"), :onclick => "window.close()" %>
+        </div>
+      </td>
+    </tr>
+    </table>
+

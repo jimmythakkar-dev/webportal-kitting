@@ -1,0 +1,97 @@
+<!-- Start Table Listing -->
+<div class="<%= params[:additional_part].present? ? "extra_order_div" : "main_order_div" %>">
+  <div class="table-responsive">
+    <table id="table" class="<%= params[:additional_part].present? ? "extra_order_req" : "main_order_req" %> table">
+      <tbody>
+      <tr>
+        <th><%= t 'agusta.part_no' %></th>
+        <th><%= t 'agusta.part_qty' %></th>
+        <th><%= t 'agusta.quantity' %></th>
+        <th><%= t 'agusta.motive' %></th>
+        <th><%= t 'agusta.note' %></th>
+        <th style="background: #ffffff"></th>
+      </tr>
+      <% if params[:new_kit_flag].present? %>
+          <tr class="<%= 'extra_order_tr' if params[:additional_part].present? %>">
+            <td align="left" style="text-align:left">
+              <%= hidden_field_tag "new_kit_flag", params[:new_kit_flag] %>
+              <%= text_field_tag "part_number[]", nil, :class => 'form-control new_kit_part' %>
+            </td>
+            <td>
+              <%= text_field_tag "AgustaOrderQtyReadOnly[]", nil, :class => 'form-control new_part_qty', :size => 10, :value => "0" %>
+            </td>
+            <td>
+              <%= text_field_tag "AgustaOrderQty[]", nil, :class => 'agustaOrderQty form-control', :size => 10, :value => "0" %>
+            </td>
+            <td>
+              <%= select_tag "motive[]", options_for_select([["#{t 'agusta.select'}",{:title=>"#{t 'agusta.select'}"}], ["#{t 'agusta.job_card_shortage'}","Job Card Shortage"], ["#{t 'agusta.missing_part'}","Missing Part from Standard Kit"], ["#{ t 'agusta.alternative_for_job_card' }","Alternative for Job Card or Standard Kit Shortage"], ["#{t 'agusta.length'}","-/+ Length"], ["#{t 'agusta.lost_or_damaged'}","Lost or Damaged"], ["#{t 'agusta.added_after_bom_issued'}","Added After BOM Issued"], ["#{t 'agusta.experimental_unplanned_requirement'}","Experimental unplanned requirement - not on Bar chart"], ["#{t 'agusta.rework_not_planned'}","Rework Not planned in bar chart"], ["#{t 'agusta.installation_from_off_site'}","Installation from off site - i.e Brindisi fitters come to Vergiate to complete work"], ["#{t 'agusta.aw_subcontractor'}","AW Subcontractor"], ["#{t 'agusta.ag_other'}","Other"]], "#{t 'agusta.select'}"), :class => "select_motive form-control" %>
+            </td>
+            <td>
+              <%= text_field_tag "PartComment[]", nil, :class => 'PartNo form-control agustaPart', :size => 10 %>
+            </td>
+            <td>
+
+            </td>
+          </tr>
+      <% elsif response["errCode"] == "" %>
+          <% response["kitComponents"].each_with_index do |kit_component, index| %>
+              <tr class="<%= 'extra_order_tr' if params[:additional_part].present? %>">
+                <td align="left" style="text-align:left">
+                  <%= hidden_field_tag "part_number[]", kit_component %>
+                  <%= kit_component %>
+                </td>
+                <td>
+                  <%= text_field_tag "AgustaOrderQtyReadOnly[]", nil, :class => 'form-control', :size => 10, :value => response["kitCompQtys"][index], :readonly => true %>
+                </td>
+                <td>
+                  <%= text_field_tag "AgustaOrderQty[]", nil, :class => 'agustaOrderQty form-control', :size => 10, :value => "0" %>
+                </td>
+                <td>
+                  <%= select_tag "motive[]", options_for_select([["#{t 'agusta.select'}",{:title=>"#{t 'agusta.select'}"}], ["#{t 'agusta.job_card_shortage'}","Job Card Shortage"], ["#{t 'agusta.missing_part'}","Missing Part from Standard Kit"], ["#{ t 'agusta.alternative_for_job_card' }","Alternative for Job Card or Standard Kit Shortage"], ["#{t 'agusta.length'}","-/+ Length"], ["#{t 'agusta.lost_or_damaged'}","Lost or Damaged"], ["#{t 'agusta.added_after_bom_issued'}","Added After BOM Issued"], ["#{t 'agusta.experimental_unplanned_requirement'}","Experimental unplanned requirement - not on Bar chart"], ["#{t 'agusta.rework_not_planned'}","Rework Not planned in bar chart"], ["#{t 'agusta.installation_from_off_site'}","Installation from off site - i.e Brindisi fitters come to Vergiate to complete work"], ["#{t 'agusta.aw_subcontractor'}","AW Subcontractor"], ["#{t 'agusta.ag_other'}","Other"]], "#{t 'agusta.select'}"), :class => "select_motive form-control" %>
+                </td>
+                <td>
+                  <%= text_field_tag "PartComment[]", nil, :class => 'PartNo form-control agustaPart', :size => 10 %>
+                </td>
+              </tr>
+          <% end %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+  <% if params[:new_kit_flag].present? %>
+      <div class="col-sm-12 ">
+        <a id="newPartID" class="btn pull-right"><i class="glyphicon glyphicon-plus"></i></a>
+      </div>
+  <% end %>
+  <% unless params[:additional_part].present? %>
+      <%= image_seperator %>
+      <div class="row text-center">
+        <div class="s_title col-sm-3">
+          <%= t('agusta.order_type') %>
+        </div>
+        <div class="col-sm-6 agusta_order_type">
+          <% if session[:user_level] > "1" %>
+              <%= select_tag "agusta_order_select", options_for_select([I18n.t('select',:scope => "agusta"),I18n.t('normal_order',:scope => "agusta._kit_components_details"),I18n.t('expedited_order',:scope => "agusta._kit_components_details")], I18n.t('expedited_order',:scope => "agusta._kit_components_details") ),:class=> "form-control" %>
+          <% else %>
+              <%= select_tag "agusta_order_select_floor", options_for_select([I18n.t('expedited_order',:scope => "agusta._kit_components_details")] ),:class=> "form-control" %>
+          <% end %>
+        </div>
+      </div>
+      <%= image_seperator %>
+  <% end %>
+  <% unless params[:additional_part].present? %>
+      <div class="col-sm-12">
+        <%= submit_tag t("agusta.restore_order"), :id => "agusta_reset_formID", :class => "btn btn-info btn-large", :onclick => "agustaCheckForm();return false;" %>&nbsp;
+        <%= submit_tag t("agusta.reset_form"), :id => "agusta_restore_orderID", :class => "btn btn-info btn-large", :onclick => "agustaResetFM();return false;" %>&nbsp;
+        <%= submit_tag t("agusta.send"), :id => "agusta_sendID", :class => "btn btn-info btn-large" %>&nbsp;
+        <%= button_tag t("agusta.submit_order"), :disabled => "true",:id => "agusta_submitorder", :style => "display:none;",:class => "btn btn-info btn-large" %>&nbsp;
+        <% if params[:new_kit_flag].blank? %>
+            <div class="bs-docs-example" style="float: right;" id="popUpID">
+              <a href="javascript:void(0);" onclick="agustaPopUpFormValidation();return false;" class="btn btn-info btn-large"><%= t 'agusta.pop_up' %></a>
+            </div>
+        <% end %>
+      </div>
+      <div class="clear"></div>
+  <% end %>
+</div>
+<!-- End Table Listing -->

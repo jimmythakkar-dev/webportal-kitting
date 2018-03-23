@@ -1,0 +1,87 @@
+<%= image_seperator %>
+<!--<div class="row">-->
+  <div class="col-sm-12">
+    <div class="row">
+      <div class="col-sm-4"> <%= t('Part_Number_Entered',:scope => "floor_views._floor_view_search")%>:</div>
+      <div class="col-sm-8 body_text_subhead"><strong><%= @response["partNo"].join("")%></strong>	</div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4"><%= t('Description',:scope => "floor_views._floor_view_search")%> </div>
+      <div class="col-sm-8"><%= @response["partName"]%></div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4"><%= t('Customer_Ref_Number',:scope => "floor_views._floor_view_search")%></div>
+      <div class="col-sm-8 "><%= @response["custPartNoList"].first %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4"><%= t('Contract_Part_Number',:scope => "floor_views._floor_view_search")%></div>
+      <div class="col-sm-8 "><%= @response["invPNList"].first %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4"><%= t('Updated_Date',:scope => "floor_views._floor_view_search")%></div>
+      <div class="col-sm-8 "><%= @bin_part_response["updatedDt"]%></div>
+    </div>
+
+    <div class="row">
+      <div class = "col-sm-4"><%= t('Updated_By',:scope => "floor_views._floor_view_search")%></div>
+      <div class="col-sm-8 "><%= @bin_part_response["updatedBy"]%></div>
+    </div>
+
+  </div>
+<!--</div>-->
+<!--<div class="row">-->
+  <div class="col-sm-12">
+    <span><%= image_seperator %></span>
+    <% if @lead_time_response["errCode"] != "" || @lead_time_response["errCode"].nil? %>
+        <div class="row">
+          <div class = "col-sm-4">
+            <%= t('Effective_Date',:scope => "floor_views._floor_view_search")%>
+          </div>
+        </div>
+        <div class="row">
+          <div class = "col-sm-4">
+            <%= t('Supportability_Date',:scope => "floor_views._floor_view_search")%>
+          </div>
+        </div>
+        <div class="row">
+          <div class = "col-sm-4">
+            <%= t('Lead_Time(Days)',:scope => "floor_views._floor_view_search")%>
+          </div>
+        </div>
+    <%else%>
+        <div class="row">
+          <div class = "col-sm-4"><%= t('Effective_Date',:scope => "floor_views._floor_view_search")%></div>
+          <div class="col-sm-8 "><%= @lead_time_response["begDate"]%></div>
+        </div>
+        <div class="row">
+          <div class = "col-sm-4"><%= t('Supportability_Date',:scope => "floor_views._floor_view_search")%></div>
+          <div class="col-sm-8 "><%= @lead_time_response["actionDate"]%></div>
+        </div>
+        <div class="row">
+          <div class = "col-sm-4"><%= t('Lead_Time(Days)',:scope => "floor_views._floor_view_search")%></div>
+          <div class="col-sm-8 "><%= @lead_time_response["actionTime"]%></div>
+        </div>
+    <%end%>
+  </div>
+<!--</div>-->
+<span><%= image_seperator %></span>
+<!--<div class="row">-->
+  <div class="col-sm-12">
+    <div class="simple_form">
+      <div class="row">
+        <div class = "col-sm-4"><%= t('Ship-To_Address',:scope => "floor_views._floor_view_search")%></div>
+        <div class="col-sm-8 "><%= @bin_part_response["shipTo"].html_safe %></div>
+      </div>
+      <span><%= image_seperator %></span>
+      <div class="simple_form">
+        <div>
+          <%= render :partial => 'quantity_on_hand' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--</div>	-->

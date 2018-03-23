@@ -1,0 +1,19 @@
+<% if params[:new_kit_flag].present?%>
+  <%if @contract_stock_check_details["errCode"].present? || @contract_stock_check_details["errMsg"].first.present? %>
+   $("#agusta_sendID").attr("disabled", true);
+   $("#<%= params[:current_object_id] %>").val("");
+   alert("<%=  I18n.t("part_not_on_contract",:part_no => @contract_stock_check_details["partNo"],:scope => "agusta.add_part",:default => @contract_stock_check_details["errMsg"]  ) %>");
+  <% else %>
+    $("#agusta_sendID").attr("disabled", false);
+  <% end %>
+<% else %>
+  <%if @contract_stock_check_details["errCode"].present? || @contract_stock_check_details["errMsg"].first.present? %>
+  $(".err_msg").css("display", "block");
+  $(".err_msg").html("<%= I18n.t("part_not_on_contract",:part_no => @contract_stock_check_details["partNo"],:scope => "agusta.add_part",:default => @contract_stock_check_details["errMsg"]  ) %>");
+  //  $("#add_order_record").attr("disabled", true);
+  <%else%>
+  $(".err_msg").hide();
+  $("#add_order_record").attr("disabled", false);
+  $(".extra_order_req tr:last").after("<%= escape_javascript(render 'add_table_row') %>")
+  <%end%>
+<% end %>

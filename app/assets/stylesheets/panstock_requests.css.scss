@@ -1,0 +1,87 @@
+/* Place all the styles related to the panstock_requests controller here.
+ They will automatically be included in application.css.
+*/
+
+table {
+  &.email_table {
+    width: 100%;
+    tr {
+      th {
+        background-color: #006699;
+        text-align: center;
+        color: #FFFFFF;
+      }
+      td {
+        text-align: center;
+      }
+    }
+  }
+  td.left_align {
+    text-align: left;
+  }
+  &.email_table tr td.panstock_mail_head {
+    text-align: center;
+  }
+  &.action_request {
+    width: 650px;
+    border: 0;
+    td.date_coloum {
+      width: 25px;
+    }
+  }
+}
+
+.clear {
+  clear: both;
+  height: 5px;
+}
+
+#check_all, #uncheck_all {
+  text-decoration: underline;
+  width: 70px;
+  color: #336699;
+}
+
+#check_all:hover, #uncheck_all:hover {
+  cursor: pointer;
+}
+
+.panstock_table_title {
+  background-color: #666666;
+  color: #FFFFFF;
+  font-weight: normal;
+  text-align: center;
+}
+
+table tr td.form_process {
+  background: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #cc0000;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.panstock_history_link {
+  float: right;
+  height: 50px;
+}
+
+.thankyou_msg {
+  background: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #cc0000;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.pan_text_align {
+  vertical-align: top;
+  margin-bottom: 0px;
+}
+
+.PartNo,.OrderQty {
+  width: 100% !important;
+}
+.ReasonForAction {
+  width: 100% !important;
+}

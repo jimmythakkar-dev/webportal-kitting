@@ -1,0 +1,43 @@
+
+<div class="row">
+  <label class="col-xs-12 col-sm-3">Name: </label>
+  <div class="col-xs-12 col-sm-9 body_text_subhead"><%= @kit_media_type.name %></div>
+</div>
+
+<div class="row">
+  <label class="col-xs-12 col-sm-3">Number of Compartments: </label>
+  <%if @kit_media_type.kit_type == "binder" %>
+      <div class="col-xs-12 col-sm-9 body_text_subhead">-</div>
+  <%else%>
+      <div class="col-xs-12 col-sm-9 body_text_subhead"><%= @kit_media_type.compartment %></div>
+  <%end%>
+</div>
+
+<div class="row">
+  <label class="col-xs-12 col-sm-3">Type: </label>
+  <div class="col-xs-12 col-sm-9 body_text_subhead"><%= @kit_media_type.kit_type %></div>
+</div>
+<div class="row">
+  <label class="col-xs-12 col-sm-3">Description: </label>
+  <div class="col-xs-12 col-sm-9 body_text_subhead"><%= @kit_media_type.description %></div>
+</div>
+
+<%= image_seperator %>
+<% if @kit_media_type.kit_type != "binder" %>
+    <label>Kit Layout: </label>
+    <table class="table table-bordered">
+      <thead>
+      <td>Row</td>
+      <td>Number Of Compartments</td>
+      </thead>
+      <tbody>
+      <% JSON.parse(@kit_media_type.compartment_layout).each do |key, value| %>
+          <tr>
+            <td><%= key %></td>
+            <td><%= value %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <%= image_seperator %>
+<% end %>

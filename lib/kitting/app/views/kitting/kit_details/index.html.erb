@@ -1,0 +1,59 @@
+<% if params[:type] == "RFID" %>
+    <h2 class="body_header">Generate RFID INFO</h2>
+<% else %>
+    <h2 class="body_header">Generate KIT BOM </h2>
+<% end %>
+<%= render 'layouts/message_display' %>
+<%= image_seperator %>
+<% if params[:type] == "RFID" %>
+    <%= link_to "Reset","#",:onclick=> "$(\"#rfid_download\").trigger(\"reset\");",:class=>"btn pull-right refresh glyphicon glyphicon-refresh btn-primary" %>
+    <div class="clear"></div>
+    <%= form_tag({:action => 'download_kit_copy_rfid'},:method=>"post",:id => "rfid_download") do  %>
+        <%= hidden_field_tag "type", "RFID" %>
+        <div class="row">
+          <div class="col-sm-4 text-right"><%= label_tag 'Enter the Kit Copy Number:', 'Enter the Kit Copy Number:',:class => "control-label" %></div>
+          <div class="col-sm-4 old_img"><%= text_field_tag :kit_copy_number, nil,:class=> "form-control" %> </div>
+        </div>
+        <div class="clear"></div>
+        <div class="row new_part">
+          <div class="col-sm-4 text-right"><%= label_tag 'Enter RFID Serial Number:', 'Enter RFID Serial Number:',:class => "control-label" %></div>
+          <div class="col-sm-4 new_img"><%= text_field_tag :rfid_number, nil,:class=> "form-control" %> </div>
+        </div>
+        <div class="clear"></div>
+        <div class="row"> <div class="col-sm-4">&nbsp;</div>
+          <div class="col-sm-5"><%= submit_tag 'Download RFID', :id => "download_rfid", :class => "btn btn-primary glyphicon glyphicon-download" %></div>
+        </div>
+    <% end %>
+<% else %>
+    <% unless session["BOM_ID"].blank? %>
+        <div class="row">
+          <div class="col-sm-12">A Kit BOM Is Currently Under Process / You can Generate a New Report Once the Old Report is Completed </div>
+        </div>
+    <% else %>
+        <%= link_to "Reset","#",:onclick=> "$(\"#bom_download\").trigger(\"reset\");",:class=>"btn pull-right refresh glyphicon glyphicon-refresh btn-primary" %>
+        <div class="clear"></div>
+        <%= form_tag({:action => 'create'},:method=>"post",:id => "bom_download",:class=>"form-horizontal",:remote => true ) do  %>
+            <div class="row">
+              <div class="col-sm-4 text-right"><%= label_tag 'Enter the Kit Number', 'Enter the Kit Number:',:class => "control-label" %></div>
+              <div class="col-sm-4 old_img"><%= text_field_tag :kit_number, nil,:class=> "form-control" %> </div>
+            </div>
+            <div class="clear"></div>
+            <div class="row new_part">
+              <div class="col-sm-4 text-right"><%= label_tag 'Enter a Part Number:', 'Enter a Part Number:',:class => "control-label" %></div>
+              <div class="col-sm-4 new_img"><%= text_field_tag :part_number, nil,:class=> "form-control" %> </div>
+            </div>
+            <div class="clear"></div>
+            <div class="row">
+              <div class="col-sm-4 text-right"><%= label_tag 'Select a Bin Center', 'Select a Bin Center',:class => "control-label" %>:</div>
+              <div class="col-sm-4">
+                <%= select_tag(:bincenter, options_for_select(@binCenters, selected: :option),:class => "form-control",:prompt => "Select Kit Bin-Center") %>
+              </div>
+            </div>
+            <div class="clear"></div>
+            <div class="row"> <div class="col-sm-4">&nbsp;</div>
+              <div class="col-sm-5"><%= submit_tag 'Download KIT BOM', :id => "download_kit_bom",:disable_with => "Generating BOM...", :class => "btn btn-primary glyphicon glyphicon-download" %></div>
+            </div>
+        <% end %>
+    <% end %>
+<% end %>
+<%= image_seperator %>

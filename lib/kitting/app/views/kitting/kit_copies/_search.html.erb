@@ -1,0 +1,28 @@
+<%= image_seperator %>
+<p>Please enter Kit Number to view the details for that Kit.</p>
+<%= image_seperator %>
+<p class="text-right">
+  <%= link_to 'Update Kit Location', kit_queue_update_path %>
+  <% if session[:user_level] > "4" %>
+  | <%= link_to "Upload RFID", upload_kits_path(:type => 'RFID') %>
+  | <%= link_to "Download RFID", kit_details_path(:type => 'RFID') %>
+  <% end %>
+</p>
+<%= form_tag(kit_copies_path, :method => 'get', :class => "form-horizontal") do %>
+    <div class="form-group">
+      <%= label_tag 'Search', nil, :class => "col-sm-1 control-label" %>
+      <div class="col-sm-3"><%= text_field_tag :kit_number_search, params[:kit_number_search].try(:strip), class: 'form-control' %></div>
+
+      <%= label_tag 'Queue', nil, :class => "col-sm-1 control-label" %>
+      <div class="col-sm-3"><%= select_tag :kit_queue, options_from_collection_for_select(@location, 'id', 'name', :selected => params[:kit_queue]), {:prompt => "Select a Queue", class: 'form-control'} %></div>
+
+      <%= label_tag 'Order Status', nil, :class => "col-sm-1 control-label" %>
+      <div class="col-sm-2"><%= select_tag :kit_order_status, options_for_select([['All', 'ALL'], ['Yes', 'Y'], ['No', 'N']], :selected => params[:kit_order_status]), class: 'form-control' %></div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-1 col-sm-11">
+        <%= submit_tag 'Search', :class => "btn btn-primary" %>
+      </div>
+    </div>
+<% end %>
+<%= image_seperator %>
